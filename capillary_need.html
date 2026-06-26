@@ -18,7 +18,7 @@ body{
     width:100%;
 }
 
-/* ✅ TITLE STYLE */
+/* title */
 h2{
     margin-bottom:10px;
 }
@@ -35,7 +35,7 @@ td{
     text-align:center;
 }
 
-/* color */
+/* colors */
 .header{ background:#f4b183; font-weight:bold; }
 .yellow{ background:yellow; }
 .result{ background:#f8cbad; font-weight:bold; }
@@ -49,6 +49,7 @@ input{
     padding:6px;
 }
 
+/* buttons */
 .btn-row{
     display:flex;
     gap:8px;
@@ -75,7 +76,6 @@ button{ padding:8px; font-size:14px; }
 
 <div class="container">
 
-<!-- ✅ TITLE ADDED -->
 <h2>Capillary Need Calculator</h2>
 
 <table>
@@ -133,25 +133,26 @@ const defaults = {
     life2:"720000"
 };
 
+// ✅ STORE PREVIOUS VALUE
 let prev = {};
 
-// ✅ UNIVERSAL INPUT HANDLER
+// ✅ UNIVERSAL INPUT HANDLER (NO CHANGE)
 document.querySelectorAll("input").forEach(el => {
 
     const id = el.id;
 
     el.addEventListener("focus", () => {
         prev[id] = el.value;
-        if(el.value !== "") el.value = "";
+        if(el.value !== "") el.value = "";   // clear
     });
 
     el.addEventListener("blur", () => {
 
         if(el.value === ""){
             if(defaults[id] !== undefined){
-                el.value = defaults[id];
+                el.value = defaults[id];   // restore default
             }else{
-                el.value = prev[id] || "";
+                el.value = prev[id] || ""; // restore previous
             }
         }
     });
@@ -159,7 +160,24 @@ document.querySelectorAll("input").forEach(el => {
     el.addEventListener("input", calc);
 });
 
-// ✅ CALC
+// ✅ ✅ ✅ ENTER FLOW (FIXED PART)
+const flow = ["load","wire","td1","td2","life1","life2"];
+
+flow.forEach((id,i)=>{
+    document.getElementById(id).addEventListener("keydown", e=>{
+        if(e.key === "Enter"){
+            e.preventDefault();
+
+            if(i+1 < flow.length){
+                document.getElementById(flow[i+1]).focus();
+            }else{
+                e.target.blur();
+            }
+        }
+    });
+});
+
+// ✅ CALCULATION
 function calculate(load, wire, td, life){
     if(isNaN(load)||isNaN(wire)||isNaN(td)||isNaN(life)) return "";
     return Math.ceil((load*wire*td)/life).toFixed(2);
@@ -190,10 +208,13 @@ const life2El=document.getElementById("life2");
 
 // ✅ CLEAR
 function clearData(){
+
     loadEl.value="";
     wireEl.value="";
+
     res1.innerHTML="";
     res2.innerHTML="";
+
     td1El.value="3";
     td2El.value="4";
     life1El.value="720000";
