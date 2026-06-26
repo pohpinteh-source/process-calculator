@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fusing Current Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+    font-family:Arial;
+    font-size:14px;
+    background:#f5f5f5;
+}
+
+.container{
+    display:flex;
+    align-items:flex-start;
+}
+
+.left{ width:260px; }
+
+table{
+    border-collapse:collapse;
+    width:100%;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+.header{ background:#d9c2ad; font-weight:bold; }
+.input-box{ background:yellow; }
+.result-box{ background:#eee; }
+
+.au-box{ background:gold; }
+.al-box{ background:#d9d9d9; }
+
+input, select{
+    width:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+}
+
+.middle{ margin-left:15px; }
+
+canvas{
+    margin-left:15px;
+    border:2px solid black;
+    background:#bfbfbf;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+<table>
+<tr><td class="header" colspan="3">Assumption</td></tr>
+
+<tr>
+<td>Wire Type</td>
+<td id="wireTypeBox" class="input-box">
+<select id="wireType">
+<option value="">Select</option>
+<option value="Au">Au</option>
+<option value="Al">Al</option>
+</select>
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td>Wire diameter</td>
+<td class="input-box"><input id="d"></td>
+<td>um</td>
+</tr>
+
+<tr>
+<td>Temp_Chip</td>
+<td class="input-box"><input id="tch" value="175"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>Temp_Lead</td>
+<td class="input-box"><input id="tp" value="125"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>Temp_Package avg</td>
+<td class="result-box" id="T"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>Temp_Wire max</td>
+<td class="input-box"><input id="tmax" value="220"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>ΔT</td>
+<td class="result-box" id="dT"></td>
+<td>°C</td>
+</tr>
+</table>
+
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+</div>
+
+<div class="middle">
+<table id="dataTable"></table>
+</div>
+
+<canvas id="chart" width="550" height="400"></canvas>
+
+</div>
+
+<script>
+
+// ✅ SMART Y AXIS
+function getNiceAxis(maxVal){
+
+let rawMax = maxVal * 1.05;
+
+let steps = [0.2, 0.25, 0.5, 1, 2, 5];
+
+for(let step of steps){
+    let max = Math.ceil(rawMax / step) * step;
+    if(max / step <= 6){
+        return {max:max, step:step};
+    }
+}
+
+return { max:rawMax, step:rawMax/5 };
+}
+
+// refs
+const dEl=document.getElementById("d");
+const tchEl=document.getElementById("tch");
+const tpEl=document.getElementById("tp");
+const tmaxEl=document.getElementById("tmax");
+const wireType=document.getElementById("wireType");
+const wireTypeBox=document.getElementById("wireTypeBox");
+
+const canvas=document.getElementById("chart");
+const ctx=canvas.getContext("2d");
+
+// ✅ INPUT UX
+let prev={};
+const defaults={ tch:"175", tp:"125", tmax:"220" };
+
+dEl.onfocus=()=>{ prev.d=dEl.value; dEl.value=""; };
+dEl.onblur=()=>{ if(dEl.value==="") dEl.value=prev.d||""; };
+
+["tch","tp","tmax"].forEach(id=>{
+let el=document.getElementById(id);
+el.onfocus=()=>{ el.value=""; };
+el.onblur=()=>{ if(el.value==="") el.value=defaults[id]; };
+});
+
+// ✅ COLOR
+wireType.onchange=()=>{
+wireTypeBox.className="input-box";
+if(wireType.value==="Au") wireTypeBox.className="au-box";
+if(wireType.value==="Al") wireTypeBox.className="al-box";
+calc();
+};
+
+// ✅ CALC
+function calc(){
+
+let d=parseFloat(dEl.value);
+let tch=parseFloat(tchEl.value);
+let tp=parseFloat(tpEl.value);
+let tmax=parseFloat(tmaxEl.value);
+let type=wireType.value;
+
+if(!type || isNaN(d)) return;
+
+let Tavg=(tch+tp)/2;
+T.innerHTML=Tavg.toFixed(1);
+
+let dTval=tmax-Tavg;
+dT.innerHTML=dTval.toFixed(1);
+
+let table=document.getElementById("dataTable");
+
+table.innerHTML="<tr><td class='header'>Wire Length (mm)</td><td class='header'>Ampacity (A)</td></tr>";
+
+let x=[],y=[];
+
+for(let i=1;i<=40;i++){
+
+let L=i*0.1;
+let I=0;
+
+if(type==="Au"){
+I=(1.192-0.0012*Tavg)*Math.sqrt(dTval)*
+(1.55e-3*d**1.19 +
+120e-6*d**2.159*Math.exp(L*(-d+9.79)/(d*1.324)));
+}
+else{
+I=(1.32-0.002*Tavg)*Math.sqrt(dTval)*
+(1.42e-3*d**1.1163 +
+90e-6*d**2.17*Math.exp(L*(-d+13)/(d*1.3)));
+}
+
+table.innerHTML+=`<tr><td>${L.toFixed(2)}</td><td>${I.toFixed(4)}</td></tr>`;
+
+x.push(L);
+y.push(I);
+}
+
+drawGraph(x,y);
+}
+
+// ✅ GRAPH FINAL
+function drawGraph(x,y){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+let padL=60, padB=50, padT=10, padR=30; // ✅ more right space
+
+let w=canvas.width-padL-padR;
+let h=canvas.height-padT-padB;
+
+let axis=getNiceAxis(Math.max(...y));
+
+let maxY=axis.max;
+let stepY=axis.step;
+
+// ✅ extended x range
+let xRange=4.1;
+
+ctx.strokeStyle="black";
+ctx.fillStyle="black";
+ctx.font="12px Arial";
+
+// Y axis
+for(let val=0; val<=maxY+0.0001; val+=stepY){
+
+let yPos=padT+h-(val/maxY)*h;
+
+ctx.beginPath();
+ctx.moveTo(padL,yPos);
+ctx.lineTo(padL+w,yPos);
+ctx.stroke();
+
+ctx.fillText(val.toFixed(1), padL-28, yPos+4);
+}
+
+// X axis
+for(let i=0;i<=8;i++){
+
+let val=i*0.5;
+let xPos=padL+(val/xRange)*w;
+
+ctx.beginPath();
+ctx.moveTo(xPos,padT);
+ctx.lineTo(xPos,padT+h);
+ctx.stroke();
+
+ctx.fillText(val.toFixed(2), xPos-12, padT+h+15);
+}
+
+// axis bold
+ctx.lineWidth=2;
+ctx.beginPath();
+ctx.moveTo(padL,padT);
+ctx.lineTo(padL,padT+h);
+ctx.lineTo(padL+w,padT+h);
+ctx.stroke();
+
+// plot
+ctx.fillStyle="magenta";
+
+for(let i=0;i<x.length;i++){
+
+let px=padL+(x[i]/xRange)*w;
+let py=padT+h-(y[i]/maxY)*h;
+
+ctx.fillRect(px-2,py-2,4,4);
+}
+
+// labels
+ctx.fillStyle="black";
+
+ctx.fillText("Wire Length, [mm]",
+padL+w/2-60, padT+h+30);
+
+ctx.save();
+ctx.translate(padL-40, padT+h/2);
+ctx.rotate(-Math.PI/2);
+ctx.fillText("Ampacity, [A]",0,0);
+ctx.restore();
+
+}
+
+// ✅ EVENTS
+["d","tch","tp","tmax"].forEach(id=>{
+document.getElementById(id).oninput=calc;
+});
+
+// ✅ CLEAR
+function clearData(){
+dEl.value="";
+wireType.value="";
+wireTypeBox.className="input-box";
+T.innerHTML="";
+dT.innerHTML="";
+dataTable.innerHTML="";
+ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function goBack(){
+window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>

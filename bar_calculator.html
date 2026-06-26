@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>B.A.R Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f5f5f5;
+}
+
+/* container */
+.container{
+    max-width:500px;
+    margin:auto;
+}
+
+/* ✅ image */
+.top-img{
+    text-align:center;
+    margin-bottom:10px;
+}
+.top-img img{
+    width:220px;
+}
+
+/* table */
+table{
+    border-collapse:collapse;
+    width:100%;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+/* colors */
+.yellow{
+    background:yellow;
+    font-weight:bold;
+}
+
+.header{
+    background:#d9b38c;
+    font-weight:bold;
+}
+
+.gray{
+    background:#e6e6e6;
+}
+
+/* input */
+input{
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+    font-size:16px;
+}
+
+/* unit column */
+.unit{
+    width:50px;
+}
+
+/* buttons */
+.btn-row{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+button{
+    flex:1;
+    padding:10px;
+    background:#e0e0e0;
+    border:1px solid black;
+}
+
+/* note */
+.note{
+    font-size:13px;
+    margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- ✅ PNG FIX (IMPORTANT) -->
+<div class="top-img">
+<img src="BAR.png" alt="BAR Diagram">
+</div>
+
+<table>
+
+<tr>
+<td class="yellow">Ball Diameter</td>
+<td><input id="d_min" placeholder="Min"></td>
+<td><input id="d_max" placeholder="Max"></td>
+<td class="unit">um</td>
+</tr>
+
+<tr>
+<td class="header">B.A.R</td>
+<td class="header">Min</td>
+<td class="header">Max</td>
+<td class="unit">um</td>
+</tr>
+
+<tr><td class="gray">0.15</td><td id="r015_min"></td><td id="r015_max"></td><td class="unit">um</td></tr>
+<tr><td class="gray">0.20</td><td id="r020_min"></td><td id="r020_max"></td><td class="unit">um</td></tr>
+<tr><td class="gray">0.25</td><td id="r025_min"></td><td id="r025_max"></td><td class="unit">um</td></tr>
+<tr><td class="gray">4</td><td id="r4_min"></td><td id="r4_max"></td><td class="unit">um</td></tr>
+<tr><td class="gray">5</td><td id="r5_min"></td><td id="r5_max"></td><td class="unit">um</td></tr>
+<tr><td class="gray">6</td><td id="r6_min"></td><td id="r6_max"></td><td class="unit">um</td></tr>
+
+</table>
+
+<div class="note">** Key in Yellow box</div>
+
+<div class="btn-row">
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+</div>
+
+</div>
+
+<script>
+
+// ✅ ENTER FLOW
+const flow=["d_min","d_max"];
+
+flow.forEach((id,i)=>{
+    document.getElementById(id).addEventListener("keydown", e=>{
+        if(e.key==="Enter"){
+            e.preventDefault();
+            if(i+1 < flow.length){
+                document.getElementById(flow[i+1]).focus();
+            }else{
+                e.target.blur();
+            }
+        }
+    });
+});
+
+// ✅ SMART INPUT (CLEAR + RESTORE)
+let prev = {};
+
+flow.forEach(id=>{
+
+    let el = document.getElementById(id);
+
+    el.addEventListener("focus", function(){
+        prev[id] = this.value;
+        if(this.value !== ""){
+            this.value = "";
+        }
+    });
+
+    el.addEventListener("blur", function(){
+
+        if(this.value === ""){
+            this.value = prev[id] || "";
+            return;
+        }
+
+        let v = parseFloat(this.value);
+        if(!isNaN(v)){
+            this.value = v.toFixed(2);
+        }
+
+    });
+});
+
+// ✅ CALCULATION (IMPROVED - INDEPENDENT)
+function calc(){
+
+let dmin = parseFloat(d_min.value);
+let dmax = parseFloat(d_max.value);
+
+// ✅ MIN SIDE
+if(!isNaN(dmin)){
+
+    r015_min.innerHTML=(dmin*0.15).toFixed(2);
+    r020_min.innerHTML=(dmin*0.20).toFixed(2);
+    r025_min.innerHTML=(dmin*0.25).toFixed(2);
+
+    r4_min.innerHTML=(dmin/4).toFixed(2);
+    r5_min.innerHTML=(dmin/5).toFixed(2);
+    r6_min.innerHTML=(dmin/6).toFixed(2);
+
+}else{
+    [r015_min,r020_min,r025_min,r4_min,r5_min,r6_min]
+    .forEach(el=>el.innerHTML="");
+}
+
+// ✅ MAX SIDE
+if(!isNaN(dmax)){
+
+    r015_max.innerHTML=(dmax*0.15).toFixed(2);
+    r020_max.innerHTML=(dmax*0.20).toFixed(2);
+    r025_max.innerHTML=(dmax*0.25).toFixed(2);
+
+    r4_max.innerHTML=(dmax/4).toFixed(2);
+    r5_max.innerHTML=(dmax/5).toFixed(2);
+    r6_max.innerHTML=(dmax/6).toFixed(2);
+
+}else{
+    [r015_max,r020_max,r025_max,r4_max,r5_max,r6_max]
+    .forEach(el=>el.innerHTML="");
+}
+
+}
+
+// trigger
+flow.forEach(id=>{
+    document.getElementById(id).addEventListener("input", calc);
+});
+
+// ✅ CLEAR
+function clearData(){
+
+d_min.value="";
+d_max.value="";
+
+[
+r015_min,r015_max,
+r020_min,r020_max,
+r025_min,r025_max,
+r4_min,r4_max,
+r5_min,r5_max,
+r6_min,r6_max
+].forEach(el=>el.innerHTML="");
+
+}
+
+// ✅ BACK
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
