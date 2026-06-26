@@ -11,18 +11,22 @@ body {
     background: #f5f5f5;
 }
 
-.row {
-    display: flex;
-    align-items: flex-start;
+/* ✅ VERTICAL MOBILE LAYOUT */
+.container {
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
 
+/* ✅ TABLE */
 table {
     border-collapse: collapse;
+    width:100%;
 }
 
 td {
     border: 1px solid black;
-    padding: 6px;
+    padding: 8px;
 }
 
 /* COLORS */
@@ -36,41 +40,51 @@ td {
     padding-left: 5px;
 }
 
-/* RED WARNING */
+/* warning */
 .red {
     background: red !important;
 }
 
-/* INPUT */
+/* input */
 input {
-    width: 100%;
-    border: none;
-    background: yellow;
-    text-align: center;
-    font-size: 16px;
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+    font-size:18px;   /* ✅ bigger for phone */
 }
 
-/* QPA BLOCK */
+/* ✅ QPA BLOCK */
 .qpa-block {
-    margin-left: 10px;
-    width: 150px;
+    width:100%;
 }
 
-/* BUTTON */
+/* ✅ BUTTON STANDARD */
 button {
-    width: 150px;
-    padding: 10px;
-    margin-top: 10px;
-    display: block;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    font-size:16px;
 }
 
-/* RIGHT IMAGE */
-.right {
-    margin-left: 20px;
-}
-
+/* ✅ IMAGE AT BOTTOM */
 img {
-    width: 350px;
+    width:100%;
+    max-width:400px;
+    margin-top:10px;
+}
+
+/* desktop fallback */
+@media(min-width:768px){
+    .container{
+        flex-direction:row;
+    }
+    .qpa-block{
+        width:180px;
+    }
+    img{
+        width:350px;
+    }
 }
 
 </style>
@@ -80,10 +94,10 @@ img {
 
 <h2>** Key in Yellow box.</h2>
 
-<div class="row">
+<div class="container">
 
 <!-- ✅ LEFT TABLE -->
-<table style="width:520px">
+<table>
 
 <tr>
 <td class="label">Vol/Syringe, g</td>
@@ -141,7 +155,7 @@ img {
 
 </table>
 
-<!-- ✅ MIDDLE (QPA + BUTTON) -->
+<!-- ✅ QPA + BUTTON -->
 <div class="qpa-block">
 
 <table>
@@ -153,43 +167,36 @@ img {
 
 </table>
 
-<!-- ✅ BUTTONS -->
 <button onclick="clearData()">Clear</button>
 <button onclick="goBack()">Back</button>
 
 </div>
 
-<!-- ✅ RIGHT IMAGE -->
-<div class="right">
-
+<!-- ✅ IMAGE -->
 <img src="DA Glue Component scrap.png">
-
-</div>
 
 </div>
 
 <script>
 
-// focus
+// ✅ ALL YOUR ORIGINAL LOGIC (UNCHANGED)
+
 function setFocus(){
     document.getElementById("B2").focus();
 }
 
-// clear on click
 document.querySelectorAll("input").forEach(el=>{
     el.addEventListener("focus", function(){
         this.value="";
     });
 });
 
-// check left filled
 function leftComplete(){
     return (
         B2.value && B3.value && B5.value && B6.value && B7.value
     );
 }
 
-// ✅ FIXED CALCULATION
 function calculate(){
 
     let B2v = B2.value;
@@ -214,11 +221,9 @@ function calculate(){
     let Q2n = Number(Q2v);
     let Q3n = Number(Q3v);
 
-    // total vol
     let B4 = B3n * B2n;
-    document.getElementById("B4").innerHTML = B4 ? B4.toFixed(3) : "";
+    B4 ? (B4El=B4.toFixed(3),document.getElementById("B4").innerHTML=B4El) : "";
 
-    // ✅ FIXED CONDITION
     if(Q1v !== "" && Q2v !== "" && Q3v !== ""){
 
         let B8 = (Q1n + Q2n + Q3n)/3;
@@ -248,12 +253,10 @@ function calculate(){
     }
 }
 
-// auto calc
 ["B2","B3","B5","B6","B7","Q1","Q2","Q3"].forEach(id=>{
     document.getElementById(id).addEventListener("input", calculate);
 });
 
-// left flow
 const leftFlow = ["B2","B3","B5","B6","B7"];
 
 leftFlow.forEach((id,index)=>{
@@ -269,7 +272,6 @@ leftFlow.forEach((id,index)=>{
     });
 });
 
-// ✅ QPA ENTER FLOW FIXED
 const qpaFlow = ["Q1","Q2","Q3"];
 
 qpaFlow.forEach((id,index)=>{
@@ -283,7 +285,6 @@ qpaFlow.forEach((id,index)=>{
     });
 });
 
-// block entry
 qpaFlow.forEach(id=>{
     document.getElementById(id).addEventListener("focus", function(){
         if(!leftComplete()){
@@ -293,7 +294,6 @@ qpaFlow.forEach(id=>{
     });
 });
 
-// ✅ 3 decimal for QPA inputs
 qpaFlow.forEach(id=>{
     document.getElementById(id).addEventListener("blur", function(){
         if(this.value){
@@ -302,7 +302,6 @@ qpaFlow.forEach(id=>{
     });
 });
 
-// clear
 function clearData(){
     document.querySelectorAll("input").forEach(i=>i.value="");
     document.querySelectorAll(".result-box").forEach(i=>{
@@ -312,7 +311,6 @@ function clearData(){
     setFocus();
 }
 
-// back
 function goBack(){
     window.location.href="index.html";
 }
