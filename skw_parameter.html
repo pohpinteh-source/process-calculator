@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SKW Parameter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f0f0f0;
+}
+
+/* title */
+.title{
+    background:#e6c97f;
+    font-size:28px;
+    text-align:center;
+    padding:10px;
+    font-weight:bold;
+}
+
+/* layout */
+.container{
+    margin-top:15px;
+}
+
+/* table */
+table{
+    border-collapse:collapse;
+    width:100%;
+    margin-bottom:15px;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+}
+
+/* colors */
+.label{
+    background:#dddddd;
+}
+
+.input-box{
+    background:yellow;
+    text-align:center;
+}
+
+.header{
+    background:yellow;
+    font-weight:bold;
+    text-align:center;
+}
+
+.gray{
+    background:#cfd6e6;
+    text-align:center;
+}
+
+/* input */
+input{
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+    font-size:16px;
+}
+
+/* buttons */
+.btn-row{
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    margin-top:20px;
+}
+
+button{
+    width:200px;
+    padding:10px;
+    font-size:16px;
+    background:#e0e0e0;
+    border:1px solid black;
+    cursor:pointer;
+}
+
+/* remark */
+.remark{
+    font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="title">For Shinkawa Bonder</div>
+
+<div class="container">
+
+<!-- INPUT -->
+<table>
+<tr>
+<td class="label">Wire Size, μm</td>
+<td class="input-box"><input id="wire"></td>
+<td>μm</td>
+</tr>
+
+<tr>
+<td class="label">Target Ball Size, μm</td>
+<td class="input-box"><input id="ball"></td>
+<td>μm</td>
+</tr>
+
+<tr>
+<td class="label">Target Bump Size, μm</td>
+<td class="input-box"><input id="bump"></td>
+<td>μm</td>
+</tr>
+</table>
+
+<!-- SEARCH FORCE -->
+<table>
+
+<tr>
+<td class="header">Search Force & Bond Force, gf</td>
+<td class="header">1st Bond</td>
+<td class="header">2nd Bond</td>
+</tr>
+
+<tr>
+<td class="label">Ball Bond</td>
+<td class="gray" id="ball1"></td>
+<td class="gray" id="ball2"></td>
+</tr>
+
+<tr>
+<td class="label">Bump Bond</td>
+<td class="gray" id="bump1"></td>
+<td class="gray" id="bump2"></td>
+</tr>
+
+</table>
+
+<!-- US POWER -->
+<table>
+
+<tr>
+<td class="header">US Power</td>
+<td class="header">1st Bond</td>
+<td class="header">2nd Bond</td>
+</tr>
+
+<tr>
+<td class="label">30 to 50μm</td>
+<td class="gray">200</td>
+<td class="gray">300</td>
+</tr>
+
+<tr>
+<td class="label">More than 50μm</td>
+<td class="gray">300</td>
+<td class="gray">400</td>
+</tr>
+
+</table>
+
+<p><i>**If found issue during bonding, please change "US Power".</i></p>
+
+<!-- SEARCH SPEED -->
+<table>
+
+<tr>
+<td class="header">Search Speed (Target Ball Size - Ø)</td>
+<td class="header">1st Bond</td>
+<td class="header">2nd Bond</td>
+</tr>
+
+<tr><td class="label">30 to 40μm</td><td class="gray">5mm/s</td><td class="gray">10mm/s</td></tr>
+<tr><td class="label">40 to 50μm</td><td class="gray">9mm/s</td><td class="gray">18mm/s</td></tr>
+<tr><td class="label">50 to 60μm</td><td class="gray">19mm/s</td><td class="gray">38mm/s</td></tr>
+<tr><td class="label">60 to 70μm</td><td class="gray">36mm/s</td><td class="gray">72mm/s</td></tr>
+<tr><td class="label">More than 70μm</td><td class="gray">50mm/s</td><td class="gray">100mm/s</td></tr>
+
+</table>
+
+<!-- BOND PARAM -->
+<table>
+
+<tr>
+<td class="header">Bond Parameter</td>
+<td class="header">1st Bond</td>
+<td class="header">2nd Bond</td>
+</tr>
+
+<tr>
+<td class="label">US Time</td>
+<td class="gray">5 ms (Pad)</td>
+<td class="gray">10 ms (Lead)</td>
+</tr>
+
+<tr>
+<td class="label">Bond / Force Time</td>
+<td class="gray" colspan="2">US Time + 2ms</td>
+</tr>
+
+<tr>
+<td class="label">Search Level</td>
+<td class="gray">100 μm</td>
+<td class="gray">50 - 100 μm</td>
+</tr>
+
+</table>
+
+<div class="remark">
+<b>Remark:</b><br>
+Above parameter recommendation is for reference only. Final parameter need to achieve process requirement.
+</div>
+
+<!-- BUTTON -->
+<div class="btn-row">
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+</div>
+
+</div>
+
+<script>
+
+// ✅ ENTER FLOW
+const flow=["wire","ball","bump"];
+
+flow.forEach((id,i)=>{
+document.getElementById(id).addEventListener("keydown", e=>{
+    if(e.key==="Enter"){
+        e.preventDefault();
+        if(i+1<flow.length){
+            document.getElementById(flow[i+1]).focus();
+        }
+    }
+});
+});
+
+// ✅ SMART INPUT (CLEAR + RESTORE)
+let previousValue = {};
+
+document.querySelectorAll("input").forEach(el=>{
+
+    el.addEventListener("focus", function(){
+        previousValue[this.id] = this.value;
+        if(this.value !== ""){
+            this.value="";
+        }
+    });
+
+    el.addEventListener("blur", function(){
+        if(this.value===""){
+            this.value = previousValue[this.id] || "";
+            return;
+        }
+    });
+
+});
+
+// ✅ CALC
+function calc(){
+
+
+let wire = Number(document.getElementById("wire").value);
+let ball = Number(document.getElementById("ball").value);
+let bump = Number(document.getElementById("bump").value);
+
+// ✅ Ball Bond
+if(ball){
+    let v1 = Math.ceil(0.01*Math.PI*(ball/2)*(ball/2));
+    ball1.innerHTML = v1;
+
+    // ✅ FIXED 2nd bond
+    ball2.innerHTML = wire ? (wire * 2) : "";
+}
+
+// ✅ Bump Bond
+if(bump){
+    let v2 = Math.ceil(0.01*Math.PI*(bump/2)*(bump/2));
+    bump1.innerHTML = v2;
+
+    // ✅ FIXED 2nd bond
+    bump2.innerHTML = wire ? (wire * 2) : "";
+}
+
+}
+
+// fix id reference
+const ball_id = document.getElementById("ball");
+const bump_id = document.getElementById("bump");
+
+// trigger
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("input",calc);
+});
+
+// clear
+function clearData(){
+
+    // ✅ Only clear yellow input boxes
+    document.querySelectorAll(".input-box input")
+    .forEach(i => i.value = "");
+
+    // ✅ Reset calculated result safely (auto recalculation)
+    document.getElementById("ball1").innerHTML = "";
+    document.getElementById("ball2").innerHTML = "";
+    document.getElementById("bump1").innerHTML = "";
+    document.getElementById("bump2").innerHTML = "";
+
+}
+
+// back
+function goBack(){
+window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
+``
