@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SPC LSL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+/* TABLE */
+table {
+    border-collapse: collapse;
+    width: 70%;
+}
+
+td {
+    border: 1px solid black;
+    padding: 6px;
+    text-align: center;
+}
+
+/* COLORS */
+.header { background: yellow; }
+.data { background: #d9d9d9; }
+
+/* ✅ NEW LEFT COLUMN COLOR (MATCH YOUR IMAGE) */
+.leftcol {
+    background: #e6bc9a;   /* light brown tone */
+    text-align: left;
+}
+
+/* BUTTON */
+button {
+    margin-top: 10px;
+    padding: 12px;
+    width: 200px;
+    font-size: 16px;
+}
+
+/* LAYOUT */
+.container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.right {
+    margin-left: 20px;
+}
+
+.remark {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>SPC LSL Reference</h2>
+
+<div class="container">
+
+<!-- ✅ TABLE -->
+<table>
+
+<tr class="header">
+<td>Wire Size</td>
+<td>18um</td>
+<td>25um</td>
+<td>30um</td>
+<td>38um</td>
+</tr>
+
+<tr>
+<td class="leftcol">Wire Pull</td>
+<td class="data">2.0 gf</td>
+<td class="data">3.0 gf</td>
+<td class="data">5.0 gf</td>
+<td class="data">6.5 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Tweezer Pull</td>
+<td class="data">2.5 gf</td>
+<td class="data">3.5 gf</td>
+<td class="data">5.5 gf</td>
+<td class="data">5.5 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Ball Shear</td>
+<td class="data">20 gf</td>
+<td class="data">17 / 30 gf</td>
+<td class="data">35 gf</td>
+<td class="data">76 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear ESD 6mils</td>
+<td colspan="4" class="data">35 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear ESD 8mils</td>
+<td colspan="4" class="data">76 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear ESD 10mils</td>
+<td colspan="4" class="data">76 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear LED 1mm²</td>
+<td colspan="4" class="data">620 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear LED 2mm²</td>
+<td colspan="4" class="data">2000 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear LED 2.8mm², 3mm²</td>
+<td colspan="4" class="data">2200 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear LED 4mm²</td>
+<td colspan="4" class="data">2500 gf</td>
+</tr>
+
+<tr>
+<td class="leftcol">Die Shear Saphire</td>
+<td colspan="4" class="data">309 gf</td>
+</tr>
+
+</table>
+
+<!-- ✅ RIGHT SIDE BUTTON -->
+<div class="right">
+
+<!-- ✅ UPDATED BUTTON TEXT -->
+<button onclick="goBack()">Back</button>
+
+</div>
+
+</div>
+
+<!-- ✅ REMARK -->
+<div class="remark">
+<b>Remark:</b><br>
+Above LSL is for reference purpose. Final LSL refer to product control plan.
+</div>
+
+<script>
+
+function goBack(){
+    window.location.href = "index.html";
+}
+
+</script>
+
+</body>
+</html>

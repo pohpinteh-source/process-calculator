@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FAB Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#eaeaea;
+}
+
+.container{
+    display:flex;
+}
+
+.left{
+    width:70%;
+}
+
+table{
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+.label{
+    background:#f4b183;
+    text-align:left;
+    padding-left:8px;
+}
+
+.header{
+    background:#cfcfcf;
+    font-weight:bold;
+}
+
+.input-box{
+    background:yellow;
+}
+
+.result-box{
+    background:#ffc000;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+}
+
+/* formula */
+.formula{
+    margin-top:10px;
+    font-size:12px;
+}
+
+/* buttons */
+.btn-row{
+    display:flex;
+    gap:15px;
+    margin-top:20px;
+}
+
+button{
+    width:200px;
+    padding:10px;
+    font-size:16px;
+    background:#e0e0e0;
+    border:1px solid black;
+    cursor:pointer;
+}
+
+.note{
+    margin-top:8px;
+    font-size:13px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h3><b>Determine desired free air ball volume (FAB)</b></h3>
+
+<div class="container">
+
+<div class="left">
+
+<!-- ✅ PNG FIXED -->
+<img src="FAB Cal.png" style="width:300px;">
+
+<!-- FORMULA -->
+<div class="formula">
+
+<b>Formula:</b><br><br>
+
+FAB³ = 1.5H²(H − WD) + (CD³ − H³)/(4TAN(0.5CA)) + 1.5BD²(BT)
+<br><br>
+
+OR
+<br><br>
+
+FAB = (1.5H²(H − WD) + (CD³ − H³)/(4TAN(0.5CA)) + 1.5BD²(BT))<sup>1/3</sup>
+
+</div>
+
+<!-- TABLE -->
+<table>
+
+<tr>
+<td></td>
+<td class="header">mil</td>
+<td class="header">um</td>
+</tr>
+
+<tr>
+<td class="label">H =</td>
+<td class="input-box"><input id="h_mil"></td>
+<td class="input-box"><input id="h_um"></td>
+</tr>
+
+<tr>
+<td class="label">WD =</td>
+<td class="input-box"><input id="wd_mil"></td>
+<td class="input-box"><input id="wd_um"></td>
+</tr>
+
+<tr>
+<td class="label">CD =</td>
+<td class="input-box"><input id="cd_mil"></td>
+<td class="input-box"><input id="cd_um"></td>
+</tr>
+
+<tr>
+<td class="label">CA =</td>
+<td class="input-box"><input id="ca_mil"></td>
+<td class="input-box"><input id="ca_um"></td>
+</tr>
+
+<tr>
+<td class="label">BD =</td>
+<td class="input-box"><input id="bd_mil"></td>
+<td class="input-box"><input id="bd_um"></td>
+</tr>
+
+<tr>
+<td class="label">BT =</td>
+<td class="input-box"><input id="bt_mil"></td>
+<td class="input-box"><input id="bt_um"></td>
+</tr>
+
+<tr>
+<td class="label">FAB =</td>
+<td class="result-box" id="fab_mil"></td>
+<td class="result-box" id="fab_um"></td>
+</tr>
+
+</table>
+
+<div class="note">** Key in Yellow box.</div>
+
+<div class="btn-row">
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// ✅ ENTER FLOW
+const order=[
+"h_mil","wd_mil","cd_mil","ca_mil","bd_mil","bt_mil",
+"h_um","wd_um","cd_um","ca_um","bd_um","bt_um"
+];
+
+order.forEach((id,i)=>{
+    document.getElementById(id).addEventListener("keydown", e=>{
+        if(e.key==="Enter"){
+            e.preventDefault();
+            if(i+1<order.length){
+                document.getElementById(order[i+1]).focus();
+            }
+        }
+    });
+});
+
+// ✅ SMART INPUT MEMORY
+let previousValue = {};
+
+document.querySelectorAll("input").forEach(el=>{
+
+    el.addEventListener("focus", function(){
+        previousValue[this.id] = this.value;
+        if(this.value !== ""){
+            this.value = "";
+        }
+    });
+
+    el.addEventListener("blur", function(){
+
+        if(this.value === ""){
+            this.value = previousValue[this.id] || "";
+            return;
+        }
+
+        let v = parseFloat(this.value);
+        if(!isNaN(v)){
+            this.value = v.toFixed(2); // ✅ 2 decimal
+        }
+    });
+});
+
+// ✅ CALC
+function calc(){
+
+let Hm=Number(h_mil.value);
+let WDm=Number(wd_mil.value);
+let CDm=Number(cd_mil.value);
+let CAm=Number(ca_mil.value);
+let BDm=Number(bd_mil.value);
+let BTm=Number(bt_mil.value);
+
+if(Hm&&WDm&&CDm&&CAm&&BDm&&BTm){
+let fab=Math.pow(
+(1.5*Hm*Hm*(Hm-WDm)) +
+((Math.pow(CDm,3)-Math.pow(Hm,3)) /
+(4*Math.tan(0.5*CAm*Math.PI/180))) +
+(1.5*BDm*BDm*BTm),
+1/3
+);
+fab_mil.innerHTML=fab.toFixed(3);
+}
+
+let Hu=Number(h_um.value);
+let WDu=Number(wd_um.value);
+let CDu=Number(cd_um.value);
+let CAu=Number(ca_um.value);
+let BDu=Number(bd_um.value);
+let BTu=Number(bt_um.value);
+
+if(Hu&&WDu&&CDu&&CAu&&BDu&&BTu){
+let fab=Math.pow(
+(1.5*Hu*Hu*(Hu-WDu)) +
+((Math.pow(CDu,3)-Math.pow(Hu,3)) /
+(4*Math.tan(0.5*CAu*Math.PI/180))) +
+(1.5*BDu*BDu*BTu),
+1/3
+);
+fab_um.innerHTML=fab.toFixed(3);
+}
+
+}
+
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("input",calc);
+});
+
+// clear
+function clearData(){
+document.querySelectorAll("input").forEach(i=>i.value="");
+fab_mil.innerHTML="";
+fab_um.innerHTML="";
+}
+
+// back
+function goBack(){
+window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>

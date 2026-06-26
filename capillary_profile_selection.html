@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Capillary Profile Selection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f5f5f5;
+}
+
+.container{
+    display:flex;
+    align-items:flex-start;
+}
+
+/* table */
+table{
+    border-collapse:collapse;
+}
+td{
+    border:1px solid black;
+    padding:6px;
+}
+
+/* colors */
+.label{background:orange;}
+.input-box{background:yellow;text-align:center;}
+.result{background:#8fd14f;text-align:center;font-weight:bold;}
+
+input{
+    border:none;
+    background:yellow;
+    text-align:center;
+    font-size:16px;
+}
+input.full{ width:100%; }
+
+/* L3 input */
+#l3input{
+    width:70px;
+}
+
+/* ✅ BLUE IMAGE (FINAL SIZE) */
+.center-img{
+    margin-left:40px;
+}
+.center-img img{
+    width:100px;
+}
+
+/* ✅ RIGHT IMAGE */
+.right-img{
+    margin-left:40px;
+    position:relative;
+}
+.right-img img{
+    width:330px;
+}
+
+/* ✅ L DISPLAY (ONLY "=" + VALUE) */
+.overlay{
+    position:absolute;
+    top:100px;
+    left:155px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.equal{
+    font-size:20px;
+}
+
+.valueL{
+    color:green;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.unit{
+    font-size:18px;
+}
+
+/* result panel */
+.result-panel{
+    margin-left:20px;
+}
+
+/* buttons */
+.btn-row{
+    display:flex;
+    gap:15px;
+    margin-top:20px;
+}
+
+button{
+    width:120px;
+    padding:10px;
+    font-size:16px;
+}
+
+</style>
+</head>
+
+<body onload="cd.focus()">
+
+<h2>** Key in Yellow box</h2>
+
+<div class="container">
+
+<!-- ✅ INPUT TABLE -->
+<table>
+
+<tr><td class="label">ØCD</td><td class="input-box"><input id="cd" class="full"></td><td>um</td></tr>
+<tr><td class="label">ØH</td><td class="input-box"><input id="h" class="full"></td><td>um</td></tr>
+<tr><td class="label">CA</td><td class="input-box"><input id="ca" class="full"></td><td>Deg</td></tr>
+<tr><td class="label">ØTip</td><td class="input-box"><input id="tip" class="full"></td><td>um</td></tr>
+<tr><td class="label">MTA</td><td class="input-box"><input id="mta" class="full"></td><td>Deg</td></tr>
+
+<tr><td class="label">TL</td>
+<td class="input-box"><input id="tl" value="11.000" class="full"></td>
+<td>mm</td></tr>
+
+<tr><td class="label">ØTD</td>
+<td class="input-box"><input id="td" value="1.587" class="full"></td>
+<td>mm</td></tr>
+
+</table>
+
+<!-- ✅ CENTER IMAGE -->
+<div class="center-img">
+<img src="Capillary Profile Selection1.png" alt="Capillary Diagram">
+</div>
+
+<!-- ✅ RESULT -->
+<div class="result-panel">
+
+<div>L₁ = <span class="result" id="l1">0.0000</span> mm</div><br>
+<div>X₁ = <span class="result" id="x1">0.0000</span> mm</div><br>
+<div>L₂ = <span class="result" id="l2">0.0000</span> mm</div><br>
+<div>X₂ = <span class="result" id="x2">0.0000</span> mm</div><br>
+
+<div>L₃ = <input id="l3input"> mm</div>
+
+<div class="btn-row">
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+</div>
+
+</div>
+
+<!-- ✅ RIGHT IMAGE -->
+<div class="right-img">
+<img src="Capillary Profile Selection2.png" alt="Cross Section">
+
+<div class="overlay">
+<div class="equal">=</div>
+<div class="valueL" id="Lright">0.0000</div>
+<div class="unit">mm</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// ENTER FLOW
+const flow=["cd","h","ca","tip","mta","tl","td","l3input"];
+
+flow.forEach((id,i)=>{
+    document.getElementById(id).addEventListener("keydown", e=>{
+        if(e.key==="Enter"){
+            e.preventDefault();
+            if(i+1 < flow.length){
+                document.getElementById(flow[i+1]).focus();
+            }else{
+                e.target.blur();
+            }
+        }
+    });
+});
+
+// clear on click
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("focus", function(){
+        this.value="";
+    });
+});
+
+// restore default
+tl.onblur = ()=>{ if(tl.value==="") tl.value="11.000"; };
+td.onblur = ()=>{ if(td.value==="") td.value="1.587"; };
+
+// L3 formatting
+l3input.onblur = function(){
+    let v = parseFloat(this.value);
+    if(!isNaN(v)) this.value = v.toFixed(3);
+};
+
+// ✅ CALCULATION (YOUR FINAL FORMULA)
+function calc(){
+
+let CD = Number(cd.value);
+let H = Number(h.value);
+let CA = Number(ca.value);
+let TIP = Number(tip.value);
+let MTA = Number(mta.value);
+let TL = Number(tl.value);
+let TD = Number(td.value);
+let L3 = Number(l3input.value);
+
+// convert
+let CDmm = CD/1000;
+let Hmm = H/1000;
+let TIPmm = TIP/1000;
+
+// X1
+if(TD){
+    let X1 = TD/2;
+    x1.innerHTML = X1.toFixed(4);
+}
+
+// L2
+let L2 = null;
+if(MTA && TD && TIPmm && L3){
+    L2 = Math.tan((90-(MTA/2))*Math.PI/180)
+         * ((TD/2)-(TIPmm/2)) - L3;
+    l2.innerHTML = L2.toFixed(4);
+}
+
+// L1
+if(TL && L2!==null && L3){
+    let L1 = TL - L2 - L3;
+    l1.innerHTML = L1.toFixed(4);
+}
+
+// X2
+if(MTA && TIPmm && L3){
+    let X2 = (L3 / Math.tan((90-(MTA/2))*Math.PI/180))
+            + (TIPmm/2);
+    x2.innerHTML = X2.toFixed(4);
+}
+
+// RIGHT L
+if(CA && CDmm && Hmm){
+    let L = Math.tan((90-(CA/2))*Math.PI/180)
+            * ((CDmm/2)-(Hmm/2));
+    Lright.innerHTML = L.toFixed(4);
+}
+
+}
+
+// trigger
+["cd","h","ca","tip","mta","tl","td","l3input"]
+.forEach(id=>{
+    document.getElementById(id).addEventListener("input",calc);
+});
+
+// clear
+function clearData(){
+document.querySelectorAll("input").forEach(i=>i.value="");
+document.querySelectorAll(".result").forEach(i=>i.innerHTML="0.0000");
+
+tl.value="11.000";
+td.value="1.587";
+Lright.innerHTML="0.0000";
+}
+
+// back
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>

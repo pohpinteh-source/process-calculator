@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DA XY Stackup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+h1 {
+    font-size: 26px;
+    text-decoration: underline;
+}
+
+/* ✅ IMAGE */
+img {
+    display: block;
+    width: 70%;
+    max-width: 900px;
+    margin: 10px 0;
+}
+
+/* Table */
+table {
+    border-collapse: collapse;
+    width: 70%;
+}
+
+td {
+    border: 1px solid black;
+    padding: 6px;
+}
+
+/* Colors */
+.label {
+    background: #e7c4a0;
+}
+
+.unit {
+    background: #e7c4a0;
+    width: 70px;
+    text-align: center;
+}
+
+.header {
+    background: orange;
+    text-align: center;
+    font-weight: bold;
+}
+
+.input-box {
+    background: yellow;
+    text-align: center;
+}
+
+.result {
+    background: #00cc66;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Input */
+input {
+    width: 100%;
+    border: none;
+    background: yellow;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Buttons */
+button {
+    padding: 10px;
+    margin: 10px 5px 0 0;
+    font-size: 16px;
+}
+
+</style>
+</head>
+
+<body onload="init()">
+
+<h1>Gap between chips / cavity after tolerance study:</h1>
+
+<!-- ✅ IMAGE -->
+<img src="DA XY Stackup.png">
+
+<!-- ✅ MODE BUTTON -->
+<button onclick="setMode('G1')">G1</button>
+<button onclick="setMode('G2')">G2</button>
+
+<table>
+
+<tr>
+<td></td>
+<td></td>
+<td class="header">Nominal</td>
+</tr>
+
+<tr>
+<td id="label1" class="label">Gap between chips / cavity in drawing, G1</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="C18"></td>
+</tr>
+
+<tr id="rowG1">
+<td class="label">Glue Smear, S @ G1 area</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="C19"></td>
+</tr>
+
+<tr id="rowG2">
+<td class="label">Glue Smear, S @ G2 area</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="C20"></td>
+</tr>
+
+<tr>
+<td id="label4" class="label">Gap between chips / cavity after tolerance study, G1</td>
+<td id="risk" class="result"></td>
+<td id="result" class="result"></td>
+</tr>
+
+</table>
+
+<p><b>*Remark: Assume both chip same BLT.</b></p>
+
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+
+<script>
+
+let mode = "G1";
+
+// ✅ INIT
+function init(){
+    setMode("G1");
+    document.getElementById("C18").focus();
+}
+
+// ✅ SWITCH G1 / G2
+function setMode(type){
+
+    mode = type;
+
+    if(type === "G1"){
+        document.getElementById("label1").innerHTML = "Gap between chips / cavity in drawing, G1";
+        document.getElementById("label4").innerHTML = "Gap between chips / cavity after tolerance study, G1";
+
+        document.getElementById("rowG1").style.display = "";
+        document.getElementById("rowG2").style.display = "none";
+
+    } else {
+
+        document.getElementById("label1").innerHTML = "Gap between chips / cavity in drawing, G2";
+        document.getElementById("label4").innerHTML = "Gap between chips / cavity after tolerance study, G2";
+
+        document.getElementById("rowG1").style.display = "none";
+        document.getElementById("rowG2").style.display = "";
+    }
+
+    clearData();
+}
+
+// ✅ AUTO CLEAR WHEN CLICK
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("focus", function(){
+        this.value="";
+    });
+});
+
+// ✅ CALCULATION (EXCEL MATCH)
+function calculate(){
+
+    let C18 = Number(document.getElementById("C18").value);
+    let C19 = Number(document.getElementById("C19").value);
+    let C20 = Number(document.getElementById("C20").value);
+
+    if(!C18) return;
+
+    let result = "";
+
+    if(C20 > 0){
+        result = C18 - (C20 * 2);
+    } else if (C19 < 0){
+        result = "";
+    } else {
+        result = C18 - C19;
+    }
+
+    let resultBox = document.getElementById("result");
+    let riskBox = document.getElementById("risk");
+
+    if(result !== ""){
+        resultBox.innerHTML = result.toFixed(2);
+    } else {
+        resultBox.innerHTML = "";
+    }
+
+    let risk = "";
+
+    if(C18 == 0){
+        risk = "";
+    } 
+    else if(result >= 0){
+        risk = "No Risk";
+
+        resultBox.style.backgroundColor = "#00cc66";
+        riskBox.style.backgroundColor = "#00cc66";
+
+    } 
+    else {
+        risk = "Risk";
+
+        resultBox.style.backgroundColor = "#ff4d4d";
+        riskBox.style.backgroundColor = "#ff4d4d";
+    }
+
+    riskBox.innerHTML = risk;
+}
+
+// ✅ AUTO CALCULATE
+["C18","C19","C20"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", calculate);
+});
+
+// ✅ ENTER FLOW
+const flow = ["C18","C19","C20"];
+
+flow.forEach((id, index)=>{
+    document.getElementById(id).addEventListener("keydown", function(e){
+        if(e.key === "Enter"){
+            e.preventDefault();
+            if(index+1 < flow.length){
+                document.getElementById(flow[index+1]).focus();
+            }
+        }
+    });
+});
+
+// ✅ CLEAR
+function clearData(){
+    document.querySelectorAll("input").forEach(i=>i.value="");
+
+    let resultBox = document.getElementById("result");
+    let riskBox = document.getElementById("risk");
+
+    resultBox.innerHTML="";
+    riskBox.innerHTML="";
+
+    resultBox.style.backgroundColor = "#00cc66";
+    riskBox.style.backgroundColor = "#00cc66";
+}
+
+// ✅ BACK
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
+``

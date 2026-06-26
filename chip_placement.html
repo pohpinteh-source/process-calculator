@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chip Placement</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body { font-family: Arial; background:#f5f5f5; }
+
+h1 {
+    text-align:center;
+    background:orange;
+    padding:12px;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+td {
+    border:1px solid black;
+    padding:8px;
+    text-align:center;
+}
+
+.label{background:#d9d9d9;}
+.input-box{background:yellow;}
+.result-box{background:#00ff00;font-weight:bold;}
+
+input{
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+}
+
+img{
+    width:260px;
+    display:block;
+    margin:20px auto;
+}
+</style>
+</head>
+
+<body onload="setFocus()">
+
+<h1>Chip Placement (ASM AD838L)</h1>
+<p style="color:red;">** Key in Yellow box.</p>
+
+<table>
+
+<tr>
+<td class="label">Existing Offset value in m/c</td>
+<td>X</td>
+<td class="input-box"><input id="offsetX"></td>
+<td>µm</td>
+
+<td>Y</td>
+<td class="input-box"><input id="offsetY"></td>
+<td>µm</td>
+</tr>
+
+<tr>
+<td class="label">Position 1</td>
+<td>X1</td>
+<td class="input-box"><input id="x1"></td>
+<td>µm</td>
+
+<td>Y1</td>
+<td class="input-box"><input id="y1"></td>
+<td>µm</td>
+</tr>
+
+<tr>
+<td class="label">Position 2</td>
+<td>X2</td>
+<td class="input-box"><input id="x2"></td>
+<td>µm</td>
+
+<td>Y2</td>
+<td class="input-box"><input id="y2"></td>
+<td>µm</td>
+</tr>
+
+<tr>
+<td class="label">Delta (±5 µm)</td>
+<td class="result-box" id="deltaX"></td>
+<td class="result-box" id="rangeX"></td>
+<td>µm</td>
+
+<td class="result-box" id="deltaY"></td>
+<td class="result-box" id="rangeY"></td>
+<td>µm</td>
+</tr>
+
+<tr>
+<td class="label">Placement offset need to adjust</td>
+<td colspan="3" class="result-box" id="adjustX"></td>
+<td colspan="3" class="result-box" id="adjustY"></td>
+</tr>
+
+<tr>
+<td class="label">New Offset setting in m/c</td>
+<td colspan="3" class="result-box" id="newX"></td>
+<td colspan="3" class="result-box" id="newY"></td>
+</tr>
+
+</table>
+
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+
+<img src="chip_placement.png">
+
+<script>
+
+// ✅ focus
+function setFocus(){
+    offsetX.focus();
+}
+
+// ✅ auto clear when click (FIXED ISSUE #2)
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("focus", function(){
+        this.value="";
+    });
+});
+
+// ✅ CALCULATION (ALL FIXED)
+function calculate(){
+
+    let offsetXVal = Number(offsetX.value)||0;
+    let offsetYVal = Number(offsetY.value)||0;
+
+    let x1v = x1.value;
+    let x2v = x2.value;
+    let y1v = y1.value;
+    let y2v = y2.value;
+
+    let tol = 5;
+
+    // ✅ FIX ISSUE #3 → allow 0
+    if(x1v !== "" && x2v !== ""){
+
+        let X1 = Number(x1v);
+        let X2 = Number(x2v);
+
+        let deltaX = (X1+X2)/2;
+        let minX = deltaX - tol;
+        let maxX = deltaX + tol;
+
+        deltaXElem.innerHTML = deltaX.toFixed(0);
+        rangeX.innerHTML = minX + " - " + maxX;
+
+        // ✅ X adjust (CORRECT)
+        let textX="";
+        if(deltaX===X1){
+            textX="No adjustment needed";
+        }else if(deltaX > X1){
+            textX="Shift Right with additional →, +" + (deltaX-X1);
+        }else{
+            textX="Shift Left with additional ←, -" + (X1-deltaX);
+        }
+
+        let newXVal = offsetXVal + ((X2-X1)/2);
+
+        adjustX.innerHTML = textX + " µm";
+        newX.innerHTML = newXVal.toFixed(1) + " µm";
+    }
+
+    if(y1v !== "" && y2v !== ""){
+
+        let Y1 = Number(y1v);
+        let Y2 = Number(y2v);
+
+        let deltaY = (Y1+Y2)/2;
+        let minY = deltaY - tol;
+        let maxY = deltaY + tol;
+
+        deltaYElem.innerHTML = deltaY.toFixed(0);
+        rangeY.innerHTML = minY + " - " + maxY;
+
+        // ✅ FIX ISSUE #1 (SIGN CORRECT)
+        let textY="";
+        if(deltaY===Y1){
+            textY="No adjustment needed";
+        }else if(deltaY > Y1){
+            textY="Shift Down with additional ↓, -" + (deltaY-Y1);
+        }else{
+            textY="Shift Up with additional ↑, +" + (Y1-deltaY);
+        }
+
+        let newYVal = offsetYVal + ((Y1-Y2)/2);
+
+        adjustY.innerHTML = textY + " µm";
+        newY.innerHTML = newYVal.toFixed(1) + " µm";
+    }
+}
+
+// auto calc
+["offsetX","offsetY","x1","y1","x2","y2"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",calculate);
+});
+
+// ✅ FLOW (unchanged correct)
+const flow=["offsetX","offsetY","x1","y1","x2","y2"];
+
+flow.forEach((id,i)=>{
+    document.getElementById(id).addEventListener("keydown",function(e){
+        if(e.key==="Enter"){
+            e.preventDefault();
+            if(i+1<flow.length){
+                document.getElementById(flow[i+1]).focus();
+            }
+        }
+    });
+});
+
+// clear
+function clearData(){
+    document.querySelectorAll("input").forEach(i=>i.value="");
+    document.querySelectorAll(".result-box").forEach(i=>i.innerHTML="");
+    setFocus();
+}
+
+// back
+function goBack(){
+    window.location.href="index.html";
+}
+
+// alias fix (for cleaner use)
+const deltaXElem = document.getElementById("deltaX");
+const deltaYElem = document.getElementById("deltaY");
+
+</script>
+
+</body>
+</html>

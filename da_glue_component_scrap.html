@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DA Glue Component Scrap</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+.row {
+    display: flex;
+    align-items: flex-start;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid black;
+    padding: 6px;
+}
+
+/* COLORS */
+.label { background: #9eb6ce; }
+.input-box { background: yellow; text-align:center; }
+.result-box { background: #d9c2ad; text-align:center; }
+
+.unit {
+    width: 60px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+/* RED WARNING */
+.red {
+    background: red !important;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    border: none;
+    background: yellow;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* QPA BLOCK */
+.qpa-block {
+    margin-left: 10px;
+    width: 150px;
+}
+
+/* BUTTON */
+button {
+    width: 150px;
+    padding: 10px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* RIGHT IMAGE */
+.right {
+    margin-left: 20px;
+}
+
+img {
+    width: 350px;
+}
+
+</style>
+</head>
+
+<body onload="setFocus()">
+
+<h2>** Key in Yellow box.</h2>
+
+<div class="row">
+
+<!-- ✅ LEFT TABLE -->
+<table style="width:520px">
+
+<tr>
+<td class="label">Vol/Syringe, g</td>
+<td class="input-box"><input id="B2"></td>
+<td class="unit">g</td>
+</tr>
+
+<tr>
+<td class="label">Qty Syringe/mc</td>
+<td class="input-box"><input id="B3"></td>
+<td></td>
+</tr>
+
+<tr>
+<td class="label">Total Vol, g</td>
+<td class="result-box" id="B4"></td>
+<td class="unit">g</td>
+</tr>
+
+<tr>
+<td class="label">Pot Life</td>
+<td class="input-box"><input id="B5"></td>
+<td class="unit">hr</td>
+</tr>
+
+<tr>
+<td class="label">UPH</td>
+<td class="input-box"><input id="B6"></td>
+<td></td>
+</tr>
+
+<tr>
+<td class="label">MU</td>
+<td class="input-box"><input id="B7"></td>
+<td class="unit">%</td>
+</tr>
+
+<tr>
+<td class="label">QPA, g</td>
+<td class="result-box" id="B8"></td>
+<td class="unit">g</td>
+</tr>
+
+<tr>
+<td class="label">Component scrap, %</td>
+<td class="result-box" id="B9"></td>
+<td class="unit">%</td>
+</tr>
+
+<tr>
+<td class="label">Component scrap, g</td>
+<td class="result-box" id="B10"></td>
+<td class="unit">g</td>
+</tr>
+
+</table>
+
+<!-- ✅ MIDDLE (QPA + BUTTON) -->
+<div class="qpa-block">
+
+<table>
+
+<tr><td class="input-box"><b>3x QPA, g</b></td></tr>
+<tr><td class="input-box"><input id="Q1"></td></tr>
+<tr><td class="input-box"><input id="Q2"></td></tr>
+<tr><td class="input-box"><input id="Q3"></td></tr>
+
+</table>
+
+<!-- ✅ BUTTONS -->
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+
+</div>
+
+<!-- ✅ RIGHT IMAGE -->
+<div class="right">
+
+<img src="DA Glue Component scrap.png">
+
+</div>
+
+</div>
+
+<script>
+
+// focus
+function setFocus(){
+    document.getElementById("B2").focus();
+}
+
+// clear on click
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("focus", function(){
+        this.value="";
+    });
+});
+
+// check left filled
+function leftComplete(){
+    return (
+        B2.value && B3.value && B5.value && B6.value && B7.value
+    );
+}
+
+// ✅ FIXED CALCULATION
+function calculate(){
+
+    let B2v = B2.value;
+    let B3v = B3.value;
+    let B5v = B5.value;
+    let B6v = B6.value;
+    let B7v = B7.value;
+
+    let Q1v = Q1.value;
+    let Q2v = Q2.value;
+    let Q3v = Q3.value;
+
+    if(!B2v) return;
+
+    let B2n = Number(B2v);
+    let B3n = Number(B3v);
+    let B5n = Number(B5v);
+    let B6n = Number(B6v);
+    let B7n = Number(B7v)/100;
+
+    let Q1n = Number(Q1v);
+    let Q2n = Number(Q2v);
+    let Q3n = Number(Q3v);
+
+    // total vol
+    let B4 = B3n * B2n;
+    document.getElementById("B4").innerHTML = B4 ? B4.toFixed(3) : "";
+
+    // ✅ FIXED CONDITION
+    if(Q1v !== "" && Q2v !== "" && Q3v !== ""){
+
+        let B8 = (Q1n + Q2n + Q3n)/3;
+        document.getElementById("B8").innerHTML = B8.toFixed(3);
+
+        if(!B5v || !B6v || !B7v) return;
+
+        let scrap_pct =
+        ((B4 - (B6n*B7n*B5n*B8/1000)) /
+        (B6n*B7n*B5n*(B8/1000))) * 100;
+
+        let scrap_g = (scrap_pct * B4)/100;
+
+        let pct = document.getElementById("B9");
+        let g = document.getElementById("B10");
+
+        pct.innerHTML = scrap_pct.toFixed(3);
+        g.innerHTML = scrap_g.toFixed(3);
+
+        pct.classList.remove("red");
+        g.classList.remove("red");
+
+        if(scrap_pct < 0){
+            pct.classList.add("red");
+            g.classList.add("red");
+        }
+    }
+}
+
+// auto calc
+["B2","B3","B5","B6","B7","Q1","Q2","Q3"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", calculate);
+});
+
+// left flow
+const leftFlow = ["B2","B3","B5","B6","B7"];
+
+leftFlow.forEach((id,index)=>{
+    document.getElementById(id).addEventListener("keydown", function(e){
+        if(e.key==="Enter"){
+            e.preventDefault();
+            if(index+1 < leftFlow.length){
+                document.getElementById(leftFlow[index+1]).focus();
+            } else {
+                document.getElementById("Q1").focus();
+            }
+        }
+    });
+});
+
+// ✅ QPA ENTER FLOW FIXED
+const qpaFlow = ["Q1","Q2","Q3"];
+
+qpaFlow.forEach((id,index)=>{
+    document.getElementById(id).addEventListener("keydown", function(e){
+        if(e.key==="Enter"){
+            e.preventDefault();
+            if(index+1 < qpaFlow.length){
+                document.getElementById(qpaFlow[index+1]).focus();
+            }
+        }
+    });
+});
+
+// block entry
+qpaFlow.forEach(id=>{
+    document.getElementById(id).addEventListener("focus", function(){
+        if(!leftComplete()){
+            alert("Please complete left table first");
+            document.getElementById("B2").focus();
+        }
+    });
+});
+
+// ✅ 3 decimal for QPA inputs
+qpaFlow.forEach(id=>{
+    document.getElementById(id).addEventListener("blur", function(){
+        if(this.value){
+            this.value = parseFloat(this.value).toFixed(3);
+        }
+    });
+});
+
+// clear
+function clearData(){
+    document.querySelectorAll("input").forEach(i=>i.value="");
+    document.querySelectorAll(".result-box").forEach(i=>{
+        i.innerHTML="";
+        i.classList.remove("red");
+    });
+    setFocus();
+}
+
+// back
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>

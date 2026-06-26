@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Define DA Spec</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+/* Layout */
+.container {
+    display: flex;
+}
+
+/* Table */
+table {
+    border-collapse: collapse;
+    width: 60%;
+}
+
+td {
+    border: 1px solid black;
+    padding: 6px;
+}
+
+/* Colors */
+.label { background: #9eb6ce; }
+.input-box { background: yellow; text-align:center; }
+.result-box { background: #d9c2ad; text-align:center; }
+
+/* Input */
+input {
+    width: 100%;
+    border: none;
+    background: yellow;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Right side */
+.right {
+    margin-left: 20px;
+}
+
+/* Standard button */
+button {
+    display: block;
+    width: 200px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* ✅ ROUND BOX (FINAL STYLE) */
+.roundbox {
+    background: green;
+    color: yellow;
+    padding: 10px;
+    margin-top: 15px;
+    width: 200px;
+    text-align: center;
+    border: 2px solid black;
+}
+
+.roundbox div:first-child {
+    font-size: 22px;
+}
+
+.roundbox div:last-child {
+    font-size: 26px;
+    margin-top: 5px;
+}
+
+/* Image */
+img {
+    width: 220px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+</style>
+</head>
+
+<body onload="setFocus()">
+
+<h2>** Key in Yellow box.</h2>
+
+<div class="container">
+
+<!-- ✅ LEFT TABLE -->
+<table>
+
+<tr>
+<td class="label">Chip edge 1 [mm]</td>
+<td class="input-box"><input id="mm1"></td>
+<td>mm</td>
+</tr>
+
+<tr>
+<td class="label">Chip edge 2 [mm]</td>
+<td class="input-box"><input id="mm2"></td>
+<td>mm</td>
+</tr>
+
+<tr>
+<td class="label">Chip edge 1 [in]</td>
+<td class="result-box" id="in1"></td>
+<td>in</td>
+</tr>
+
+<tr>
+<td class="label">Chip edge 2 [in]</td>
+<td class="result-box" id="in2"></td>
+<td>in</td>
+</tr>
+
+<tr>
+<td class="label">Area [mm²]</td>
+<td class="result-box" id="area_mm"></td>
+<td>mm²</td>
+</tr>
+
+<tr>
+<td class="label">Area [in²]</td>
+<td class="result-box" id="area_in"></td>
+<td>in²</td>
+</tr>
+
+<tr>
+<td class="label">Chip area 10⁻⁴ [in²]</td>
+<td class="result-box" id="chip_area"></td>
+<td>in²</td>
+</tr>
+
+<tr>
+<td class="label">1.0x [gf]</td>
+<td class="result-box" id="one"></td>
+<td>gf</td>
+</tr>
+
+<tr>
+<td class="label">2.0x [gf] - Target</td>
+<td class="result-box" id="two"></td>
+<td>gf</td>
+</tr>
+
+<tr>
+<td class="label">2.0x+14% [gf]</td>
+<td class="result-box" id="plus14"></td>
+<td>gf</td>
+</tr>
+
+<tr>
+<td class="label">2.0x+25% [gf] - For Prod</td>
+<td class="result-box" id="plus25"></td>
+<td>gf</td>
+</tr>
+
+</table>
+
+<!-- ✅ RIGHT PANEL -->
+<div class="right">
+
+<!-- ✅ IMAGE -->
+<img src="DA_spec_chart.png">
+
+<!-- ✅ PDF -->
+<button onclick="openPDF('Die Shear Spec MIL883.pdf')">
+    Die Shear Spec MIL883
+</button>
+
+<button onclick="openPDF('Die Shear Spec MIL883 (Chinese).pdf')">
+    Die Shear Spec MIL883 (Chinese)
+</button>
+
+<!-- ✅ ROUNDUP -->
+<div class="roundbox">
+    <div>Roundup</div>
+    <div id="roundupValue">0.00 gf</div>
+</div>
+
+<!-- ✅ BUTTONS -->
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+
+</div>
+
+</div>
+
+<script>
+
+function setFocus(){
+    document.getElementById("mm1").focus();
+}
+
+// auto clear
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("focus", function(){
+        this.value="";
+    });
+});
+
+// calculation (UNCHANGED)
+function calc(){
+
+    let mm1 = Number(document.getElementById("mm1").value);
+    let mm2 = Number(document.getElementById("mm2").value);
+
+    if(!mm1 || !mm2) return;
+
+    let in1 = mm1 / 25.4;
+    let in2 = mm2 / 25.4;
+
+    let area_mm = mm1 * mm2;
+    let area_in = in1 * in2;
+
+    let chip_area = area_in * 10000;
+
+    let one = 0.04 * chip_area * 1000;
+    let two = 0.08 * chip_area * 1000;
+
+    let plus14 = two + (two / 7);
+    let plus25 = two + (two / 4);
+
+    let roundup = Math.ceil(plus25);
+
+    document.getElementById("in1").innerHTML = in1.toFixed(4);
+    document.getElementById("in2").innerHTML = in2.toFixed(4);
+    document.getElementById("area_mm").innerHTML = area_mm.toFixed(2);
+    document.getElementById("area_in").innerHTML = area_in.toFixed(4);
+    document.getElementById("chip_area").innerHTML = chip_area.toFixed(2);
+
+    document.getElementById("one").innerHTML = one.toFixed(2);
+    document.getElementById("two").innerHTML = two.toFixed(2);
+    document.getElementById("plus14").innerHTML = plus14.toFixed(2);
+    document.getElementById("plus25").innerHTML = plus25.toFixed(2);
+
+    // ✅ FINAL ROUNDUP DISPLAY
+    document.getElementById("roundupValue").innerHTML =
+        roundup.toFixed(2) + " gf";
+}
+
+// auto calc
+["mm1","mm2"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", calc);
+});
+
+// clear
+function clearData(){
+    document.querySelectorAll("input").forEach(i=>i.value="");
+    document.querySelectorAll(".result-box").forEach(i=>i.innerHTML="");
+    document.getElementById("roundupValue").innerHTML="0.00 gf";
+}
+
+// back
+function goBack(){
+    window.location.href="index.html";
+}
+
+// open pdf
+function openPDF(file){
+    window.open(file,"_blank");
+}
+
+</script>
+
+</body>
+</html>

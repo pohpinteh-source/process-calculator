@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Process Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+}
+
+.column {
+    width: 23%;
+}
+
+.section-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+button {
+    display: block;
+    width: 90%;
+    margin: 8px auto;
+    padding: 12px;
+    font-size: 15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Process Calculator</h1>
+
+<div class="container">
+
+<!-- ✅ DA -->
+<div class="column">
+<div class="section-title">DA</div>
+
+<button onclick="goTo('chip_placement.html')">Chip Placement</button>
+<button onclick="goTo('da_collet.html')">DA Collet</button>
+<button onclick="goTo('da_xy_stackup.html')">DA XY Stackup</button>
+<button onclick="goTo('da_glue_component_scrap.html')">DA Glue Component Scrap</button>
+
+</div>
+
+<!-- ✅ ✅ ✅ WB (UPDATED) -->
+<div class="column">
+<div class="section-title">WB</div>
+
+
+
+<button onclick="goTo('capillary_profile_selection.html')">
+Capillary Profile Selection
+</button>
+
+<!-- ✅ NEW FAB CALCULATOR -->
+<button onclick="goTo('fab_calculator.html')">
+FAB Calculator
+</button>
+
+</div>
+
+<!-- ✅ SPEC -->
+<div class="column">
+<div class="section-title">Spec</div>
+
+<button onclick="goTo('define_da_spec.html')">Define DA Spec</button>
+<button onclick="goTo('define_wb_spec.html')">Define WB Spec</button>
+<button onclick="goTo('spc_lsl.html')">SPC LSL</button>
+
+</div>
+
+<!-- ✅ INFO -->
+<div class="column">
+<div class="section-title">Info</div>
+
+<button onclick="openPDF()">Wire Bond Guideline</button>
+
+</div>
+
+</div>
+
+<script>
+
+function goTo(page){
+    window.location.href = page;
+}
+
+function openPDF(){
+    window.open("Wire Bond Guideline.pdf","_blank");
+}
+
+</script>
+
+</body>
+</html>

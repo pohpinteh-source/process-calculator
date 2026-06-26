@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DA Collet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+/* Title */
+h1 {
+    font-size: 26px;
+    text-decoration: underline;
+}
+
+/* ✅ IMAGE FIXED + LEFT ALIGN */
+img {
+    display: block;
+    width: 70%;
+    max-width: 900px;
+    margin: 10px 0;
+}
+
+/* Table */
+table {
+    border-collapse: collapse;
+    width: 70%;
+}
+
+td {
+    border: 1px solid black;
+    padding: 6px;
+}
+
+/* Excel colors */
+.label {
+    background: #e7c4a0;
+}
+
+.unit {
+    background: #e7c4a0;
+    width: 70px;
+    text-align: center;
+}
+
+/* ✅ HEADER (orange like Excel) */
+.nominal-header {
+    background: orange;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* ✅ INPUT = yellow */
+.input-box {
+    background: yellow;
+    text-align: center;
+}
+
+/* ✅ RESULT = green */
+.result {
+    background: #00cc66;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Input */
+input {
+    width: 100%;
+    border: none;
+    background: yellow;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Buttons */
+button {
+    width: 70%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+</style>
+</head>
+
+<body onload="setFocus()">
+
+<h1>Min Gap of Collet (ØA) Hit Cavity Wall / Adjacent Chip</h1>
+
+<!-- ✅ ✅ IMAGE WILL SHOW NOW -->
+<img src="DA Collet.png">
+
+<table>
+
+<tr>
+<td></td>
+<td></td>
+<td class="nominal-header">Nominal</td>
+</tr>
+
+<tr>
+<td class="label">Gap between chips / cavity, G</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="G"></td>
+</tr>
+
+<tr>
+<td class="label">Height of Cavity / Adjacent Chip, H</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="H"></td>
+</tr>
+
+<tr>
+<td class="label">Chip thickness, CT</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="CT"></td>
+</tr>
+
+<tr>
+<td class="label">Chip size</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="chip"></td>
+</tr>
+
+<tr>
+<td class="label">Collet OD</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="od"></td>
+</tr>
+
+<tr>
+<td class="label">Collet Diameter A</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="A"></td>
+</tr>
+
+<tr>
+<td class="label">Collet MTA</td>
+<td class="unit">o</td>
+<td class="input-box"><input id="mta"></td>
+</tr>
+
+<tr>
+<td class="label">Placement accuracy</td>
+<td class="unit">um</td>
+<td class="input-box"><input id="acc"></td>
+</tr>
+
+<tr>
+<td class="label">Gap of Collet (ØA) Hit Cavity Wall / Adjacent Chip, X</td>
+<td id="risk" class="result"></td>
+<td id="result" class="result"></td>
+</tr>
+
+</table>
+
+<p><b>*Remark: Assume both chip same BLT.</b></p>
+
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+
+<script>
+
+// Focus
+function setFocus(){
+    document.getElementById("G").focus();
+}
+
+// ✅ AUTO CLEAR ON CLICK
+document.querySelectorAll("input").forEach(el=>{
+    el.addEventListener("focus", function(){
+        this.value = "";
+    });
+});
+
+// Calculation
+function calculate(){
+
+    let G = Number(document.getElementById("G").value);
+    let H = Number(document.getElementById("H").value);
+    let CT = Number(document.getElementById("CT").value);
+    let chip = Number(document.getElementById("chip").value);
+    let A = Number(document.getElementById("A").value);
+    let mta = Number(document.getElementById("mta").value);
+    let acc = Number(document.getElementById("acc").value);
+
+    if(!G || !H || !CT || !chip || !A || !mta) return;
+
+    let tanVal = Math.tan((mta/2) * Math.PI / 180);
+
+    let X;
+
+    if(((A/2 - chip/2)/tanVal + CT) < H){
+        X = (G + chip/2 - acc*2) - (A/2);
+    } else {
+        X = (chip/2 + G - A/2) - ((H - CT)*tanVal - (acc*2));
+    }
+
+    document.getElementById("result").innerHTML = X.toFixed(2);
+
+    let risk = (X >= 0) ? "No Risk" : "Risk";
+    document.getElementById("risk").innerHTML = risk;
+}
+
+// Auto calc
+["G","H","CT","chip","od","A","mta","acc"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", calculate);
+});
+
+// Enter flow
+const flow = ["G","H","CT","chip","od","A","mta","acc"];
+
+flow.forEach((id, index) => {
+    document.getElementById(id).addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (index + 1 < flow.length) {
+                document.getElementById(flow[index + 1]).focus();
+            }
+        }
+    });
+});
+
+// Clear
+function clearData(){
+    document.querySelectorAll("input").forEach(i=>i.value="");
+    document.getElementById("result").innerHTML="";
+    document.getElementById("risk").innerHTML="";
+    setFocus();
+}
+
+// Back
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
