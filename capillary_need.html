@@ -9,14 +9,16 @@
 body{
     font-family:Arial;
     background:#f5f5f5;
-    font-size:14px;
+    font-size:16px;   /* ✅ bigger text */
+    margin:10px;
 }
 
+/* container full width */
 .container{
-    width:600px;
-    margin:auto;
+    width:100%;
 }
 
+/* table mobile behavior */
 table{
     border-collapse:collapse;
     width:100%;
@@ -24,31 +26,75 @@ table{
 
 td{
     border:1px solid black;
-    padding:8px;
+    padding:12px;    /* ✅ bigger touch space */
     text-align:center;
 }
 
+/* color */
 .header{ background:#f4b183; font-weight:bold; }
 .yellow{ background:yellow; }
 .result{ background:#f8cbad; font-weight:bold; }
 
+/* input bigger */
 input{
     width:100%;
     border:none;
     background:yellow;
     text-align:center;
+    font-size:18px;
+    padding:8px;
 }
 
 /* buttons */
 .btn-row{
     display:flex;
-    justify-content:space-between;
-    margin-top:15px;
+    gap:10px;
+    margin-top:20px;
 }
 
 button{
-    width:48%;
+    flex:1;
+    padding:14px;
+    font-size:18px;
+}
+
+/* ✅ MOBILE STACK */
+@media (max-width:600px){
+
+/* make rows stack */
+td{
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+}
+
+/* label */
+.header{
+    text-align:left;
+}
+
+/* hide original column style rows */
+.machine-row{
+    display:none;
+}
+
+/* custom mobile cards */
+.card{
+    border:1px solid black;
+    margin-bottom:10px;
+}
+
+.card-title{
+    background:#f4b183;
+    padding:8px;
+    font-weight:bold;
+}
+
+.card-body{
     padding:10px;
+    background:#fff;
+}
+
 }
 
 </style>
@@ -58,29 +104,25 @@ button{
 
 <div class="container">
 
-<table>
+<!-- ✅ DESKTOP TABLE -->
+<table id="desktopTable">
 
 <tr>
 <td class="header">Loading Qty</td>
-<td colspan="2" class="yellow">
-<input id="load">
-</td>
+<td colspan="2" class="yellow"><input id="load"></td>
 </tr>
 
 <tr>
 <td class="header">Qty Wire in 1 unit</td>
-<td colspan="2" class="yellow">
-<input id="wire">
-</td>
+<td colspan="2" class="yellow"><input id="wire"></td>
 </tr>
 
-<tr>
+<tr class="machine-row">
 <td class="header">Machine Model</td>
 <td class="header">Shinkawa</td>
 <td class="header">ASM</td>
 </tr>
 
-<!-- ✅ NOW INPUT -->
 <tr>
 <td class="header">Qty touchdown/wire</td>
 <td class="yellow"><input id="td1" value="3"></td>
@@ -88,7 +130,7 @@ button{
 </tr>
 
 <tr>
-<td class="header">Capillary Life Span (Touchdown)</td>
+<td class="header">Capillary Life Span</td>
 <td class="yellow"><input id="life1" value="720000"></td>
 <td class="yellow"><input id="life2" value="720000"></td>
 </tr>
@@ -101,6 +143,43 @@ button{
 
 </table>
 
+<!-- ✅ MOBILE VIEW -->
+<div id="mobileView" style="display:none;">
+
+<div class="card">
+<div class="card-title">Loading Qty</div>
+<div class="card-body">
+<input id="load_m">
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Qty Wire per Unit</div>
+<div class="card-body">
+<input id="wire_m">
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Shinkawa</div>
+<div class="card-body">
+Touchdown/wire:<br><input id="td1_m" value="3"><br><br>
+Life Span:<br><input id="life1_m" value="720000"><br><br>
+Result:<br><div id="res1_m" class="result"></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">ASM</div>
+<div class="card-body">
+Touchdown/wire:<br><input id="td2_m" value="4"><br><br>
+Life Span:<br><input id="life2_m" value="720000"><br><br>
+Result:<br><div id="res2_m" class="result"></div>
+</div>
+</div>
+
+</div>
+
 <div class="btn-row">
 <button onclick="clearData()">Clear</button>
 <button onclick="goBack()">Back</button>
@@ -110,92 +189,43 @@ button{
 
 <script>
 
-// ✅ ENTER FLOW
-const flow = ["load","wire","td1","td2","life1","life2"];
+// ✅ SWITCH VIEW
+function checkView(){
+if(window.innerWidth <= 600){
+    desktopTable.style.display="none";
+    mobileView.style.display="block";
+}else{
+    desktopTable.style.display="table";
+    mobileView.style.display="none";
+}
+}
 
-flow.forEach((id,i)=>{
-document.getElementById(id).addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
-        e.preventDefault();
-        if(i+1 < flow.length){
-            document.getElementById(flow[i+1]).focus();
-        }else{
-            e.target.blur();
-        }
-    }
-});
-});
+window.onload=checkView;
+window.onresize=checkView;
 
-// ✅ SMART INPUT
+// ✅ CALC FUNCTION
+function calculate(load, wire, td, life){
+if(isNaN(load)||isNaN(wire)||isNaN(td)||isNaN(life)) return "";
+return Math.ceil((load*wire*td)/life).toFixed(2);
+}
 
-let prev={};
-
-const defaults = {
-    td1:"3",
-    td2:"4",
-    life1:"720000",
-    life2:"720000"
-};
-
-// ✅ load & wire (restore previous)
-["load","wire"].forEach(id=>{
-let el=document.getElementById(id);
-
-el.onfocus=()=>{
-    prev[id]=el.value;
-    if(el.value!=="") el.value="";
-};
-
-el.onblur=()=>{
-    if(el.value===""){
-        el.value=prev[id] || "";
-    }
-};
-});
-
-// ✅ touchdown & lifespan (restore DEFAULT)
-["td1","td2","life1","life2"].forEach(id=>{
-
-let el=document.getElementById(id);
-
-el.onfocus=()=>{
-    if(el.value!=="") el.value="";
-};
-
-el.onblur=()=>{
-    if(el.value===""){
-        el.value=defaults[id];
-    }
-};
-
-});
-
-// ✅ CALCULATION
-
+// ✅ SYNC + CALC
 function calc(){
 
 let load=parseFloat(loadEl.value);
 let wire=parseFloat(wireEl.value);
+
 let td1=parseFloat(td1El.value);
 let td2=parseFloat(td2El.value);
 let life1=parseFloat(life1El.value);
 let life2=parseFloat(life2El.value);
 
-if(
-isNaN(load) ||
-isNaN(wire) ||
-isNaN(td1) ||
-isNaN(td2) ||
-isNaN(life1) ||
-isNaN(life2)
-) return;
+res1.innerHTML=calculate(load,wire,td1,life1);
+res2.innerHTML=calculate(load,wire,td2,life2);
 
-let shinkawa = Math.ceil((load * wire * td1) / life1);
-let asm      = Math.ceil((load * wire * td2) / life2);
-
-res1.innerHTML = shinkawa.toFixed(2);
-res2.innerHTML = asm.toFixed(2);
-
+// mobile sync
+res1_m.innerHTML=res1.innerHTML;
+res2_m.innerHTML=res2.innerHTML;
 }
 
 // refs
@@ -207,28 +237,23 @@ const life1El=document.getElementById("life1");
 const life2El=document.getElementById("life2");
 
 // trigger
-flow.forEach(id=>{
-document.getElementById(id).addEventListener("input",calc);
+["load","wire","td1","td2","life1","life2"].forEach(id=>{
+document.getElementById(id)?.addEventListener("input",calc);
 });
 
-// ✅ CLEAR (ONLY THESE TWO)
+// ✅ CLEAR
 function clearData(){
-
 loadEl.value="";
 wireEl.value="";
-
 res1.innerHTML="";
 res2.innerHTML="";
-
-// restore defaults
 td1El.value="3";
 td2El.value="4";
 life1El.value="720000";
 life2El.value="720000";
-
 }
 
-// ✅ BACK
+// back
 function goBack(){
 window.location.href="index.html";
 }
@@ -237,4 +262,3 @@ window.location.href="index.html";
 
 </body>
 </html>
-``
