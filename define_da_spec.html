@@ -11,12 +11,28 @@ body {
     background: #f5f5f5;
 }
 
-/* Layout */
+/* ✅ LAYOUT */
 .container {
     display: flex;
+    gap:15px;
 }
 
-/* Table */
+/* ✅ MOBILE FIX */
+@media(max-width:768px){
+    .container{
+        flex-direction: column;
+    }
+
+    table{
+        width:100%;
+    }
+
+    .right{
+        margin-left:0;
+    }
+}
+
+/* table */
 table {
     border-collapse: collapse;
     width: 60%;
@@ -27,12 +43,12 @@ td {
     padding: 6px;
 }
 
-/* Colors */
+/* colors */
 .label { background: #9eb6ce; }
 .input-box { background: yellow; text-align:center; }
 .result-box { background: #d9c2ad; text-align:center; }
 
-/* Input */
+/* input */
 input {
     width: 100%;
     border: none;
@@ -41,27 +57,26 @@ input {
     font-size: 16px;
 }
 
-/* Right side */
+/* right panel */
 .right {
     margin-left: 20px;
 }
 
-/* Standard button */
+/* buttons */
 button {
     display: block;
-    width: 200px;
+    width: 100%;
     padding: 10px;
     margin-top: 10px;
     font-size: 16px;
 }
 
-/* ✅ ROUND BOX (FINAL STYLE) */
+/* ✅ ROUNDUP */
 .roundbox {
     background: green;
     color: yellow;
-    padding: 10px;
-    margin-top: 15px;
-    width: 200px;
+    padding: 12px;
+    width: 100%;
     text-align: center;
     border: 2px solid black;
 }
@@ -75,11 +90,12 @@ button {
     margin-top: 5px;
 }
 
-/* Image */
+/* image */
 img {
-    width: 220px;
+    width: 100%;
+    max-width:300px;
     display: block;
-    margin-bottom: 10px;
+    margin: 15px auto;
 }
 
 </style>
@@ -91,7 +107,7 @@ img {
 
 <div class="container">
 
-<!-- ✅ LEFT TABLE -->
+<!-- ✅ TABLE -->
 <table>
 
 <tr>
@@ -165,6 +181,12 @@ img {
 <!-- ✅ RIGHT PANEL -->
 <div class="right">
 
+<!-- ✅ ROUNDUP -->
+<div class="roundbox">
+    <div>Roundup</div>
+    <div id="roundupValue">0.00 gf</div>
+</div>
+
 <!-- ✅ IMAGE -->
 <img src="DA_spec_chart.png">
 
@@ -177,13 +199,7 @@ img {
     Die Shear Spec MIL883 (Chinese)
 </button>
 
-<!-- ✅ ROUNDUP -->
-<div class="roundbox">
-    <div>Roundup</div>
-    <div id="roundupValue">0.00 gf</div>
-</div>
-
-<!-- ✅ BUTTONS -->
+<!-- ✅ CONTROL -->
 <button onclick="clearData()">Clear</button>
 <button onclick="goBack()">Back</button>
 
@@ -193,77 +209,123 @@ img {
 
 <script>
 
+// ✅ focus
 function setFocus(){
     document.getElementById("mm1").focus();
 }
 
-// auto clear
+// ✅ SMART INPUT (clear + restore ✅)
+let prev = {};
+
 document.querySelectorAll("input").forEach(el=>{
-    el.addEventListener("focus", function(){
-        this.value="";
+
+    const id = el.id;
+
+    el.addEventListener("focus", ()=>{
+        prev[id] = el.value;
+        if(el.value !== "") el.value = "";
+    });
+
+    el.addEventListener("blur", ()=>{
+        if(el.value === ""){
+            el.value = prev[id] || "";
+        }
+    });
+
+});
+
+// ✅ ENTER FLOW
+const flow = ["mm1","mm2"];
+
+flow.forEach((id,i)=>{
+    document.getElementById(id).addEventListener("keydown", e=>{
+        if(e.key==="Enter"){
+            e.preventDefault();
+
+            if(i+1<flow.length){
+                document.getElementById(flow[i+1]).focus();
+            }else{
+                e.target.blur();
+            }
+        }
     });
 });
 
-// calculation (UNCHANGED)
+// ✅ calc
 function calc(){
 
-    let mm1 = Number(document.getElementById("mm1").value);
-    let mm2 = Number(document.getElementById("mm2").value);
+let mm1 = Number(mm1El.value);
+let mm2 = Number(mm2El.value);
 
-    if(!mm1 || !mm2) return;
+if(!mm1 || !mm2) return;
 
-    let in1 = mm1 / 25.4;
-    let in2 = mm2 / 25.4;
+let in1 = mm1 / 25.4;
+let in2 = mm2 / 25.4;
 
-    let area_mm = mm1 * mm2;
-    let area_in = in1 * in2;
+let area_mm = mm1 * mm2;
+let area_in = in1 * in2;
 
-    let chip_area = area_in * 10000;
+let chip_area = area_in * 10000;
 
-    let one = 0.04 * chip_area * 1000;
-    let two = 0.08 * chip_area * 1000;
+let one = 0.04 * chip_area * 1000;
+let two = 0.08 * chip_area * 1000;
 
-    let plus14 = two + (two / 7);
-    let plus25 = two + (two / 4);
+let plus14 = two + (two / 7);
+let plus25 = two + (two / 4);
 
-    let roundup = Math.ceil(plus25);
+let roundup = Math.ceil(plus25);
 
-    document.getElementById("in1").innerHTML = in1.toFixed(4);
-    document.getElementById("in2").innerHTML = in2.toFixed(4);
-    document.getElementById("area_mm").innerHTML = area_mm.toFixed(2);
-    document.getElementById("area_in").innerHTML = area_in.toFixed(4);
-    document.getElementById("chip_area").innerHTML = chip_area.toFixed(2);
+// update
+in1El.innerHTML = in1.toFixed(4);
+in2El.innerHTML = in2.toFixed(4);
+area_mmEl.innerHTML = area_mm.toFixed(2);
+area_inEl.innerHTML = area_in.toFixed(4);
+chip_areaEl.innerHTML = chip_area.toFixed(2);
 
-    document.getElementById("one").innerHTML = one.toFixed(2);
-    document.getElementById("two").innerHTML = two.toFixed(2);
-    document.getElementById("plus14").innerHTML = plus14.toFixed(2);
-    document.getElementById("plus25").innerHTML = plus25.toFixed(2);
+oneEl.innerHTML = one.toFixed(2);
+twoEl.innerHTML = two.toFixed(2);
+plus14El.innerHTML = plus14.toFixed(2);
+plus25El.innerHTML = plus25.toFixed(2);
 
-    // ✅ FINAL ROUNDUP DISPLAY
-    document.getElementById("roundupValue").innerHTML =
-        roundup.toFixed(2) + " gf";
+roundupEl.innerHTML = roundup.toFixed(2) + " gf";
 }
 
-// auto calc
+// ✅ refs
+const mm1El=document.getElementById("mm1");
+const mm2El=document.getElementById("mm2");
+
+const in1El=document.getElementById("in1");
+const in2El=document.getElementById("in2");
+const area_mmEl=document.getElementById("area_mm");
+const area_inEl=document.getElementById("area_in");
+const chip_areaEl=document.getElementById("chip_area");
+const oneEl=document.getElementById("one");
+const twoEl=document.getElementById("two");
+const plus14El=document.getElementById("plus14");
+const plus25El=document.getElementById("plus25");
+const roundupEl=document.getElementById("roundupValue");
+
+// ✅ auto calc
 ["mm1","mm2"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", calc);
+document.getElementById(id).addEventListener("input", calc);
 });
 
-// clear
+// ✅ clear
 function clearData(){
-    document.querySelectorAll("input").forEach(i=>i.value="");
-    document.querySelectorAll(".result-box").forEach(i=>i.innerHTML="");
-    document.getElementById("roundupValue").innerHTML="0.00 gf";
+document.querySelectorAll("input").forEach(i=>i.value="");
+document.querySelectorAll(".result-box").forEach(i=>i.innerHTML="");
+roundupEl.innerHTML="0.00 gf";
+prev = {}; // reset stored values ✅
 }
 
-// back
+// ✅ back
 function goBack(){
-    window.location.href="index.html";
+window.location.href="index.html";
 }
 
-// open pdf
+// ✅ open pdf
 function openPDF(file){
-    window.open(file,"_blank");
+window.open(file,"_blank");
 }
 
 </script>
