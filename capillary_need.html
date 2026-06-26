@@ -9,16 +9,21 @@
 body{
     font-family:Arial;
     background:#f5f5f5;
-    font-size:16px;   /* ✅ bigger text */
-    margin:10px;
+    font-size:15px;
+    margin:6px;
+    text-align:center;
 }
 
-/* container full width */
 .container{
     width:100%;
 }
 
-/* table mobile behavior */
+/* ✅ TITLE STYLE */
+h2{
+    margin-bottom:10px;
+}
+
+/* table */
 table{
     border-collapse:collapse;
     width:100%;
@@ -26,7 +31,7 @@ table{
 
 td{
     border:1px solid black;
-    padding:12px;    /* ✅ bigger touch space */
+    padding:8px;
     text-align:center;
 }
 
@@ -35,66 +40,32 @@ td{
 .yellow{ background:yellow; }
 .result{ background:#f8cbad; font-weight:bold; }
 
-/* input bigger */
 input{
     width:100%;
     border:none;
     background:yellow;
     text-align:center;
-    font-size:18px;
-    padding:8px;
+    font-size:16px;
+    padding:6px;
 }
 
-/* buttons */
 .btn-row{
     display:flex;
-    gap:10px;
-    margin-top:20px;
+    gap:8px;
+    margin-top:12px;
 }
 
 button{
     flex:1;
-    padding:14px;
-    font-size:18px;
-}
-
-/* ✅ MOBILE STACK */
-@media (max-width:600px){
-
-/* make rows stack */
-td{
-    display:block;
-    width:100%;
-    box-sizing:border-box;
-}
-
-/* label */
-.header{
-    text-align:left;
-}
-
-/* hide original column style rows */
-.machine-row{
-    display:none;
-}
-
-/* custom mobile cards */
-.card{
-    border:1px solid black;
-    margin-bottom:10px;
-}
-
-.card-title{
-    background:#f4b183;
-    padding:8px;
-    font-weight:bold;
-}
-
-.card-body{
     padding:10px;
-    background:#fff;
+    font-size:15px;
 }
 
+/* mobile */
+@media (max-width:600px){
+td{ padding:6px; }
+input{ font-size:15px; padding:5px; }
+button{ padding:8px; font-size:14px; }
 }
 
 </style>
@@ -104,8 +75,10 @@ td{
 
 <div class="container">
 
-<!-- ✅ DESKTOP TABLE -->
-<table id="desktopTable">
+<!-- ✅ TITLE ADDED -->
+<h2>Capillary Need Calculator</h2>
+
+<table>
 
 <tr>
 <td class="header">Loading Qty</td>
@@ -117,14 +90,14 @@ td{
 <td colspan="2" class="yellow"><input id="wire"></td>
 </tr>
 
-<tr class="machine-row">
+<tr>
 <td class="header">Machine Model</td>
 <td class="header">Shinkawa</td>
 <td class="header">ASM</td>
 </tr>
 
 <tr>
-<td class="header">Qty touchdown/wire</td>
+<td class="header">Qty touchdown / wire</td>
 <td class="yellow"><input id="td1" value="3"></td>
 <td class="yellow"><input id="td2" value="4"></td>
 </tr>
@@ -143,43 +116,6 @@ td{
 
 </table>
 
-<!-- ✅ MOBILE VIEW -->
-<div id="mobileView" style="display:none;">
-
-<div class="card">
-<div class="card-title">Loading Qty</div>
-<div class="card-body">
-<input id="load_m">
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">Qty Wire per Unit</div>
-<div class="card-body">
-<input id="wire_m">
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">Shinkawa</div>
-<div class="card-body">
-Touchdown/wire:<br><input id="td1_m" value="3"><br><br>
-Life Span:<br><input id="life1_m" value="720000"><br><br>
-Result:<br><div id="res1_m" class="result"></div>
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">ASM</div>
-<div class="card-body">
-Touchdown/wire:<br><input id="td2_m" value="4"><br><br>
-Life Span:<br><input id="life2_m" value="720000"><br><br>
-Result:<br><div id="res2_m" class="result"></div>
-</div>
-</div>
-
-</div>
-
 <div class="btn-row">
 <button onclick="clearData()">Clear</button>
 <button onclick="goBack()">Back</button>
@@ -189,43 +125,59 @@ Result:<br><div id="res2_m" class="result"></div>
 
 <script>
 
-// ✅ SWITCH VIEW
-function checkView(){
-if(window.innerWidth <= 600){
-    desktopTable.style.display="none";
-    mobileView.style.display="block";
-}else{
-    desktopTable.style.display="table";
-    mobileView.style.display="none";
-}
-}
+// ✅ DEFAULT VALUES
+const defaults = {
+    td1:"3",
+    td2:"4",
+    life1:"720000",
+    life2:"720000"
+};
 
-window.onload=checkView;
-window.onresize=checkView;
+let prev = {};
 
-// ✅ CALC FUNCTION
+// ✅ UNIVERSAL INPUT HANDLER
+document.querySelectorAll("input").forEach(el => {
+
+    const id = el.id;
+
+    el.addEventListener("focus", () => {
+        prev[id] = el.value;
+        if(el.value !== "") el.value = "";
+    });
+
+    el.addEventListener("blur", () => {
+
+        if(el.value === ""){
+            if(defaults[id] !== undefined){
+                el.value = defaults[id];
+            }else{
+                el.value = prev[id] || "";
+            }
+        }
+    });
+
+    el.addEventListener("input", calc);
+});
+
+// ✅ CALC
 function calculate(load, wire, td, life){
-if(isNaN(load)||isNaN(wire)||isNaN(td)||isNaN(life)) return "";
-return Math.ceil((load*wire*td)/life).toFixed(2);
+    if(isNaN(load)||isNaN(wire)||isNaN(td)||isNaN(life)) return "";
+    return Math.ceil((load*wire*td)/life).toFixed(2);
 }
 
-// ✅ SYNC + CALC
 function calc(){
 
-let load=parseFloat(loadEl.value);
-let wire=parseFloat(wireEl.value);
+    let load=parseFloat(loadEl.value);
+    let wire=parseFloat(wireEl.value);
 
-let td1=parseFloat(td1El.value);
-let td2=parseFloat(td2El.value);
-let life1=parseFloat(life1El.value);
-let life2=parseFloat(life2El.value);
+    let td1=parseFloat(td1El.value);
+    let td2=parseFloat(td2El.value);
 
-res1.innerHTML=calculate(load,wire,td1,life1);
-res2.innerHTML=calculate(load,wire,td2,life2);
+    let life1=parseFloat(life1El.value);
+    let life2=parseFloat(life2El.value);
 
-// mobile sync
-res1_m.innerHTML=res1.innerHTML;
-res2_m.innerHTML=res2.innerHTML;
+    res1.innerHTML=calculate(load,wire,td1,life1);
+    res2.innerHTML=calculate(load,wire,td2,life2);
 }
 
 // refs
@@ -236,26 +188,21 @@ const td2El=document.getElementById("td2");
 const life1El=document.getElementById("life1");
 const life2El=document.getElementById("life2");
 
-// trigger
-["load","wire","td1","td2","life1","life2"].forEach(id=>{
-document.getElementById(id)?.addEventListener("input",calc);
-});
-
 // ✅ CLEAR
 function clearData(){
-loadEl.value="";
-wireEl.value="";
-res1.innerHTML="";
-res2.innerHTML="";
-td1El.value="3";
-td2El.value="4";
-life1El.value="720000";
-life2El.value="720000";
+    loadEl.value="";
+    wireEl.value="";
+    res1.innerHTML="";
+    res2.innerHTML="";
+    td1El.value="3";
+    td2El.value="4";
+    life1El.value="720000";
+    life2El.value="720000";
 }
 
-// back
+// ✅ BACK
 function goBack(){
-window.location.href="index.html";
+    window.location.href="index.html";
 }
 
 </script>
