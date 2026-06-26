@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Normalize Ball Shear</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    text-align:center;
+    padding:10px;
+}
+
+h2{ margin-bottom:10px; }
+
+/* mode buttons */
+.mode-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.mode-btn{
+    flex:1;
+    padding:10px;
+    background:#9cb6cc;
+    border:1px solid black;
+}
+
+/* table */
+table{
+    border-collapse:collapse;
+    width:100%;
+    max-width:420px;
+    margin:auto;
+}
+
+td{
+    border:1px solid black;
+    padding:8px;
+}
+
+.label{
+    background:#94a8c6;
+    text-align:left;
+}
+
+.yellow{ background:yellow; }
+
+.result{
+    background:#f4b183;
+    font-weight:bold;
+}
+
+/* input */
+input{
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+    font-size:16px;
+}
+
+/* buttons */
+.btn-row{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+button{
+    flex:1;
+    padding:10px;
+    background:#ddd;
+    border:1px solid black;
+}
+
+/* hide initially */
+#calcTable{ display:none; }
+
+</style>
+</head>
+
+<body>
+
+<h2>Normalize Ball Shear</h2>
+
+<!-- ✅ IMAGE ON TOP -->
+<div style="margin-bottom:15px;">
+<img src="Normalize Ball Shear.png" style="max-width:100%;">
+</div>
+
+<!-- ✅ MODE -->
+<div class="mode-row">
+<button class="mode-btn" onclick="setMode('diameter')">Min Ball Diameter</button>
+<button class="mode-btn" onclick="setMode('shear')">Min Ball Shear Value</button>
+<button class="mode-btn" onclick="setMode('strength')">Normalize Ball Shear</button>
+</div>
+
+<!-- ✅ TABLE -->
+<table id="calcTable">
+
+<tr id="rowStrength">
+<td class="label">Shear Strength</td>
+<td class="yellow"><input id="strength"></td>
+<td>g/mil²</td>
+</tr>
+
+<tr id="rowShear">
+<td class="label">Ball Shear</td>
+<td class="yellow"><input id="shear"></td>
+<td>gf</td>
+</tr>
+
+<tr id="rowDiameter">
+<td class="label">Ball Diameter</td>
+<td class="yellow"><input id="diameter"></td>
+<td>um</td>
+</tr>
+
+<tr>
+<td class="label" id="resultLabel">Result</td>
+<td class="result" id="result"></td>
+<td id="unit"></td>
+</tr>
+
+</table>
+
+<div class="btn-row">
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+</div>
+
+<script>
+
+// ✅ MATCH EXCEL
+const PI = 22/7;
+
+// ✅ MODE
+let mode="";
+
+function setMode(m){
+
+mode=m;
+
+calcTable.style.display="table";
+
+// hide all
+rowStrength.style.display="none";
+rowShear.style.display="none";
+rowDiameter.style.display="none";
+
+// ✅ MODE CONTROL + LABEL + UNIT
+if(m==="diameter"){
+    rowStrength.style.display="";
+    rowShear.style.display="";
+    unit.innerHTML="um";
+    resultLabel.innerHTML="Min Ball Diameter";
+}
+
+if(m==="shear"){
+    rowStrength.style.display="";
+    rowDiameter.style.display="";
+    unit.innerHTML="gf";
+    resultLabel.innerHTML="Min Ball Shear Value";
+}
+
+if(m==="strength"){
+    rowShear.style.display="";
+    rowDiameter.style.display="";
+    unit.innerHTML="g/mil²";
+    resultLabel.innerHTML="Normalize Ball Shear Strength";
+}
+
+clearData();
+
+// autofocus first input
+setTimeout(()=>getActiveInputs()[0]?.focus(),100);
+}
+
+// ✅ ACTIVE INPUT LIST
+function getActiveInputs(){
+
+let list=[];
+
+if(rowStrength.style.display!=="none") list.push(strength);
+if(rowShear.style.display!=="none") list.push(shear);
+if(rowDiameter.style.display!=="none") list.push(diameter);
+
+return list;
+}
+
+// ✅ SMART INPUT
+let prev={};
+
+document.querySelectorAll("input").forEach(el=>{
+
+let id=el.id;
+
+el.addEventListener("focus",()=>{
+    prev[id]=el.value;
+    if(el.value!=="") el.value="";
+});
+
+el.addEventListener("blur",()=>{
+
+if(el.value===""){
+    el.value=prev[id]||"";
+}else{
+    let v=parseFloat(el.value);
+    if(!isNaN(v)){
+        el.value=v.toFixed(2);   // ✅ 2 decimal
+    }
+}
+
+});
+
+el.addEventListener("input",calc);
+
+// ✅ ENTER FLOW
+el.addEventListener("keydown",e=>{
+if(e.key==="Enter"){
+
+e.preventDefault();
+
+let active=getActiveInputs();
+let idx=active.indexOf(el);
+
+if(idx+1<active.length){
+    active[idx+1].focus();
+}else{
+    el.blur();
+}
+
+}
+});
+
+});
+
+// ✅ CALCULATION
+function calc(){
+
+let S=parseFloat(strength.value);
+let F=parseFloat(shear.value);
+let D=parseFloat(diameter.value);
+
+// diameter
+if(mode==="diameter" && !isNaN(S)&&!isNaN(F)){
+    let d=2*Math.sqrt(F/(S*PI));
+    result.innerHTML=(d*25.4).toFixed(2);
+}
+
+// shear
+if(mode==="shear" && !isNaN(S)&&!isNaN(D)){
+    let d=D/25.4;
+    let f=S*PI*Math.pow(d/2,2);
+    result.innerHTML=f.toFixed(2);
+}
+
+// normalize
+if(mode==="strength" && !isNaN(F)&&!isNaN(D)){
+    let d=D/25.4;
+    let s=F/(PI*Math.pow(d/2,2));
+    result.innerHTML=s.toFixed(2);
+}
+
+}
+
+// ✅ CLEAR
+function clearData(){
+document.querySelectorAll("input").forEach(i=>i.value="");
+result.innerHTML="";
+}
+
+// ✅ BACK
+function goBack(){
+window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
