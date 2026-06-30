@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Estimate Wire Length (3D)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family:Arial;
+    font-size:14px;
+    background:#f5f5f5;
+}
+
+.container{
+
+    max-width:500px;
+    margin-left:0;
+    margin-right:auto;
+
+}
+
+table{
+    border-collapse:collapse;
+    width:40%;
+    margin-top:10px;
+}
+
+td{
+    border:1px solid black;
+    padding:8px;
+    text-align:center;
+}
+
+.header{
+    background:#d9c2ad;
+    font-weight:bold;
+}
+
+.input-box{
+    background:yellow;
+}
+
+.result-box{
+    background:#92d050;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-size:15px;
+}
+
+button{
+    width:60%;
+    padding:10px;
+    margin-top:8px;
+    font-size:16px;
+}
+
+
+.loop-img{
+
+    width:220px;
+    height:auto;
+    display:block;
+
+    margin-left:20px;     /* move left */
+    margin-right:auto;
+
+    margin-top:10px;
+    margin-bottom:10px;
+
+    border:1px solid black;
+
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2 align="center">Estimate Wire Length (3D)</h2>
+
+<button onclick="showLoop('sq')">
+Forward Sq Loop
+</button>
+
+<button onclick="showLoop('q')">
+Forward Q Loop
+</button>
+
+<button onclick="showLoop('rbsob')">
+RBSOB
+</button>
+
+<button onclick="clearInputs()">
+Clear
+</button>
+
+<button onclick="goToFusingCurrent()">Back to Fusing Current Calculator</button>
+
+<button onclick="goBack()">Back</button>
+</div>
+<div id="content"></div>
+
+</div>
+
+<script>
+
+let backup = {};
+let currentType = "";
+
+function showLoop(type){
+
+    currentType = type;
+
+    let html = "";
+
+    /* IMAGE */
+
+
+if(type==="sq"){
+   html += "<img src='Forward Sq Loop.png' class='loop-img' alt='Forward Sq Loop'>";
+}
+else if(type==="q"){
+   html += "<img src='Forward Q Loop.png' class='loop-img' alt='Forward Q Loop'>";
+}
+else{
+   html += "<img src='RBSOB.png' class='loop-img' alt='RBSOB'>";
+}
+
+
+    html += "<table>";
+
+
+let title = "Estimate Wire Length (3D)";
+
+if(type==="sq"){
+    title += " for Forward Sq Loop";
+}
+else if(type==="q"){
+    title += " for Forward Q Loop";
+}
+else{
+    title += " for RBSOB";
+}
+
+html += "<tr>";
+html += "<td class='header' colspan='3'>";
+html += title;
+html += "</td>";
+html += "</tr>";
+
+
+    html += row("Die Thickness, T","Tval","mm");
+    html += row("Wire Dist, L","Lval","mm");
+    html += row("Loop Height, A","Aval","mm");
+
+    if(type==="sq"){
+        html += row("Span Length, B","Bval","%");
+    }
+
+    html += "<tr>";
+    html += "<td>Wire Length</td>";
+    html += "<td class='result-box' id='wireLength'></td>";
+    html += "<td>mm</td>";
+    html += "</tr>";
+
+    html += "<tr>";
+    html += "<td>Refer Wire Length's Table</td>";
+    html += "<td class='result-box' id='roundLength'></td>";
+    html += "<td>mm</td>";
+    html += "</tr>";
+
+    html += "</table>";
+
+    document.getElementById("content").innerHTML = html;
+
+    bindInput("Tval");
+    bindInput("Lval");
+    bindInput("Aval");
+
+    if(type==="sq"){
+        bindInput("Bval");
+    }
+
+    setTimeout(()=>{
+        document.getElementById("Tval").focus();
+    },100);
+}
+
+function row(label,id,unit){
+
+    return "<tr>"
+    +"<td>"+label+"</td>"
+    +"<td class='input-box'>"
+    +"<input id='"+id+"'>"
+    +"</td>"
+    +"<td>"+unit+"</td>"
+    +"</tr>";
+}
+
+function bindInput(id){
+
+    let el=document.getElementById(id);
+
+    el.addEventListener("focus",function(){
+
+        backup[id]=this.value;
+
+        if(this.value!==""){
+            this.value="";
+        }
+    });
+
+    el.addEventListener("blur",function(){
+
+        if(this.value===""){
+            this.value=backup[id] || "";
+            return;
+        }
+
+        let v=parseFloat(this.value);
+
+        if(!isNaN(v)){
+            this.value=v.toFixed(3);
+        }
+    });
+
+    el.addEventListener("keydown",function(e){
+
+        if(e.key==="Enter"){
+
+            e.preventDefault();
+
+            let inputs=document.querySelectorAll(".input-box input");
+
+            for(let i=0;i<inputs.length;i++){
+
+                if(inputs[i]===this){
+
+                    if(i<inputs.length-1){
+                        inputs[i+1].focus();
+                    }
+                    else{
+                        calculate();
+                        this.blur();
+                    }
+
+                    break;
+                }
+            }
+        }
+    });
+
+    el.addEventListener("input",calculate);
+}
+
+function calculate(){
+
+    let T=parseFloat(document.getElementById("Tval").value);
+    let L=parseFloat(document.getElementById("Lval").value);
+    let A=parseFloat(document.getElementById("Aval").value);
+
+    if(isNaN(T) || isNaN(L) || isNaN(A)){
+        return;
+    }
+
+    let result = 0;
+
+    if(currentType==="sq"){
+
+        let B=parseFloat(document.getElementById("Bval").value);
+
+        if(isNaN(B)){
+            return;
+        }
+
+        result =
+        A +
+        (B/100)*L +
+        Math.sqrt(
+            Math.pow(T+A,2)+
+            Math.pow(L-(B/100)*L,2)
+        );
+    }
+
+    else if(currentType==="q"){
+
+        result =
+        Math.sqrt(
+            Math.pow(L,2)+
+            Math.pow(T+A,2)
+        )
+        + A;
+    }
+
+    else if(currentType==="rbsob"){
+
+        result =
+        Math.sqrt(
+            Math.pow(L,2)+
+            Math.pow(T+A,2)
+        )
+        + (A+T);
+    }
+
+    document.getElementById("wireLength").innerHTML =
+    result.toFixed(2);
+
+    let refer=Math.ceil(result*10)/10;
+
+    document.getElementById("roundLength").innerHTML =
+    refer.toFixed(2);
+}
+
+function clearInputs(){
+
+
+    // Clear all input fields
+    let inputs = document.querySelectorAll(".input-box input");
+
+    inputs.forEach(input=>{
+        input.value = "";
+    });
+
+    // Clear calculated results
+    let wireLength = document.getElementById("wireLength");
+    let roundLength = document.getElementById("roundLength");
+
+    if(wireLength){
+        wireLength.innerHTML = "";
+    }
+
+    if(roundLength){
+        roundLength.innerHTML = "";
+    }
+
+    // Reset backup values
+    backup = {};
+
+    // Return focus to first input
+    let firstInput = document.getElementById("Tval");
+
+    if(firstInput){
+        firstInput.focus();
+    }
+
+}
+
+function goToFusingCurrent(){
+    window.location.href = "fusing_current.html";
+}
+
+function goBack(){
+    window.location.href = "index.html";
+}
+</script>
+
+
+
+
+
+</body>
+</html>

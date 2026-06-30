@@ -159,8 +159,8 @@ canvas{
 </table>
 
 <button onclick="clearData()">Clear</button>
+<button onclick="goToWireLength()">Go to Est. Wire Length (3D)</button>
 <button onclick="goBack()">Back</button>
-
 </div>
 
 <!-- ✅ TABLE -->
@@ -366,6 +366,11 @@ ctx.clearRect(0,0,canvas.width,canvas.height);
 
 function goBack(){
 window.location.href="index.html";
+}
+
+
+function goToWireLength(){
+    window.location.href = "estimate-wire-length-3d.html";
 }
 
 </script>
