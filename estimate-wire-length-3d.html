@@ -315,10 +315,16 @@ function calculate(){
     document.getElementById("wireLength").innerHTML =
     result.toFixed(2);
 
-    let refer=Math.ceil(result*10)/10;
 
-    document.getElementById("roundLength").innerHTML =
-    refer.toFixed(2);
+// Refer Wire Length's Table
+let base = Math.floor(result * 10) / 10;
+
+let lower = base + 0.1;
+let upper = base + 0.4;
+
+document.getElementById("roundLength").innerHTML =
+    lower.toFixed(2) + " to " + upper.toFixed(2);
+
 }
 
 function clearInputs(){
@@ -363,9 +369,6 @@ function goBack(){
     window.location.href = "index.html";
 }
 </script>
-
-
-
 
 
 </body>
