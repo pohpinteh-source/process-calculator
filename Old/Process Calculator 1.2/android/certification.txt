@@ -1,0 +1,24 @@
+---------------------------------------------------
+Here are the ownership and the certification details
+of the Process Calculator 1.2
+---------------------------------------------------
+
+app_name - 						Process Calculator
+app_alias - 					processcalculator
+app_author_name - 				TEH POH PIN
+app_author_organizational - 	TEH POH PIN
+app_author_organization - 		TEH POH PIN
+app_author_locality - 			TEH POH PIN
+app_author_state - 				Penang
+app_author_country - 			Malaysia
+app_password - 					dawbprocess
+app_versionName - 				versionName "1.2"
+app_versionCode - 				102
+
+---------------------------------------------------
+The certification was created by WebIntoApp.com at
+the Tuesday 30th of June 2026 06:05:47 AM
+
+https://webintoapp.com
+---------------------------------------------------
+

@@ -177,10 +177,34 @@ flow.forEach((id,i)=>{
     });
 });
 
-// auto clear input
+
+// ✅ smart clear + restore
+let backup = {};
+
 document.querySelectorAll("input").forEach(el=>{
-    el.addEventListener("focus",()=>el.value="");
+
+    const id = el.id;
+
+    // clear when click, but remember old value
+    el.addEventListener("focus",function(){
+
+        backup[id] = this.value;
+
+        if(this.value !== ""){
+            this.value = "";
+        }
+    });
+
+    // restore if no new value entered
+    el.addEventListener("blur",function(){
+
+        if(this.value === ""){
+            this.value = backup[id] || "";
+        }
+    });
+
 });
+
 
 // ✅ CALC (FULLY INDEPENDENT LOGIC)
 function calc(){

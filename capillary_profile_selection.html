@@ -196,11 +196,34 @@ flow.forEach((id,i)=>{
     });
 });
 
+
+// ✅ smart clear + restore
+let backup = {};
+
 document.querySelectorAll("input").forEach(el=>{
-    el.addEventListener("focus", function(){
-        this.value="";
+
+    const id = el.id;
+
+    // clear when click, but remember old value
+    el.addEventListener("focus",function(){
+
+        backup[id] = this.value;
+
+        if(this.value !== ""){
+            this.value = "";
+        }
     });
+
+    // restore if no new value entered
+    el.addEventListener("blur",function(){
+
+        if(this.value === ""){
+            this.value = backup[id] || "";
+        }
+    });
+
 });
+
 
 tl.onblur = ()=>{ if(tl.value==="") tl.value="11.000"; };
 td.onblur = ()=>{ if(td.value==="") td.value="1.587"; };
