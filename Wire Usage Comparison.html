@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wire Usage Comparison</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+}
+
+h1{
+    text-align:center;
+    background:orange;
+    padding:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+td{
+    border:1px solid black;
+    padding:5px;
+    text-align:center;
+    vertical-align:middle;
+
+}
+
+.label{
+    background:#e6d8a8;
+}
+
+.input-box{
+    background:yellow;
+}
+
+.result-box{
+
+    background:#00ff00;
+    font-weight:bold;
+    text-align:center;
+
+}
+
+input{
+    width:100%;
+    border:none;
+    background:yellow;
+    text-align:center;
+    font-size:14px;
+
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+}
+
+img{
+
+ width:450px;          /* increase size */
+    max-width:100%;
+    display:block;
+
+    margin-top:15px;
+    margin-bottom:15px;
+
+    margin-left:0;        /* left align */
+    margin-right:auto;
+
+}
+
+</style>
+</head>
+
+<body onload="setFocus()">
+
+<h1>Wire Usage Comparison (For Estimation Only)</h1>
+
+<table>
+
+<tr>
+<td class="label"></td>
+<td class="label" align="center"><b>Existing Product</b></td>
+<td class="label" align="center"><b>New Product</b></td>
+<td class="label"></td>
+</tr>
+
+<tr><td class="label">No of dies</td><td class="input-box"><input id="b4"></td><td class="input-box"><input id="c4"></td><td>chips</td></tr>
+<tr><td class="label">No of LED wires</td><td class="input-box"><input id="b5"></td><td class="input-box"><input id="c5"></td><td>wire qty</td></tr>
+<tr><td class="label">No of ESD wires</td><td class="input-box"><input id="b6"></td><td class="input-box"><input id="c6"></td><td>wire qty</td></tr>
+<tr><td class="label">LED Die Thickness</td><td class="input-box"><input id="b7"></td><td class="input-box"><input id="c7"></td><td>um</td></tr>
+<tr><td class="label">ESD Die Thickness</td><td class="input-box"><input id="b8"></td><td class="input-box"><input id="c8"></td><td>um</td></tr>
+<tr><td class="label">Wire Size, r</td><td class="input-box"><input id="b9"></td><td class="input-box"><input id="c9"></td><td>um</td></tr>
+<tr><td class="label">LED Loop Height</td><td class="input-box"><input id="b10"></td><td class="input-box"><input id="c10"></td><td>um</td></tr>
+<tr><td class="label">ESD Loop Height</td><td class="input-box"><input id="b11"></td><td class="input-box"><input id="c11"></td><td>um</td></tr>
+<tr><td class="label">Ball / Bump size (max), 2R</td><td class="input-box"><input id="b12"></td><td class="input-box"><input id="c12"></td><td>um</td></tr>
+<tr><td class="label">Ball / Bump height (max), h</td><td class="input-box"><input id="b13"></td><td class="input-box"><input id="c13"></td><td>um</td></tr>
+<tr><td class="label"># of ball & bump in package</td><td class="input-box"><input id="b14"></td><td class="input-box"><input id="c14"></td><td>balls</td></tr>
+<tr><td class="label">Total Wire Distance 2D (LED)</td><td class="input-box"><input id="b15"></td><td class="input-box"><input id="c15"></td><td>mm</td></tr>
+<tr><td class="label">Total Wire Distance 2D (ESD)</td><td class="input-box"><input id="b16"></td><td class="input-box"><input id="c16"></td><td>mm</td></tr>
+
+<tr>
+<td class="label"><b>Total Wire Length (3D)</b></td>
+<td class="result-box" id="b17"></td>
+<td class="result-box" id="c17"></td>
+<td>mm</td>
+</tr>
+
+<tr>
+<td class="label"><b>Differences</b></td>
+<td class="result-box" colspan="2" id="b18"></td>
+<td>%</td>
+</tr>
+
+</table>
+
+<button onclick="clearData()">Clear</button>
+<button onclick="goBack()">Back</button>
+<img src="Wire Usage.png">
+
+
+<script>
+
+function setFocus(){
+    document.getElementById("b4").focus();
+}
+
+let backup={};
+
+document.querySelectorAll("input").forEach(el=>{
+
+    const id=el.id;
+
+    el.addEventListener("focus",function(){
+
+        backup[id]=this.value;
+
+        if(this.value!==""){
+            this.value="";
+        }
+    });
+
+    el.addEventListener("blur",function(){
+
+        if(this.value===""){
+            this.value=backup[id] || "";
+        }
+    });
+
+    el.addEventListener("input",calculate);
+});
+
+const flow=[
+
+"b4",
+"b5",
+"b6",
+"b7",
+"b8",
+"b9",
+"b10",
+"b11",
+"b12",
+"b13",
+"b14",
+"b15",
+"b16",
+
+"c4",
+"c5",
+"c6",
+"c7",
+"c8",
+"c9",
+"c10",
+"c11",
+"c12",
+"c13",
+"c14",
+"c15",
+"c16"
+];
+
+flow.forEach((id,i)=>{
+
+    document.getElementById(id).addEventListener("keydown",e=>{
+
+        if(e.key==="Enter"){
+
+            e.preventDefault();
+
+            
+if(i+1<flow.length){
+    document.getElementById(flow[i+1]).focus();
+}else{
+    calculate();
+    this.blur();
+
+            }
+        }
+    });
+
+});
+
+function val(id){
+    return Number(document.getElementById(id).value)||0;
+}
+
+function calcLength(p){
+
+    if(document.getElementById(p+"4").value===""){
+        return "";
+    }
+
+    return (
+        val(p+"14")*
+        (
+        val(p+"13")*
+        (
+            ((val(p+"12")/2)**2)
+            -
+            (val(p+"13")**2/12)
+        )
+        /
+        ((val(p+"9")/2)**2)
+        )/1000
+
+        +
+
+        val(p+"5")*
+        (
+        val(p+"15")
+        +
+        ((val(p+"10")+val(p+"7"))/1000)
+        )
+
+        +
+
+        val(p+"6")*
+        (
+        val(p+"16")
+        +
+        ((val(p+"11")+val(p+"8"))/1000)
+        )
+
+    );
+
+}
+
+function calculate(){
+
+    let oldLen=calcLength("b");
+    let newLen=calcLength("c");
+
+    document.getElementById("b17").innerHTML=
+        oldLen===""?"":oldLen.toFixed(2);
+
+    document.getElementById("c17").innerHTML=
+        newLen===""?"":newLen.toFixed(2);
+
+    if(oldLen!=="" && newLen!=="" && oldLen!==0){
+
+        let diff=((newLen-oldLen)/oldLen)*100;
+
+        let sign=diff>=0?"+":"";
+
+        document.getElementById("b18").innerHTML=
+            sign + diff.toFixed(2) + " %";
+
+    }else{
+
+        document.getElementById("b18").innerHTML="";
+    }
+}
+
+function clearData(){
+
+    document.querySelectorAll("input").forEach(i=>{
+        i.value="";
+    });
+
+    document.getElementById("b17").innerHTML="";
+    document.getElementById("c17").innerHTML="";
+    document.getElementById("b18").innerHTML="";
+
+    backup={};
+
+    setFocus();
+}
+
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
