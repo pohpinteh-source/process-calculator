@@ -43,6 +43,7 @@ td{
 .result-box{ background:#eee; }
 
 .au-box{ background:gold; }
+.ag-box{ background:silver; }
 .al-box{ background:#d9d9d9; }
 
 /* ✅ INPUT FIX (IMPORTANT) */
@@ -113,8 +114,9 @@ canvas{
 <td id="wireTypeBox" class="input-box">
 <select id="wireType">
 <option value="">Select</option>
-<option value="Au">Au</option>
+<option value="Ag">Ag</option>
 <option value="Al">Al</option>
+<option value="Au">Au</option>
 </select>
 </td>
 <td></td>
@@ -146,7 +148,7 @@ canvas{
 
 <tr>
 <td>Temp_Wire max</td>
-<td class="input-box"><input id="tmax" value="220"></td>
+<td class="input-box"><input id="tmax"></td>
 <td>°C</td>
 </tr>
 
@@ -161,6 +163,21 @@ canvas{
 <button onclick="clearData()">Clear</button>
 <button onclick="goToWireLength()">Go to Est. Wire Length (3D)</button>
 <button onclick="goBack()">Back</button>
+
+<div class="remark-box">
+    <div>
+        Remark #1:<br>
+- Ag wire fusing current is estimated using the Al wire model.
+    </div>
+    <br>
+    <div>
+        Remark #2:<br>
+- All fusing current values are provided for estimation purposes only.
+</div>
+- Physical verification and qualification testing are recommended prior to production use.
+    </div>
+</div>
+
 </div>
 
 <!-- ✅ TABLE -->
@@ -201,25 +218,119 @@ const canvas=document.getElementById("chart");
 const ctx=canvas.getContext("2d");
 
 // ✅ INPUT UX
-let prev={};
-const defaults={ tch:"175", tp:"125", tmax:"220" };
 
-dEl.onfocus=()=>{ prev.d=dEl.value; dEl.value=""; };
-dEl.onblur=()=>{ if(dEl.value==="") dEl.value=prev.d||""; };
+// ✅ INPUT UX
+let prev={};
+
+const defaults={
+    tch:"175",
+    tp:"125",
+    tmax:"220"
+};
+
+dEl.onfocus=()=>{
+    prev.d=dEl.value;
+    dEl.value="";
+};
+
+dEl.onblur=()=>{
+    if(dEl.value==="") dEl.value=prev.d||"";
+};
 
 ["tch","tp","tmax"].forEach(id=>{
-let el=document.getElementById(id);
-el.onfocus=()=>{ el.value=""; };
-el.onblur=()=>{ if(el.value==="") el.value=defaults[id]; };
+
+    let el=document.getElementById(id);
+
+    el.onfocus=()=>{
+        el.value="";
+    };
+
+    el.onblur=()=>{
+
+        if(el.value!=="") return;
+
+        if(id==="tmax"){
+
+            if(wireType.value==="Au"){
+                el.value="220";
+            }
+            else if(wireType.value==="Ag"){
+                el.value="200";
+            }
+            else if(wireType.value==="Al"){
+                el.value="180";
+            }
+            else{
+                el.value="";
+            }
+
+        }else{
+
+            el.value=defaults[id];
+
+        }
+    };
+
 });
 
-// ✅ COLOR
+// ✅ COLOR + AUTO TEMP_WIRE MAX
+
 wireType.onchange=()=>{
-wireTypeBox.className="input-box";
-if(wireType.value==="Au") wireTypeBox.className="au-box";
-if(wireType.value==="Al") wireTypeBox.className="al-box";
-calc();
+
+    wireTypeBox.className="input-box";
+
+    if(wireType.value==="Au"){
+
+        wireTypeBox.className="au-box";
+        tmaxEl.value="220";
+
+    }
+    else if(wireType.value==="Ag"){
+
+        wireTypeBox.className="ag-box";
+        tmaxEl.value="200";
+
+    }
+    else if(wireType.value==="Al"){
+
+        wireTypeBox.className="al-box";
+        tmaxEl.value="180";
+
+    }
+    else{
+
+        tmaxEl.value="";
+
+    }
+
+    calc();
 };
+
+
+// ✅ COLOR
+
+wireType.onchange=()=>{
+
+    wireTypeBox.className="input-box";
+
+    if(wireType.value==="Au"){
+        wireTypeBox.className="au-box";
+        tmaxEl.value="220";
+    }
+
+    if(wireType.value==="Ag"){
+        wireTypeBox.className="ag-box";
+        tmaxEl.value="200";
+    }
+
+    if(wireType.value==="Al"){
+        wireTypeBox.className="al-box";
+        tmaxEl.value="180";
+    }
+
+    calc();
+};
+
 
 // ✅ CALC
 function calc(){
@@ -252,15 +363,30 @@ for(let i=1;i<=40;i++){
 let L=i*0.1;
 let I=0;
 
+
+
 if(type==="Au"){
-I=(1.192-0.0012*Tavg)*Math.sqrt(dTval)*
-(1.55e-3*d**1.19 +
-120e-6*d**2.159*Math.exp(L*(-d+9.79)/(d*1.324)));
-}else{
-I=(1.32-0.002*Tavg)*Math.sqrt(dTval)*
-(1.42e-3*d**1.1163 +
-90e-6*d**2.17*Math.exp(L*(-d+13)/(d*1.3)));
+
+    I=(1.192-0.0012*Tavg)*Math.sqrt(dTval)*
+    (1.55e-3*d**1.19 +
+    120e-6*d**2.159*Math.exp(L*(-d+9.79)/(d*1.324)));
+
 }
+else if(type==="Ag"){
+
+    I=(1.32-0.002*Tavg)*Math.sqrt(dTval)*
+    (1.42e-3*d**1.1163 +
+    90e-6*d**2.17*Math.exp(L*(-d+13)/(d*1.3)));
+}
+else if(type==="Al"){
+
+    I=(1.32-0.002*Tavg)*Math.sqrt(dTval)*
+    (1.42e-3*d**1.1163 +
+    90e-6*d**2.17*Math.exp(L*(-d+13)/(d*1.3)));
+
+}
+
+
 
 table.innerHTML+=`<tr><td>${L.toFixed(2)}</td><td>${I.toFixed(4)}</td></tr>`;
 
@@ -351,9 +477,12 @@ document.getElementById(id).oninput=calc;
 // ✅ CLEAR
 function clearData(){
 
+
 dEl.value="";
 wireType.value="";
+tmaxEl.value="";
 wireTypeBox.className="input-box";
+
 
 T.innerHTML="";
 dT.innerHTML="";
