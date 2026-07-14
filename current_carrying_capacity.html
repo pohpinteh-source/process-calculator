@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Current Carrying Capacity Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family:Arial;
+    font-size:14px;
+    background:#f5f5f5;
+}
+
+.container{
+    display:flex;
+    align-items:flex-start;
+    flex-wrap:wrap;
+}
+
+.left{
+    width:520px;
+}
+
+.right{
+    margin-left:20px;
+    width:400px;
+}
+
+
+table{
+    border-collapse:collapse;
+    width:100%;
+    table-layout:fixed;
+}
+
+
+.col-name{
+    width:170px;
+}
+
+.col-value{
+    width:120px;
+}
+
+.col-unit{
+    width:30px;
+}
+
+
+td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+.header{
+    background:#d9c2ad;
+    font-weight:bold;
+}
+
+
+.input-box{
+    background:yellow;
+}
+
+.au-box{
+    background:gold;
+}
+
+.ag-box{
+    background:silver;
+}
+
+.al-box{
+    background:#d9d9d9;
+}
+
+.cu-box{
+    background:#b87333;
+    color:black;
+}
+
+.property-box{
+    background:orange;
+    font-weight:bold;
+}
+
+.result-box{
+    background:gold;
+    font-weight:bold;
+}
+
+
+.result-box{
+    background:gold;
+    font-weight:bold;
+}
+
+.info-box{
+    border:1px solid black;
+    padding:10px;
+    background:white;
+    text-align:left;
+    line-height:1.5;
+}
+
+.remark-box{
+    margin-top:10px;
+    border:2px solid red;
+    background:#ffe6e6;
+    color:red;
+    padding:10px;
+    text-align:left;
+    font-size:12px;
+}
+
+input,select{
+    width:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+}
+
+@media(max-width:900px){
+
+.container{
+    flex-direction:column;
+}
+
+.left,.right{
+    width:100%;
+    margin-left:0;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+
+<table>
+
+<tr>
+<td class="header" colspan="3">
+Current Carrying Capacity (CCC)
+</td>
+</tr>
+
+<tr>
+<td class="col-name">Wire Type</td>
+<td id="wireTypeBox" class="input-box">
+<select id="wireType">
+<option value="">Select</option>
+<option value="Ag">Ag</option>
+<option value="Au">Au</option>
+<option value="Cu">Cu</option>
+<option value="Al">Al</option>
+</select>
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td class="col-name">Wire Diameter</td>
+<td id="diameterBox" class="input-box">
+<input id="diameter">
+
+</td>
+<td>µm</td>
+</tr>
+
+
+<tr>
+<td class="col-name">Wire Length</td>
+<td id="lengthBox" class="input-box">
+<input id="length">
+</td>
+<td>µm</td>
+</tr>
+
+
+<tr>
+<td class="col-name">Thermal Conductivity</td>
+<td id="kValue" class="property-box"></td>
+<td>W/mK</td>
+</tr>
+
+<tr>
+
+<td class="col-name">Wire Resistivity</td>
+<td id="rhoValue" class="property-box"></td>
+<td>Ω·m</td>
+</tr>
+
+<tr>
+<td class="col-name">Wire Melting Temp</td>
+<td id="meltValue" class="property-box"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td class="col-name">ΔT</td><td id="deltaTValue" class="property-box"></td>
+<td>K</td>
+</tr>
+
+<tr>
+<td class="header" colspan="3">
+Current Carrying Capacity
+</td>
+</tr>
+
+<tr>
+<td>CCC</td>
+<td id="cccResult" class="result-box"></td>
+<td>A</td>
+</tr>
+
+<tr>
+<td class="header" colspan="3">
+Preece Equation
+</td>
+</tr>
+
+<tr>
+<td>CCC</td>
+<td id="preeceResult" class="result-box"></td>
+<td>A</td>
+</tr>
+
+<tr>
+<td class="header" colspan="3">
+Modified Preece Equation
+</td>
+</tr>
+
+<tr>
+<td>CCC</td>
+<td id="modifiedResult" class="result-box"></td>
+<td>A</td>
+</tr>
+
+</table>
+
+
+<div style="text-align:center; margin-top:10px;">
+
+    <img
+        src="ccc.png"
+        alt="CCC Formula"
+        style="
+            max-width:100%;
+            height:auto;
+            border:1px solid black;
+            background:white;
+            padding:5px;
+        "
+    >
+
+</div>
+<button onclick="clearData()">Clear</button>
+
+<button onclick="openPDF()">
+Open Reference PDF
+</button>
+
+<button onclick="goBack()">
+Back
+</button>
+
+<div class="remark-box">
+
+<b>Remark #1:</b><br>
+Current carrying capacity (CCC) values are estimated using analytical equations.
+<br><br>
+
+<b>Remark #2:</b><br>
+Preece and Modified Preece equations are provided for reference purposes only.
+<br><br>
+
+<b>Remark #3:</b><br>
+Actual current carrying capability may vary depending on wire geometry, package structure, molding compound, and operating environment.
+<br><br>
+
+<b>Remark #4:</b><br>
+Physical validation is recommended before engineering or production use.
+
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="info-box">
+
+<b>Reference Material Data</b>
+
+<br><br>
+
+<b>Thermal Conductivity</b><br>
+Silver : 430 W/mK<br>
+Copper : 390 W/mK<br>
+Gold : 310 W/mK<br>
+Aluminium : 237 W/mK
+
+<br><br>
+
+<b>Wire Resistivity</b><br>
+Silver : 1.59E-8 Ω·m<br>
+Copper : 1.68E-8 Ω·m<br>
+Gold : 2.44E-8 Ω·m<br>
+Aluminium : 2.82E-8 Ω·m
+
+<br><br>
+
+<b>Wire Melting Temperature</b><br>
+Silver : 961°C<br>
+Copper : 1085°C<br>
+Gold : 1064°C<br>
+Aluminium : 660°C
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const db = {
+
+Ag:{
+    k:430,
+    rho:1.59e-8,
+    melt:961
+},
+
+Cu:{
+    k:390,
+    rho:1.68e-8,
+    melt:1085
+},
+
+Au:{
+    k:310,
+    rho:2.44e-8,
+    melt:1064
+},
+
+Al:{
+    k:237,
+    rho:2.82e-8,
+    melt:660
+}
+
+};
+
+
+const wireTypeBox=document.getElementById("wireTypeBox");
+const diameterBox=document.getElementById("diameterBox");
+const lengthBox=document.getElementById("lengthBox");
+
+const wireType=document.getElementById("wireType");
+const diameter=document.getElementById("diameter");
+const length=document.getElementById("length");
+
+
+
+
+
+wireType.onchange=()=>{
+
+    wireTypeBox.className="input-box";
+    diameterBox.className="input-box";
+    lengthBox.className="input-box";
+
+    if(wireType.value==="Au"){
+
+        wireTypeBox.className="au-box";
+        diameterBox.className="au-box";
+        lengthBox.className="au-box";
+
+    }
+    else if(wireType.value==="Ag"){
+
+        wireTypeBox.className="ag-box";
+        diameterBox.className="ag-box";
+        lengthBox.className="ag-box";
+
+    }
+    else if(wireType.value==="Al"){
+
+        wireTypeBox.className="al-box";
+        diameterBox.className="al-box";
+        lengthBox.className="al-box";
+
+    }
+    else if(wireType.value==="Cu"){
+
+        wireTypeBox.className="cu-box";
+        diameterBox.className="cu-box";
+        lengthBox.className="cu-box";
+
+    }
+
+    if(wireType.value){
+
+        kValue.innerHTML=db[wireType.value].k;
+        rhoValue.innerHTML=db[wireType.value].rho.toExponential(2);
+        meltValue.innerHTML=db[wireType.value].melt;
+        deltaTValue.innerHTML="390";
+
+    }
+
+    calc();
+
+};
+
+diameter.oninput=calc;
+length.oninput=calc;
+
+
+let prev={};
+
+diameter.onfocus=()=>{
+
+    prev.d=diameter.value;
+    diameter.value="";
+
+};
+
+diameter.onblur=()=>{
+
+    if(diameter.value===""){
+
+        diameter.value=prev.d || "";
+
+    }
+
+};
+
+length.onfocus=()=>{
+
+    prev.l=length.value;
+    length.value="";
+
+};
+
+length.onblur=()=>{
+
+    if(length.value===""){
+
+        length.value=prev.l || "";
+
+    }
+
+};
+
+
+function calc(){
+
+    let type=wireType.value;
+
+    if(!type) return;
+
+    let d_um=parseFloat(diameter.value);
+    let l_um=parseFloat(length.value);
+
+    if(isNaN(d_um) || isNaN(l_um)) return;
+
+    let k=db[type].k;
+    let rho=db[type].rho;
+    let melt=db[type].melt;
+
+    let deltaT=390;
+
+    kValue.innerHTML=k;
+    rhoValue.innerHTML=rho.toExponential(2);
+    meltValue.innerHTML=melt;
+    deltaTValue.innerHTML=deltaT;
+
+    let D=d_um*1e-6;
+    let L=l_um*1e-6;
+
+    let ccc=
+    (Math.PI/4)*
+    Math.sqrt(k/rho)*
+    (Math.pow(D,2)/L)*
+    Math.sqrt(deltaT);
+
+    let Dinch=D/0.0254;
+
+    let preece=
+    10244*Math.pow(Dinch,1.5);
+
+    let modified=
+    30000*Math.pow(Dinch,1.5);
+
+    cccResult.innerHTML=
+    ccc.toFixed(4);
+
+    preeceResult.innerHTML=
+    preece.toFixed(4);
+
+    modifiedResult.innerHTML=
+    modified.toFixed(4);
+
+}
+
+
+function clearData(){
+
+    wireType.value="";
+    diameter.value="";
+    length.value="";
+
+    wireTypeBox.className="input-box";
+    diameterBox.className="input-box";
+    lengthBox.className="input-box";
+
+    kValue.innerHTML="";
+    rhoValue.innerHTML="";
+    meltValue.innerHTML="";
+    deltaTValue.innerHTML="";
+
+    cccResult.innerHTML="";
+    preeceResult.innerHTML="";
+    modifiedResult.innerHTML="";
+
+}
+
+
+function openPDF(){
+
+    window.open(
+        "Current carrying capacity.pdf",
+        "_blank"
+    );
+
+}
+
+function goBack(){
+
+    window.location.href="index.html";
+}
+
+
+
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key!=="Enter") return;
+
+    let active=document.activeElement;
+
+    if(active===diameter){
+
+        e.preventDefault();
+        length.focus();
+        return;
+
+    }
+
+    if(active===length){
+
+        e.preventDefault();
+        calc();
+        return;
+
+    }
+
+});
+
+
+
+</script>
+
+</body>
+</html>
