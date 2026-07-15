@@ -110,6 +110,15 @@ input,select{
 }
 
 
+.info-box{
+    border:1px solid black;
+    padding:10px;
+    background:white;
+    text-align:left;
+    line-height:1.5;
+    margin-top:10px;
+}
+
 canvas{
 
     border:2px solid black;
@@ -385,6 +394,36 @@ Fusing Current
 <button onclick="openPDF()">
     Open Current carrying capacity.pdf
 </button>
+<br>
+<div class="info-box">
+
+<b>Reference Material Data</b>
+
+<br><br>
+
+<b>Thermal Conductivity</b><br>
+Copper (Cu): 390 W/mK<br>
+Silver (Ag): 430 W/mK<br>
+Aluminium (Al): 237 W/mK<br>
+Gold (Au): 310 W/mK
+
+<br><br>
+
+<b>Wire Resistivity</b><br>
+Copper (Cu): 1.68E-8 Ω·m<br>
+Silver (Ag): 1.59E-8 Ω·m<br>
+Aluminium (Al): 2.82E-8 Ω·m<br>
+Gold (Au): 2.44E-8 Ω·m
+
+<br><br>
+
+<b>Wire Melting Temperature</b><br>
+Copper (Cu): 1085°C<br>
+Silver (Ag): 961°C<br>
+Aluminium (Al): 660°C<br>
+Gold (Au): 1064°C
+
+</div>
 
 </div>
 
@@ -405,7 +444,6 @@ Fusing Current
 
 <canvas id="chart" width="450" height="280"></canvas>
 <br>
-
 
 
 <div class="remark-box">
