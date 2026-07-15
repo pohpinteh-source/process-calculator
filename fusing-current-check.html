@@ -1,0 +1,830 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fusing Current Check (FCC)</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    font-size:14px;
+    background:#f5f5f5;
+    margin:10px;
+}
+
+.container{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-top:20px;
+
+}
+
+table{
+    border-collapse:collapse;
+    width:100%;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+.header{
+    background:#d9c2ad;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.input-box{
+    background:yellow;
+}
+
+.property-box{
+    background:orange;
+    font-weight:bold;
+}
+
+.result-box{
+    background:#f2f2f2;
+}
+
+.au-box{background:gold;}
+.ag-box{background:silver;}
+.al-box{background:#d9d9d9;}
+.cu-box{background:#b87333;color:black;}
+
+input,select{
+    width:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-size:16px;
+}
+
+.top{
+    width:420px;
+}
+
+.top button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+}
+
+.left{
+    width:350px;
+}
+
+.right{
+    width:350px;
+}
+
+.right button{
+    width:100%;
+    padding:10px;
+    margin-top:2px;
+}
+
+
+.highlight{
+    background:orange;
+    font-weight:bold;
+}
+
+
+.nearest{
+    background:lightgreen;
+    font-weight:bold;
+}
+
+canvas{
+    border:1px solid black;
+    background:white;
+}
+.remark-box{
+    margin-top:10px;
+    border:2px solid red;
+    background:#ffe6e6;
+    color:red;
+    padding:10px;
+    text-align:left;
+    font-size:12px;
+}
+@media(max-width:1000px){
+
+.top,.left,.right{
+    width:100%;
+}
+
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOP INPUT TABLE -->
+
+<div class="top">
+
+<table>
+
+
+
+<tr>
+<td class="header" colspan="3">
+Fusing Current Checker (FCC)
+</td>
+</tr>
+
+
+<tr>
+<td>Wire Type</td>
+<td id="wireTypeBox" class="input-box">
+
+<select id="wireType">
+<option value="">Select</option>
+<option value="Ag">Ag</option>
+<option value="Au">Au</option>
+<option value="Cu">Cu</option>
+<option value="Al">Al</option>
+</select>
+
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td>Wire Diameter</td>
+
+<td id="diameterBox" class="input-box">
+<input id="diameter">
+</td>
+
+<td>µm</td>
+</tr>
+
+<tr>
+<td>3D Wire Length</td>
+
+<td id="lengthBox" class="input-box">
+<input id="wireLength3D">
+</td>
+
+<td>mm</td>
+</tr>
+
+</table>
+
+<button onclick="clearData()">
+    Clear
+</button>
+
+<button onclick="goToWireLength()">
+    Go to Est. Wire Length (3D)
+</button>
+
+<button onclick="goBack()">
+    Back
+</button>
+</div>
+
+
+<div class="container">
+
+<!-- FUSING CURRENT -->
+
+<div class="left">
+
+<table>
+
+<tr>
+<td class="header" colspan="3">
+Fusing Current
+</td>
+</tr>
+
+<tr>
+<td>Temp_Chip</td>
+<td class="input-box">
+<input id="tChip" value="175">
+</td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>Temp_Lead</td>
+<td class="input-box">
+<input id="tLead" value="125">
+</td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>Temp_Package Avg</td>
+<td id="tPkg" class="result-box"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>Temp_Wire Max</td>
+<td class="input-box">
+<input id="tMax">
+</td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>ΔT</td>
+<td id="deltaTFusing" class="result-box"></td>
+<td>°C</td>
+</tr>
+
+</table>
+
+</div>
+
+<!-- CCC -->
+
+<div class="right">
+
+<table>
+
+
+
+<tr>
+<td class="header" colspan="3">
+
+<div style="text-align:center;">
+
+    <div style="font-weight:bold;font-size:18px;">
+        Current Carrying Capacity (CCC)
+    </div>
+
+    <img
+        src="ccc.png"
+        alt="CCC Formula"
+        style="
+            margin-top:5px;
+            max-width:95%;
+            height:auto;
+            background:white;
+            border:1px solid black;
+            padding:3px;
+        "
+    >
+
+</div>
+
+</td>
+</tr>
+
+
+
+<tr>
+<td>Thermal Conductivity</td>
+<td id="kValue" class="property-box"></td>
+<td>W/mK</td>
+</tr>
+
+<tr>
+<td>Wire Resistivity</td>
+<td id="rhoValue" class="property-box"></td>
+<td>Ω·m</td>
+</tr>
+
+<tr>
+<td>Wire Melting Temp</td>
+<td id="meltValue" class="property-box"></td>
+<td>°C</td>
+</tr>
+
+<tr>
+<td>ΔT</td>
+<td class="property-box">390</td>
+<td>K</td>
+</tr>
+
+<tr>
+<td>Preece CCC</td>
+<td id="preeceCCC" class="property-box"></td>
+<td>A</td>
+</tr>
+
+<tr>
+<td>Modified Preece CCC</td>
+<td id="modifiedCCC" class="property-box"></td>
+<td>A</td>
+</tr>
+
+
+</table>
+
+<br>
+
+<button onclick="openPDF()">
+    Open Current carrying capacity.pdf
+</button>
+
+</div>
+
+</div>
+
+<br>
+
+<table id="resultTable">
+
+<tr>
+<td class="header">Wire Length (mm)</td>
+<td class="header">Fusing Current, Ampacity (A)</td>
+<td class="header">Current Carrying Capacity (A)</td></tr>
+
+</table>
+
+<br>
+
+<canvas id="chart" width="700" height="400"></canvas>
+<br>
+
+
+
+<div class="remark-box">
+
+<b>Remark #1:</b><br>
+Fusing Current (A) & Current carrying capacity values are estimated using analytical equations.
+<br><br>
+
+<b>Remark #2:</b><br>
+Preece and Modified Preece equations are provided for reference purposes only.
+<br><br>
+
+<b>Remark #3:</b><br>
+Actual current carrying capability may vary depending on wire geometry, package structure, molding compound, and operating environment.
+<br><br>
+
+<b>Remark #4:</b><br>
+Physical validation is recommended before engineering or production use.
+
+</div>
+
+
+
+<script>
+
+const db = {
+
+Ag:{
+k:430,
+rho:1.59e-8,
+melt:961,
+tmax:200
+},
+
+Au:{
+k:310,
+rho:2.44e-8,
+melt:1064,
+tmax:220
+},
+
+Cu:{
+k:390,
+rho:1.68e-8,
+melt:1085,
+tmax:240
+},
+
+Al:{
+k:237,
+rho:2.82e-8,
+melt:660,
+tmax:180
+}
+
+};
+
+const wireType=document.getElementById("wireType");
+const diameter=document.getElementById("diameter");
+const wireLength3D=document.getElementById("wireLength3D");
+const tChip=document.getElementById("tChip");
+const tLead=document.getElementById("tLead");
+const tMax=document.getElementById("tMax");
+const wireTypeBox =
+document.getElementById("wireTypeBox");
+
+const diameterBox =
+document.getElementById("diameterBox");
+
+const lengthBox =
+document.getElementById("lengthBox");
+let prev={};
+
+[
+    diameter,
+    wireLength3D,
+    tChip,
+    tLead,
+    tMax
+].forEach(el=>{
+
+    el.onfocus=()=>{
+
+        prev[el.id]=el.value;
+        el.value="";
+
+    };
+
+    el.onblur=()=>{
+
+        if(el.value===""){
+
+            if(el.id==="tMax"){
+
+                if(wireType.value==="Au"){
+                    el.value="220";
+                }
+                else if(wireType.value==="Al"){
+                    el.value="180";
+                }
+                else{
+                    el.value=prev[el.id] || "";
+                }
+
+            }
+            else{
+
+                el.value=prev[el.id] || "";
+
+            }
+
+        }
+
+        if(
+            el.id==="wireLength3D"
+            &&
+            el.value!==""
+        ){
+
+            el.value=
+            parseFloat(el.value)
+            .toFixed(3);
+
+        }
+
+    };
+
+});
+
+[
+wireType,
+diameter,
+wireLength3D,
+tChip,
+tLead,
+tMax
+].forEach(x=>x.addEventListener("input",calc));
+
+wireType.addEventListener("change",function(){
+
+    wireTypeBox.className="input-box";
+    diameterBox.className="input-box";
+    lengthBox.className="input-box";
+
+    if(this.value==="Au"){
+
+        wireTypeBox.className="au-box";
+        diameterBox.className="au-box";
+        lengthBox.className="au-box";
+
+        tMax.value="220";
+
+    }
+    else if(this.value==="Ag"){
+
+        wireTypeBox.className="ag-box";
+        diameterBox.className="ag-box";
+        lengthBox.className="ag-box";
+
+        tMax.value="200";
+
+    }
+    else if(this.value==="Al"){
+
+        wireTypeBox.className="al-box";
+        diameterBox.className="al-box";
+        lengthBox.className="al-box";
+
+        tMax.value="180";
+
+    }
+    else if(this.value==="Cu"){
+
+        wireTypeBox.className="cu-box";
+        diameterBox.className="cu-box";
+        lengthBox.className="cu-box";
+
+        tMax.value="240";
+
+    }
+    else{
+
+        tMax.value="";
+
+    }
+
+    calc();
+
+});
+
+
+function calc(){
+
+let type = wireType.value;
+
+if(!type) return;
+
+let d = parseFloat(diameter.value);
+
+if(isNaN(d)) return;
+
+let tch=parseFloat(tChip.value);
+let tl=parseFloat(tLead.value);
+let tmax=parseFloat(tMax.value);
+
+let pkg=(tch+tl)/2;
+let dT=tmax-pkg;
+
+document.getElementById("tPkg").innerHTML =
+pkg.toFixed(1);
+
+document.getElementById("deltaTFusing").innerHTML =
+dT.toFixed(1);
+
+kValue.innerHTML=db[type].k;
+rhoValue.innerHTML=db[type].rho.toExponential(2);
+meltValue.innerHTML=db[type].melt;
+
+let D=d*1e-6;
+
+let Dinch=D/0.0254;
+
+preeceCCC.innerHTML =
+(10244*Math.pow(Dinch,1.5)).toFixed(4);
+
+modifiedCCC.innerHTML =
+(30000*Math.pow(Dinch,1.5)).toFixed(4);
+
+buildTable(
+type,
+d,
+pkg,
+dT
+);
+
+}
+
+function buildTable(type,d,Tavg,dTval){
+
+const table =
+document.getElementById("resultTable");
+
+table.innerHTML=`
+<tr>
+<td class="header">Wire Length (mm)</td>
+<td class="header">Fusing Current, Ampacity (A)</td>
+<td class="header">Current Carrying Capacity (A)</td>
+</tr>
+`;
+
+
+
+let target =
+parseFloat(wireLength3D.value);
+
+let nearestLength =
+Math.ceil(target*10)/10;
+
+
+let greenLength =
+Math.ceil(target*10)/10;
+
+for(let i=1;i<=40;i++){
+
+let L=i*0.1;
+
+
+let amp="N/A";
+
+if(type==="Au"){
+
+    amp=
+    (1.192-0.0012*Tavg)
+    *Math.sqrt(dTval)
+    *
+    (
+    1.55e-3*Math.pow(d,1.19)
+    +
+    120e-6*Math.pow(d,2.159)
+    *
+    Math.exp(
+    L*(-d+9.79)/(d*1.324)
+    )
+    );
+
+}
+else if(type==="Al"){
+
+    amp=
+    (1.32-0.002*Tavg)
+    *Math.sqrt(dTval)
+    *
+    (
+    1.42e-3*Math.pow(d,1.1163)
+    +
+    90e-6*Math.pow(d,2.17)
+    *
+    Math.exp(
+    L*(-d+13)/(d*1.3)
+    )
+    );
+
+}
+
+
+let D=d*1e-6;
+let Lm=L*1e-3;
+
+let CCC=
+(Math.PI/4)
+*
+Math.sqrt(
+db[type].k/
+db[type].rho
+)
+*
+(
+(D*D)/Lm
+)
+*
+Math.sqrt(390);
+
+
+
+
+let cls="";
+
+if(!isNaN(target)){
+
+    let diff =
+    Math.round(
+    Math.abs(L-nearestLength)*1000
+    )/1000;
+
+    if(
+        diff>0 &&
+        diff<=0.2
+    ){
+        cls="highlight";
+    }
+
+    if(
+        diff===0
+    ){
+        cls="nearest";
+    }
+}
+table.innerHTML+=`
+<tr class="${cls}">
+<td>${L.toFixed(2)}</td>
+
+<td>${
+typeof amp==="number"
+? amp.toFixed(4)
+: "N/A"
+}</td>
+<td>${CCC.toFixed(4)}</td>
+</tr>
+`;
+
+}
+
+}
+
+function openPDF(){
+
+    window.open(
+        "Current carrying capacity.pdf",
+        "_blank"
+    );
+
+}
+
+
+
+function clearData(){
+
+    wireType.value="";
+    diameter.value="";
+    wireLength3D.value="";
+
+wireTypeBox.className="input-box";
+diameterBox.className="input-box";
+lengthBox.className="input-box";
+
+    tChip.value="175";
+    tLead.value="125";
+    tMax.value="";
+
+    tPkg.innerHTML="";
+    deltaTFusing.innerHTML="";
+
+    kValue.innerHTML="";
+    rhoValue.innerHTML="";
+    meltValue.innerHTML="";
+
+    preeceCCC.innerHTML="";
+    modifiedCCC.innerHTML="";
+
+    resultTable.innerHTML=
+    `
+    <tr>
+        <td class="header">Wire Length (mm)</td>
+        <td class="header">Fusing Current, Ampacity (A)</td>
+        <td class="header">Current Carrying Capacity (A)</td>
+    </tr>
+    `;
+prev={};
+}
+
+function goBack(){
+
+    window.location.href="index.html";
+
+}
+
+function goToWireLength(){
+
+    window.location.href="estimate-wire-length-3d.html";
+
+}
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key!=="Enter") return;
+
+    let active=document.activeElement;
+
+    if(active===diameter){
+
+        e.preventDefault();
+        wireLength3D.focus();
+        return;
+
+    }
+
+    if(active===wireLength3D){
+
+        e.preventDefault();
+        tChip.focus();
+        return;
+
+    }
+
+    if(active===tChip){
+
+        e.preventDefault();
+        tLead.focus();
+        return;
+
+    }
+
+    if(active===tLead){
+
+        e.preventDefault();
+        tMax.focus();
+        return;
+
+    }
+
+    if(active===tMax){
+
+        e.preventDefault();
+        calc();
+        return;
+
+    }
+
+});
+
+
+</script>
+
+</body>
+</html>

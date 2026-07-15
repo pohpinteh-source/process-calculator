@@ -112,14 +112,10 @@ Normalize Ball Shear
 </button>
 
 
-<button onclick="goTo('current_carrying_capacity.html')">
-Current Carrying Capacity (CCC)
+<button onclick="goToFusingCurrentCheck()">
+    Fusing Current Check (FCC)
 </button>
 
-
-<button onclick="goTo('fusing_current.html')">
-Fusing Current
-</button>
 
 <button onclick="goTo('estimate-wire-length-3d.html')">
 Est. Wire Length For Fusing Current (3D)
@@ -137,6 +133,15 @@ Capillary Need
 
 <button onclick="goTo('capillary_profile_selection.html')">
 Capillary Profile Selection
+</button>
+
+<button onclick="goTo('current_carrying_capacity.html')">
+Current Carrying Capacity (CCC)
+</button>
+
+
+<button onclick="goTo('fusing_current.html')">
+Fusing Current Assumption
 </button>
 
 </div>
@@ -171,6 +176,12 @@ function goTo(page){
 // ✅ open pdf
 function openPDF(){
     window.open("Wire Bond Guideline.pdf","_blank");
+}
+
+function goToFusingCurrentCheck(){
+
+    window.location.href="fusing-current-check.html";
+
 }
 
 </script>

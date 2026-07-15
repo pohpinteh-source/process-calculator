@@ -104,11 +104,16 @@ RBSOB
 Clear
 </button>
 
-<button onclick="goToFusingCurrent()">Back to Fusing Current Calculator</button>
+
+<button onclick="goToFCC()">
+    Back To Fusing Current Check (FCC)
+</button>
+
 
 <button onclick="goToCCC()">
     Back To Current Carrying Capacity (CCC)
 </button>
+<button onclick="goToFusingCurrent()">Back to Fusing Current Assumption</button>
 
 <button onclick="goBack()">Back</button>
 </div>
@@ -380,6 +385,13 @@ function goToCCC(){
 function goBack(){
     window.location.href = "index.html";
 }
+
+function goToFCC(){
+
+    window.location.href="fusing-current-check.html";
+
+}
+
 </script>
 
 
