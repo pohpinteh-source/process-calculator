@@ -104,8 +104,11 @@ input,select{
 }
 
 canvas{
-    border:1px solid black;
-    background:white;
+
+    border:2px solid black;
+    background:#bfbfbf;
+    display:none;
+
 }
 .remark-box{
     margin-top:10px;
@@ -140,7 +143,7 @@ canvas{
 
 <tr>
 <td class="header" colspan="3">
-Fusing Current Checker (FCC)
+Fusing Current Checker (FCC) per wire
 </td>
 </tr>
 
@@ -180,7 +183,23 @@ Fusing Current Checker (FCC)
 
 <td>mm</td>
 </tr>
+<tr>
+<td>Selected Wire Length</td>
+<td id="selectedLength" class="nearest"></td>
+<td>mm</td>
+</tr>
 
+<tr>
+<td>Max Fusing Current</td>
+<td id="selectedAmpacity" class="nearest"></td>
+<td>A</td>
+</tr>
+
+<tr>
+<td>Max Current Carrying Capacity</td>
+<td id="selectedCCC" class="nearest"></td>
+<td>A</td>
+</tr>
 </table>
 
 <button onclick="clearData()">
@@ -343,8 +362,8 @@ Fusing Current
 
 <tr>
 <td class="header">Wire Length (mm)</td>
-<td class="header">Fusing Current, Ampacity (A)</td>
-<td class="header">Current Carrying Capacity (A)</td></tr>
+<td class="header">Max Fusing Current, Ampacity (A)</td>
+<td class="header">Max Current Carrying Capacity (A)</td></tr>
 
 </table>
 
@@ -416,6 +435,14 @@ const wireLength3D=document.getElementById("wireLength3D");
 const tChip=document.getElementById("tChip");
 const tLead=document.getElementById("tLead");
 const tMax=document.getElementById("tMax");
+
+const canvas=
+document.getElementById("chart");
+
+
+const ctx=
+canvas.getContext("2d");
+
 const wireTypeBox =
 document.getElementById("wireTypeBox");
 
@@ -588,7 +615,139 @@ pkg,
 dT
 );
 
+let x=[];
+
+let ampY=[];
+
+let cccY=[];
+
+
+for(let i=1;i<=40;i++){
+
+    let L=i*0.1;
+
+    let amp=0;
+let D=d*1e-6;
+
+let Lm=L*1e-3;
+
+let ccc=
+(Math.PI/4)
+*
+Math.sqrt(
+db[type].k/
+db[type].rho
+)
+*
+(
+(D*D)/Lm
+)
+*
+Math.sqrt(390);
+    if(type==="Au"){
+
+        amp=
+        (1.192-0.0012*pkg)
+        *Math.sqrt(dT)
+        *
+        (
+        1.55e-3*Math.pow(d,1.19)
+        +
+        120e-6*Math.pow(d,2.159)
+        *
+        Math.exp(
+        L*(-d+9.79)/(d*1.324)
+        )
+        );
+
+    }
+    else if(type==="Al"){
+
+        amp=
+        (1.32-0.002*pkg)
+        *Math.sqrt(dT)
+        *
+        (
+        1.42e-3*Math.pow(d,1.1163)
+        +
+        90e-6*Math.pow(d,2.17)
+        *
+        Math.exp(
+        L*(-d+13)/(d*1.3)
+        )
+        );
+
+    }
+
+    if(typeof amp==="number"){
+
+
+x.push(L);
+
+ampY.push(amp);
+
+cccY.push(ccc);
+
+
+    }
+
 }
+
+let nearestLength =
+Math.ceil(
+parseFloat(wireLength3D.value)*10
+)/10;
+let selectedIndex =
+x.findIndex(v =>
+Math.abs(
+v-nearestLength
+)<0.0001
+);
+
+if(selectedIndex >= 0){
+
+    document.getElementById(
+        "selectedLength"
+    ).innerHTML =
+    nearestLength.toFixed(2);
+
+    if(
+        type==="Au" ||
+        type==="Al"
+    ){
+
+        document.getElementById(
+            "selectedAmpacity"
+        ).innerHTML =
+        ampY[selectedIndex]
+        .toFixed(4);
+
+    }
+    else{
+
+        document.getElementById(
+            "selectedAmpacity"
+        ).innerHTML =
+        "N/A";
+
+    }
+
+    document.getElementById(
+        "selectedCCC"
+    ).innerHTML =
+    cccY[selectedIndex]
+    .toFixed(4);
+
+}
+drawGraph(
+
+    x,
+    ampY,
+    cccY,
+    nearestLength,
+    type
+
+);}
 
 function buildTable(type,d,Tavg,dTval){
 
@@ -716,7 +875,332 @@ typeof amp==="number"
 }
 
 }
+function getNiceAxis(maxVal){
 
+    let rawMax=maxVal*1.05;
+
+    let steps=[0.2,0.25,0.5,1,2,5];
+
+    for(let step of steps){
+
+        let max=
+        Math.ceil(rawMax/step)*step;
+
+        if(max/step<=6){
+
+            return{
+                max:max,
+                step:step
+            };
+
+        }
+
+    }
+
+    return{
+        max:rawMax,
+        step:rawMax/5
+    };
+
+}
+
+function drawTriangle(
+    x,
+    y,
+    size,
+    color
+){
+
+    ctx.fillStyle=color;
+    ctx.strokeStyle="black";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x,
+        y-size
+    );
+
+    ctx.lineTo(
+        x-size,
+        y+size
+    );
+
+    ctx.lineTo(
+        x+size,
+        y+size
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+    ctx.stroke();
+
+}
+function drawGraph(
+
+    x,
+    ampY,
+    cccY,
+    nearestLength,
+    type
+
+){
+
+    canvas.style.display="block";
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    let padL=60;
+    let padB=50;
+    let padT=10;
+    let padR=30;
+
+    let w=
+    canvas.width-padL-padR;
+
+    let h=
+    canvas.height-padT-padB;
+
+let maxGraph=
+
+Math.max(
+    ...ampY,
+    ...cccY
+);
+
+let axis=
+getNiceAxis(maxGraph);
+
+    let maxY=axis.max;
+    let stepY=axis.step;
+
+    let xRange=4.1;
+
+    ctx.strokeStyle="black";
+    ctx.fillStyle="black";
+    ctx.font="12px Arial";
+
+    for(
+        let val=0;
+        val<=maxY+0.0001;
+        val+=stepY
+    ){
+
+        let yPos=
+        padT+h-(val/maxY)*h;
+
+        ctx.beginPath();
+        ctx.moveTo(padL,yPos);
+        ctx.lineTo(padL+w,yPos);
+        ctx.stroke();
+
+        ctx.fillText(
+            val.toFixed(1),
+            padL-28,
+            yPos+4
+        );
+
+    }
+
+    for(let i=0;i<=8;i++){
+
+        let val=i*0.5;
+
+        let xPos=
+        padL+(val/xRange)*w;
+
+        ctx.beginPath();
+        ctx.moveTo(xPos,padT);
+        ctx.lineTo(xPos,padT+h);
+        ctx.stroke();
+
+        ctx.fillText(
+            val.toFixed(2),
+            xPos-12,
+            padT+h+15
+        );
+
+    }
+
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.moveTo(padL,padT);
+    ctx.lineTo(padL,padT+h);
+    ctx.lineTo(padL+w,padT+h);
+    ctx.stroke();
+
+    ctx.fillStyle="magenta";
+
+/* Ampacity */
+
+ctx.fillStyle="magenta";
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (ampY[i]/maxY)*h;
+
+    if(
+        Math.abs(x[i]-nearestLength)<0.0001
+    ){
+
+        drawTriangle(
+            px,
+            py,
+            16,
+            "magenta"
+        );
+
+
+    }
+    else{
+
+        ctx.fillRect(
+            px-2,
+            py-2,
+            4,
+            4
+        );
+
+    }
+
+}
+
+/* CCC */
+
+ctx.fillStyle="blue";
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (cccY[i]/maxY)*h;
+
+    if(
+        Math.abs(x[i]-nearestLength)<0.0001
+    ){
+
+        drawTriangle(
+            px,
+            py,
+            16,
+            "blue"
+        );
+
+
+    }
+    else{
+
+        ctx.fillRect(
+            px-2,
+            py-2,
+            4,
+            4
+        );
+
+    }
+
+}
+/* Legend */
+
+let selectedAmp =
+ampY.find((v,idx)=>
+Math.abs(
+x[idx]-nearestLength
+)<0.0001
+);
+
+let selectedCCC =
+cccY.find((v,idx)=>
+Math.abs(
+x[idx]-nearestLength
+)<0.0001
+);
+
+/* Legend */
+
+ctx.fillStyle="magenta";
+ctx.fillRect(360,20,14,14);
+
+ctx.fillStyle="magenta";
+ctx.font="bold 16px Arial";
+
+let ampText =
+(
+    type==="Au" ||
+    type==="Al"
+)
+?
+selectedAmp.toFixed(4)+" A"
+:
+"N/A";
+
+ctx.fillText(
+    "Fusing Current ≈ "
+    + ampText,
+    385,
+    32
+);
+
+
+ctx.fillStyle="blue";
+ctx.fillRect(360,50,14,14);
+
+ctx.fillStyle="blue";
+ctx.font="bold 16px Arial";
+
+ctx.fillText(
+   "Current Carrying Capacity ≈ "
+    + selectedCCC.toFixed(4)
+    + " A",
+    385,
+    62
+);
+/* X Axis Label */
+
+ctx.fillStyle="black";
+ctx.font="14px Arial";
+
+ctx.fillText(
+    "Wire Length, [mm]",
+    padL+w/2-60,
+    padT+h+30
+);
+
+/* Y Axis Label */
+
+ctx.save();
+
+ctx.translate(
+    padL-45,
+    padT+h/2
+);
+
+ctx.rotate(-Math.PI/2);
+
+ctx.fillText(
+    "Ampacity, [A]",
+    -35,
+    0
+);
+
+ctx.restore();
+}
 function openPDF(){
 
     window.open(
@@ -745,12 +1229,25 @@ lengthBox.className="input-box";
     tPkg.innerHTML="";
     deltaTFusing.innerHTML="";
 
+selectedLength.innerHTML="";
+selectedAmpacity.innerHTML="";
+selectedCCC.innerHTML="";
+
     kValue.innerHTML="";
     rhoValue.innerHTML="";
     meltValue.innerHTML="";
 
     preeceCCC.innerHTML="";
     modifiedCCC.innerHTML="";
+
+    canvas.style.display="none";
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     resultTable.innerHTML=
     `
