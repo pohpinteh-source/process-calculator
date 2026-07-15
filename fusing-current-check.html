@@ -442,7 +442,7 @@ Gold (Au): 1064°C
 
 <br>
 
-<canvas id="chart" width="400" height="320"></canvas>
+<canvas id="chart" width="350" height="250"></canvas>
 <br>
 
 
@@ -1102,7 +1102,7 @@ function drawGraph(
     let padL=60;
     let padB=50;
     let padT=10;
-    let padR=30;
+    let padR=15;
 
     let w=
     canvas.width-padL-padR;
@@ -1277,7 +1277,7 @@ x[idx]-nearestLength
 /* Legend */
 
 ctx.fillStyle="brown";
-ctx.fillRect(180,20,12,12);
+ctx.fillRect(100,20,12,12);
 
 ctx.fillStyle="brown";
 ctx.font="bold 12px Arial";
@@ -1295,13 +1295,13 @@ selectedAmp.toFixed(4)+" A"
 ctx.fillText(
     "Fusing Current ≈ "
     + ampText,
-    228,
+    131,
     30
 );
 
 
 ctx.fillStyle="blue";
-ctx.fillRect(180,45,12,12);
+ctx.fillRect(100,45,12,12);
 
 ctx.fillStyle="blue";
 ctx.font="bold 12px Arial";
@@ -1310,7 +1310,7 @@ ctx.fillText(
    "Current Carrying Capacity ≈ "
     + selectedCCC.toFixed(4)
     + " A",
-    209,
+    134,
     55
 );
 /* X Axis Label */
