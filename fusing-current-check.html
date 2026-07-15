@@ -103,6 +103,13 @@ input,select{
     font-weight:bold;
 }
 
+.range{
+    background:#b7d7ff;
+    color:black;
+    font-weight:bold;
+}
+
+
 canvas{
 
     border:2px solid black;
@@ -190,18 +197,46 @@ Fusing Current Checker (FCC) per wire
 </tr>
 
 <tr>
-<td>Max Fusing Current</td>
+<td>Est. Fusing Current</td>
 <td id="selectedAmpacity" class="nearest"></td>
 <td>A</td>
 </tr>
 
 <tr>
-<td>Max Current Carrying Capacity</td>
+<td>Est. Current Carrying Capacity</td>
 <td id="selectedCCC" class="nearest"></td>
 <td>A</td>
 </tr>
-</table>
 
+
+<tr>
+<td>Fusing Current Range (Max)</td>
+<td id="ampRange" class="range"></td>
+<td>A</td>
+</tr>
+
+<tr>
+<td>Current Carrying Capacity Range (Max)</td>
+<td id="cccRange" class="range"></td>
+<td>A</td>
+</tr>
+
+
+</table>
+<div
+style="
+margin-top:8px;
+margin-bottom:8px;
+padding:8px;
+background:#fff3cd;
+border:1px solid #ffcc00;
+font-weight:bold;
+color:#cc0000;
+text-align:center;
+"
+>
+Please input values in the yellow highlighted cells only.
+</div>
 <button onclick="clearData()">
     Clear
 </button>
@@ -343,7 +378,6 @@ Fusing Current
 <td>A</td>
 </tr>
 
-
 </table>
 
 <br>
@@ -369,7 +403,7 @@ Fusing Current
 
 <br>
 
-<canvas id="chart" width="700" height="400"></canvas>
+<canvas id="chart" width="450" height="280"></canvas>
 <br>
 
 
@@ -697,12 +731,36 @@ let nearestLength =
 Math.ceil(
 parseFloat(wireLength3D.value)*10
 )/10;
+
 let selectedIndex =
 x.findIndex(v =>
 Math.abs(
 v-nearestLength
 )<0.0001
 );
+
+let rangeAmp = [];
+let rangeCCC = [];
+
+for(
+    let i=selectedIndex+1;
+    i<=selectedIndex+2;
+    i++
+){
+
+    if(i < x.length){
+
+        rangeAmp.push(
+            ampY[i]
+        );
+
+        rangeCCC.push(
+            cccY[i]
+        );
+
+    }
+
+}
 
 if(selectedIndex >= 0){
 
@@ -737,8 +795,54 @@ if(selectedIndex >= 0){
     ).innerHTML =
     cccY[selectedIndex]
     .toFixed(4);
+if(
+    type==="Au" ||
+    type==="Al"
+){
+
+let maxAmp =
+Math.max(...rangeAmp);
+
+let minAmp =
+Math.min(...rangeAmp);
+
+document.getElementById(
+    "ampRange"
+).innerHTML =
+maxAmp.toFixed(4)
++
+" ~ "
++
+minAmp.toFixed(4);
 
 }
+else{
+
+    document.getElementById(
+        "ampRange"
+    ).innerHTML =
+    "N/A";
+
+}
+
+let maxCCC =
+Math.max(...rangeCCC);
+
+let minCCC =
+Math.min(...rangeCCC);
+
+document.getElementById(
+    "cccRange"
+).innerHTML =
+maxCCC.toFixed(4)
++
+" ~ "
++
+minCCC.toFixed(4);
+
+}
+
+
 drawGraph(
 
     x,
@@ -1037,11 +1141,11 @@ getNiceAxis(maxGraph);
     ctx.lineTo(padL+w,padT+h);
     ctx.stroke();
 
-    ctx.fillStyle="magenta";
+    ctx.fillStyle="brown";
 
 /* Ampacity */
 
-ctx.fillStyle="magenta";
+ctx.fillStyle="brown";
 
 for(let i=0;i<x.length;i++){
 
@@ -1059,8 +1163,8 @@ for(let i=0;i<x.length;i++){
         drawTriangle(
             px,
             py,
-            16,
-            "magenta"
+            8,
+            "brown"
         );
 
 
@@ -1098,7 +1202,7 @@ for(let i=0;i<x.length;i++){
         drawTriangle(
             px,
             py,
-            16,
+            8,
             "blue"
         );
 
@@ -1134,11 +1238,11 @@ x[idx]-nearestLength
 
 /* Legend */
 
-ctx.fillStyle="magenta";
-ctx.fillRect(360,20,14,14);
+ctx.fillStyle="brown";
+ctx.fillRect(180,20,12,12);
 
-ctx.fillStyle="magenta";
-ctx.font="bold 16px Arial";
+ctx.fillStyle="brown";
+ctx.font="bold 12px Arial";
 
 let ampText =
 (
@@ -1153,23 +1257,23 @@ selectedAmp.toFixed(4)+" A"
 ctx.fillText(
     "Fusing Current ≈ "
     + ampText,
-    385,
-    32
+    228,
+    30
 );
 
 
 ctx.fillStyle="blue";
-ctx.fillRect(360,50,14,14);
+ctx.fillRect(180,45,12,12);
 
 ctx.fillStyle="blue";
-ctx.font="bold 16px Arial";
+ctx.font="bold 12px Arial";
 
 ctx.fillText(
    "Current Carrying Capacity ≈ "
     + selectedCCC.toFixed(4)
     + " A",
-    385,
-    62
+    209,
+    55
 );
 /* X Axis Label */
 
@@ -1239,6 +1343,9 @@ selectedCCC.innerHTML="";
 
     preeceCCC.innerHTML="";
     modifiedCCC.innerHTML="";
+
+ampRange.innerHTML="";
+cccRange.innerHTML="";
 
     canvas.style.display="none";
 
