@@ -56,13 +56,78 @@ button{
     padding:12px;
     font-size:18px;
 }
+@media screen and (max-width:600px){
 
+    body{
+        margin:8px;
+        padding:5px;
+    }
+
+    .title{
+        font-size:20px;
+        padding:12px;
+    }
+
+    .mode-row{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .mode-btn{
+        width:100%;
+        font-size:16px;
+        padding:12px;
+    }
+
+    table{
+        width:100%;
+        max-width:100%;
+    }
+
+    td{
+        padding:8px 4px;
+        font-size:14px;
+    }
+
+    input{
+        min-height:40px;
+        font-size:18px;
+    }
+
+    img{
+        width:100%;
+        height:auto;
+    }
+
+    .btn-row{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+        font-size:18px;
+        padding:12px;
+    }
+}
 </style>
 </head>
 
 <body onload="setFocus()">
 
-<h3>** Key in Yellow box.</h3>
+<div
+style="
+margin-top:8px;
+margin-bottom:8px;
+padding:8px;
+background:#fff3cd;
+border:1px solid #ffcc00;
+font-weight:bold;
+color:#cc0000;
+text-align:center;
+"
+>
+Please input values in the yellow highlighted cells only.
+</div>
 
 <div class="container">
 
@@ -143,20 +208,21 @@ button{
 
 </table>
 
-<!-- ✅ RIGHT IMAGES -->
-<div class="right">
-<img src="Define WB Spec1.png">
-<img src="Define WB Spec2.png">
-<img src="Define WB Spec3.png">
-</div>
-
-</div>
 
 <!-- ✅ BUTTON -->
 <div class="btn-row">
 <button onclick="clearData()">Clear</button>
 <button onclick="goBack()">Back</button>
 <button onclick="goSPC()">Osram SPC LSL</button>
+</div>
+
+<!-- ✅ Images Below Buttons -->
+<div class="right">
+<img src="Define WB Spec1.png">
+<img src="Define WB Spec2.png">
+<img src="Define WB Spec3.png">
+</div>
+
 </div>
 
 <script>

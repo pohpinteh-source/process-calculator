@@ -97,13 +97,79 @@ img {
     display: block;
     margin: 15px auto;
 }
+@media screen and (max-width:600px){
 
+    body{
+        margin:8px;
+        padding:5px;
+    }
+
+    .title{
+        font-size:20px;
+        padding:12px;
+    }
+
+    .mode-row{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .mode-btn{
+        width:100%;
+        font-size:16px;
+        padding:12px;
+    }
+
+    table{
+        width:100%;
+        max-width:100%;
+    }
+
+    td{
+        padding:8px 4px;
+        font-size:14px;
+    }
+
+    input{
+        min-height:40px;
+        font-size:18px;
+    }
+
+    img{
+        width:100%;
+        height:auto;
+    }
+
+    .btn-row{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+        font-size:18px;
+        padding:12px;
+    }
+}
 </style>
 </head>
 
 <body onload="setFocus()">
 
-<h2>** Key in Yellow box.</h2>
+<div
+style="
+margin-top:8px;
+margin-bottom:8px;
+padding:8px;
+background:#fff3cd;
+border:1px solid #ffcc00;
+font-weight:bold;
+color:#cc0000;
+text-align:center;
+"
+>
+Please input values in the yellow highlighted cells only.
+</div>
+
 
 <div class="container">
 

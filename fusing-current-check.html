@@ -270,7 +270,7 @@ Please input values in the yellow highlighted cells only.
 
 <tr>
 <td class="header" colspan="3">
-Fusing Current
+Fusing Current per wire
 </td>
 </tr>
 
@@ -311,7 +311,20 @@ Fusing Current
 </tr>
 
 </table>
-
+<div
+style="
+margin-top:8px;
+margin-bottom:8px;
+padding:8px;
+background:#fff3cd;
+border:1px solid #ffcc00;
+font-weight:bold;
+color:#cc0000;
+text-align:center;
+"
+>
+Please input values in the yellow highlighted cells only.
+</div>
 </div>
 
 <!-- CCC -->
@@ -328,7 +341,7 @@ Fusing Current
 <div style="text-align:center;">
 
     <div style="font-weight:bold;font-size:18px;">
-        Current Carrying Capacity (CCC)
+        Current Carrying Capacity (CCC) per wire
     </div>
 
     <img
@@ -544,19 +557,20 @@ let prev={};
 
         if(el.value===""){
 
-            if(el.id==="tMax"){
-
-                if(wireType.value==="Au"){
-                    el.value="220";
-                }
-                else if(wireType.value==="Al"){
-                    el.value="180";
-                }
-                else{
-                    el.value=prev[el.id] || "";
-                }
-
-            }
+if(el.id==="tMax"){
+    if(wireType.value==="Au"){
+        el.value="220";
+    }
+    else if(wireType.value==="Al"){
+        el.value="180";
+    }
+    else if(wireType.value==="Ag" || wireType.value==="Cu"){
+        el.value="N/A";
+    }
+    else{
+        el.value=prev[el.id] || "";
+    }
+}
             else{
 
                 el.value=prev[el.id] || "";
@@ -596,42 +610,30 @@ wireType.addEventListener("change",function(){
     diameterBox.className="input-box";
     lengthBox.className="input-box";
 
-    if(this.value==="Au"){
-
-        wireTypeBox.className="au-box";
-        diameterBox.className="au-box";
-        lengthBox.className="au-box";
-
-        tMax.value="220";
-
-    }
-    else if(this.value==="Ag"){
-
-        wireTypeBox.className="ag-box";
-        diameterBox.className="ag-box";
-        lengthBox.className="ag-box";
-
-        tMax.value="200";
-
-    }
-    else if(this.value==="Al"){
-
-        wireTypeBox.className="al-box";
-        diameterBox.className="al-box";
-        lengthBox.className="al-box";
-
-        tMax.value="180";
-
-    }
-    else if(this.value==="Cu"){
-
-        wireTypeBox.className="cu-box";
-        diameterBox.className="cu-box";
-        lengthBox.className="cu-box";
-
-        tMax.value="240";
-
-    }
+   if(this.value==="Au"){
+    wireTypeBox.className="au-box";
+    diameterBox.className="au-box";
+    lengthBox.className="au-box";
+    tMax.value="220";
+}
+else if(this.value==="Ag"){
+    wireTypeBox.className="ag-box";
+    diameterBox.className="ag-box";
+    lengthBox.className="ag-box";
+    tMax.value="N/A";
+}
+else if(this.value==="Al"){
+    wireTypeBox.className="al-box";
+    diameterBox.className="al-box";
+    lengthBox.className="al-box";
+    tMax.value="180";
+}
+else if(this.value==="Cu"){
+    wireTypeBox.className="cu-box";
+    diameterBox.className="cu-box";
+    lengthBox.className="cu-box";
+    tMax.value="N/A";
+}
     else{
 
         tMax.value="";
@@ -658,13 +660,21 @@ let tl=parseFloat(tLead.value);
 let tmax=parseFloat(tMax.value);
 
 let pkg=(tch+tl)/2;
-let dT=tmax-pkg;
 
 document.getElementById("tPkg").innerHTML =
 pkg.toFixed(1);
 
-document.getElementById("deltaTFusing").innerHTML =
-dT.toFixed(1);
+let dT = 0;
+
+if(type==="Ag" || type==="Cu"){
+    document.getElementById("deltaTFusing").innerHTML = "N/A";
+}
+else{
+    let dT = tmax - pkg;
+
+    document.getElementById("deltaTFusing").innerHTML =
+    dT.toFixed(1);
+}
 
 kValue.innerHTML=db[type].k;
 rhoValue.innerHTML=db[type].rho.toExponential(2);
@@ -1301,7 +1311,7 @@ ctx.fillText(
 
 
 ctx.fillStyle="blue";
-ctx.fillRect(100,45,12,12);
+ctx.fillRect(100,40,12,12);
 
 ctx.fillStyle="blue";
 ctx.font="bold 12px Arial";
@@ -1311,7 +1321,7 @@ ctx.fillText(
     + selectedCCC.toFixed(4)
     + " A",
     125,
-    55
+    50
 );
 /* X Axis Label */
 
