@@ -43,7 +43,12 @@ td{
 
 
 .left{background:#c6e0b4;}
-.yellow{background:yellow;text-align:center;}
+
+.yellow{
+    background:yellow;
+    text-align:center;
+    width:100px;
+}
 .grey{background:#cfd5e2;text-align:center;}
 .green{background:#c6e0b4;text-align:center;}
 
@@ -141,7 +146,10 @@ Please input values in the yellow highlighted cells only.
 
 <tr>
 <td class="left">Wire Size, µm</td>
-<td class="yellow"><input id="wire"></td>
+
+<td class="yellow" style="width:120px;">
+    <input id="wire">
+</td>
 <td id="wire_mils" style="text-align:center;"></td>
 <td>mils</td>
 </tr>
