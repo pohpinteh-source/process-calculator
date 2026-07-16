@@ -34,28 +34,38 @@ body{
 table{
     border-collapse:collapse;
     width:100%;
+    table-layout:fixed;
 }
 
 td{
     border:1px solid black;
-    padding:8px;
+    padding:12px 8px;
     text-align:center;
+    vertical-align:middle;
 }
 
-/* colors */
-.header{ background:#f4b183; font-weight:bold; }
-.yellow{ background:yellow; }
-.result{ background:#f8cbad; font-weight:bold; }
+.header{
+    background:#e6ac7c;
+    font-weight:bold;
+}
+
+.yellow{
+    background:yellow;
+}
+
+.result{
+    background:#f8cbad;
+    font-weight:bold;
+    font-size:22px;
+}
 
 input{
     width:100%;
     border:none;
     background:yellow;
     text-align:center;
-    font-size:16px;
-    padding:6px;
+    font-size:20px;
 }
-
 /* buttons */
 .btn-row{
     display:flex;
@@ -127,40 +137,53 @@ text-align:center;
 >
 Please input values in the yellow highlighted cells only.
 </div>
-<table>
+
+<table style="table-layout:fixed;width:100%;">
 
 <tr>
-<td class="header">Loading Qty</td>
-<td colspan="2" class="yellow"><input id="load"></td>
+    <td class="header" style="width:25%;">Loading Qty</td>
+    <td colspan="2" class="yellow">
+        <input id="load">
+    </td>
 </tr>
 
 <tr>
-<td class="header">Qty Wire in 1 unit</td>
-<td colspan="2" class="yellow"><input id="wire"></td>
+    <td class="header">Qty Wire in 1 unit</td>
+    <td colspan="2" class="yellow">
+        <input id="wire">
+    </td>
 </tr>
 
 <tr>
-<td class="header">Machine Model</td>
-<td class="header">Shinkawa</td>
-<td class="header">ASM</td>
+    <td class="header">Machine Model</td>
+    <td class="header">Shinkawa</td>
+    <td class="header">ASM</td>
 </tr>
 
 <tr>
-<td class="header">Qty touchdown / wire</td>
-<td class="yellow"><input id="td1" value="3"></td>
-<td class="yellow"><input id="td2" value="4"></td>
+    <td class="header">Qty touchdown / wire</td>
+    <td class="yellow">
+        <input id="td1" value="3">
+    </td>
+    <td class="yellow">
+        <input id="td2" value="4">
+    </td>
 </tr>
 
 <tr>
-<td class="header">Capillary Life Span</td>
-<td class="yellow"><input id="life1" value="720000"></td>
-<td class="yellow"><input id="life2" value="720000"></td>
+    <td class="header">Capillary Life Span</td>
+    <td class="yellow">
+        <input id="life1" value="720000">
+    </td>
+    <td class="yellow">
+        <input id="life2" value="720000">
+    </td>
 </tr>
 
 <tr>
-<td class="header">Qty Capillary Need</td>
-<td class="result" id="res1"></td>
-<td class="result" id="res2"></td>
+    <td class="header">Qty Capillary Need</td>
+    <td class="result" id="res1"></td>
+    <td class="result" id="res2"></td>
 </tr>
 
 </table>
