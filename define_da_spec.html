@@ -51,10 +51,13 @@ table {
     width: 60%;
 }
 
+
 td {
     border: 1px solid black;
-    padding: 6px;
+    padding: 3px 6px;
+    height: 30px;
 }
+
 
 /* colors */
 .label { background: #9eb6ce; }
@@ -62,13 +65,18 @@ td {
 .result-box { background: #d9c2ad; text-align:center; }
 
 /* input */
+
 input {
     width: 100%;
     border: none;
     background: yellow;
     text-align: center;
     font-size: 16px;
+    padding: 0;
+    height: 20px;
+    line-height: 20px;
 }
+
 
 /* right panel */
 .right {
@@ -85,22 +93,25 @@ button {
 }
 
 /* ✅ ROUNDUP */
-.roundbox {
-    background: green;
-    color: yellow;
-    padding: 12px;
-    width: 100%;
-    text-align: center;
-    border: 2px solid black;
+.roundbox{
+    background:green;
+    color:yellow;
+    padding:8px 12px;
+    width:160px;
+    border:2px solid black;
+
+    text-align:left;
+    margin:0 auto 15px auto;
 }
 
-.roundbox div:first-child {
-    font-size: 22px;
+.roundbox div:first-child{
+    font-size:14px;
+    font-weight:bold;
 }
 
-.roundbox div:last-child {
-    font-size: 26px;
-    margin-top: 5px;
+.roundbox div:last-child{
+    font-size:20px;
+    font-weight:bold;
 }
 
 /* image */
@@ -112,6 +123,20 @@ img {
 }
 @media screen and (max-width:600px){
 
+    .roundbox{
+        width:140px;
+        padding:8px 10px;
+    }
+
+    .roundbox div:first-child{
+        font-size:14px;
+    }
+
+    .roundbox div:last-child{
+        font-size:18px;
+    }
+
+}
     body{
         margin:8px;
         padding:5px;

@@ -58,11 +58,14 @@ input{
 }
 
 /* buttons */
+
 .btn-row{
     display:flex;
-    gap:20px;
-    margin-top:20px;
+    flex-direction:column;
+    gap:10px;
+    margin-top:10px;
 }
+
 
 button{
     width:200px;
@@ -253,20 +256,28 @@ Please input values in the yellow highlighted cells only.
 
 </table>
 
-
-<!-- ✅ BUTTON -->
+<!-- BUTTONS BELOW TABLE -->
 <div class="btn-row">
-<button onclick="clearData()">Clear</button>
-<button onclick="goBack()">Back</button>
-<button onclick="goSPC()">Osram SPC LSL</button>
+
+    <button onclick="clearData()">Clear</button>
+
+    <button onclick="goBack()">Back</button>
+
+    <button onclick="goSPC()">Osram SPC LSL</button>
+
 </div>
 
-<!-- ✅ Images Below Buttons -->
+
+
+<!-- IMAGES BELOW BUTTONS -->
 <div class="bottom-images">
+
 <img src="Define WB Spec1.png">
 <img src="Define WB Spec2.png">
 <img src="Define WB Spec3.png">
 </div>
+
+
 
 </div>
 
