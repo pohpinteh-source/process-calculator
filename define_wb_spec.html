@@ -105,9 +105,25 @@ button{
 }
 
 
+
 .bottom-images img{
+    height:auto;
+}
+
+.bottom-images > img{
     width:100%;
-    max-width:150px;
+    max-width:320px;
+}
+
+
+.image-row{
+    display:flex;
+    gap:5px;
+    width:100%;
+}
+
+.image-row img{
+    width:50%;
     height:auto;
 }
 
@@ -234,9 +250,10 @@ Please input values in the yellow highlighted cells only.
 
 <!-- IMAGES BELOW BUTTONS -->
 <div class="bottom-images">
-
+<div class="image-row">
 <img src="Define WB Spec1.png">
 <img src="Define WB Spec2.png">
+</div>
 <img src="Define WB Spec3.png">
 </div>
 
