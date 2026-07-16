@@ -72,86 +72,33 @@ button{
     padding:12px;
     font-size:18px;
 }
-@media screen and (max-width:600px){
 
-    body{
-        margin:8px;
-        padding:5px;
-    }
+@media screen and (max-width:800px){
 
-
-.title{
-    font-size:20px;
-    padding:12px;
-}
-
-.bottom-images{
-    width:100%;
-}
-
-.bottom-images img{
-    width:100%;
-    max-width:320px;
-    height:auto;
-}
-
-    .mode-row{
+    .container{
         flex-direction:column;
-        gap:8px;
-    }
-
-    .mode-btn{
-        width:100%;
-        font-size:16px;
-        padding:12px;
-    }
-
-    table{
-        width:100%;
-        max-width:100%;
-    }
-
-    td{
-        padding:8px 4px;
-        font-size:14px;
-    }
-
-    input{
-        min-height:40px;
-        font-size:18px;
-    }
-
-    img{
-        width:100%;
-        height:auto;
     }
 
     .btn-row{
+        display:flex;
         flex-direction:column;
-    }
-
-    button{
+        gap:10px;
         width:100%;
-        font-size:18px;
-        padding:12px;
     }
+
+    .bottom-images{
+        width:100%;
+        align-items:center;
+    }
+
+    .bottom-images img{
+        width:100%;
+        max-width:320px;
+        height:auto;
+    }
+
 }
 
-
-.bottom-images{
-    margin-top:20px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:15px;
-}
-
-.bottom-images img{
-    width:250px;
-    max-width:100%;
-    height:auto;
-    display:block;
-}
 
 </style>
 </head>
@@ -256,6 +203,8 @@ Please input values in the yellow highlighted cells only.
 
 </table>
 
+</div>
+
 <!-- BUTTONS BELOW TABLE -->
 <div class="btn-row">
 
@@ -275,10 +224,6 @@ Please input values in the yellow highlighted cells only.
 <img src="Define WB Spec1.png">
 <img src="Define WB Spec2.png">
 <img src="Define WB Spec3.png">
-</div>
-
-
-
 </div>
 
 <script>
