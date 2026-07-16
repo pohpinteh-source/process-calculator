@@ -125,6 +125,20 @@ button {
     height:auto;
     margin-bottom:5px;
 }
+
+.disabled-btn{
+    opacity:0.5;
+    cursor:not-allowed;
+
+    background:linear-gradient(
+        to bottom,
+        #f0f0f0,
+        #cfcfcf
+    );
+
+    color:#666;
+}
+
 </style>
 
 </head>
@@ -193,16 +207,16 @@ Capillary Need
 Capillary Profile Selection
 </button>
 
-<button onclick="goTo('current_carrying_capacity.html')"
-<button disabled>
+
+
+<button disabled class="disabled-btn">
 Current Carrying Capacity (CCC)
 </button>
 
-
-<button onclick="goTo('fusing_current.html')"
-<button disabled>
+<button disabled class="disabled-btn">
 Fusing Current Assumption
 </button>
+
 
 </div>
 
