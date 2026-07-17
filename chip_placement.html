@@ -130,9 +130,7 @@ Please input values in the yellow highlighted cells only.
 
 <button onclick="clearData()">Clear</button>
 
-<button onclick="goHome()">
-    ⬅ Back
-</button>
+<button onclick="goHome()">Back</button>
 
 <script>
 
@@ -278,8 +276,11 @@ function goHome(){
             "userKey"
         );
 
-    window.location.href =
-        `index.html?user=${user}&key=${key}`;
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
 }
 // alias fix (for cleaner use)
 const deltaXElem = document.getElementById("deltaX");
