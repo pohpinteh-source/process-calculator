@@ -2,52 +2,57 @@ let users = [];
 
 let currentLink = "";
 
-// Admin account
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
 
-users.push({
-    email: "pohpin_85@yahoo.com",
-    token: "admin123",
-    role: "ADMIN"
-});
+async function loadUsers(){
 
-renderUsers();
+document.getElementById("userList").innerHTML =
+"<p>Loading users...</p>";
 
-function addUser() {
+    const response =
+        await fetch(`${API_URL}?action=getUsers`);
+
+    const data =
+        await response.json();
+
+    users = [];
+
+    data.slice(1).forEach(row => {
+
+        users.push({
+            email: row[0],
+            token: row[1],
+            role: row[2],
+            link: row[4]
+        });
+
+    });
+
+    renderUsers();
+}
+
+loadUsers();
+
+async function addUser() {
 
     const email =
         document.getElementById("email")
         .value
         .trim();
 
-    if (!email.includes("@")) {
+    if(!email.includes("@")){
 
         alert("Please enter valid email.");
-
-        return;
-    }
-
-    const duplicate =
-        users.some(
-            x =>
-            x.email.toLowerCase()
-            ===
-            email.toLowerCase()
-        );
-
-    if (duplicate) {
-
-        alert("User already exists.");
-
         return;
     }
 
     const pwd =
         prompt("Enter Admin Password");
 
-    if (pwd !== "tehpohpin") {
+    if(pwd !== "tehpohpin"){
 
         alert("Wrong Password");
-
         return;
     }
 
@@ -62,13 +67,11 @@ function addUser() {
     document.getElementById("linkBox").value =
         currentLink;
 
-    users.push({
-        email: email,
-        token: token,
-        role: "USER"
-    });
+    await fetch(
+`${API_URL}?action=addUser&email=${encodeURIComponent(email)}&key=${token}&link=${encodeURIComponent(currentLink)}`
+    );
 
-    renderUsers();
+    await loadUsers();
 
     alert("User Added Successfully");
 }
@@ -76,70 +79,85 @@ function addUser() {
 function renderUsers(){
 
     let html = "";
+document.getElementById("userCount").innerHTML =
+`👥 Total Users: ${users.length}`;
+
 
     users.forEach((u,index)=>{
 
-        let removeButton = "";
+        const isAdmin =
+            u.email.toLowerCase() ===
+            "pohpin_85@yahoo.com";
 
-        if(u.role !== "ADMIN"){
+        let buttons =
+            `<button onclick="copyUserLink(${index})">
+                📋 Copy Link
+            </button>`;
 
-            removeButton =
+        if(!isAdmin){
+
+            buttons +=
             `<button onclick="removeUser(${index})">
                 Remove
             </button>`;
         }
 
         html += `
-        <div style="
-            border:1px solid #ccc;
-            padding:10px;
-            margin-bottom:10px;
-            background:white;
-            border-radius:10px;
-        ">
 
-            📧 <b>${u.email}</b>
+<div style="
+    background:white;
+    border:1px solid #ccc;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:10px;
+    word-break:break-word;
+">
 
-            ${
-                u.role === "ADMIN"
-                ? '<span style="color:red;font-weight:bold;"> (ADMIN)</span>'
-                : ''
-            }
+📧 <b>${u.email}</b>
+
+<span style="
+font-weight:bold;
+color:${isAdmin ? 'red' : '#1f4e79'};
+">
+[${u.role}]
+</span>
 
             <br><br>
 
-            ${removeButton}
-
+<div style="
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-top:10px;
+">
+${buttons}
+</div>
         </div>
         `;
     });
 
     document.getElementById("userList").innerHTML =
         html;
+
 }
 
 function removeUser(index){
 
-    if(users[index].role === "ADMIN"){
+    if(
+        users[index].email.toLowerCase() ===
+        "pohpin_85@yahoo.com"
+    ){
 
-        alert("Admin account cannot be removed.");
-
-        return;
-    }
-
-    const pwd =
-        prompt("Enter Admin Password");
-
-    if(pwd !== "tehpohpin"){
-
-        alert("Wrong Password");
+        alert(
+            "Admin account cannot be removed."
+        );
 
         return;
     }
 
-    users.splice(index,1);
-
-    renderUsers();
+    alert(
+        "Next step: connect remove user to Google Sheet."
+    );
 }
 
 function copyLink(){
@@ -147,7 +165,6 @@ function copyLink(){
     if(!currentLink){
 
         alert("Please add user first.");
-
         return;
     }
 
@@ -156,8 +173,18 @@ function copyLink(){
     alert("Link Copied");
 }
 
+function copyUserLink(index){
+
+    const link =
+`https://pohpinteh-source.github.io/process-calculator/?user=${users[index].email}&key=${users[index].token}`;
+
+    navigator.clipboard.writeText(link);
+
+    alert("User link copied!");
+}
+
+
 function goBack(){
 
     window.location.href = "index.html";
-
 }
