@@ -68,28 +68,3 @@ async function validateUser(){
 
 validateUser();
 
-const adminBtn =
-    document.getElementById("adminBtn");
-
-if(adminBtn){
-
-    adminBtn.onclick = function(){
-
-        const password =
-            prompt(
-                "Enter Admin Password"
-            );
-
-        if(password === "tehpohpin"){
-
-            window.location.href =
-                "admin.html";
-
-        }else{
-
-            alert("Wrong Password");
-
-        }
-
-    };
-}

@@ -1,3 +1,4 @@
+
 let users = [];
 
 let currentLink = "";
@@ -47,14 +48,6 @@ async function addUser() {
         return;
     }
 
-    const pwd =
-        prompt("Enter Admin Password");
-
-    if(pwd !== "tehpohpin"){
-
-        alert("Wrong Password");
-        return;
-    }
 
     const token =
         Math.random()
@@ -141,7 +134,7 @@ ${buttons}
 
 }
 
-function removeUser(index){
+async function removeUser(index){
 
     if(
         users[index].email.toLowerCase() ===
@@ -155,11 +148,29 @@ function removeUser(index){
         return;
     }
 
+    const confirmRemove =
+        confirm(
+            `Remove ${users[index].email} ?`
+        );
+
+    if(!confirmRemove){
+        return;
+    }
+
+    await fetch(
+        `${API_URL}?action=removeUser&email=${
+            encodeURIComponent(
+                users[index].email
+            )
+        }`
+    );
+
+    await loadUsers();
+
     alert(
-        "Next step: connect remove user to Google Sheet."
+        "User removed successfully."
     );
 }
-
 function copyLink(){
 
     if(!currentLink){
