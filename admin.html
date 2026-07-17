@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>User Management</title>
+<style>
+
+body{
+    font-family:Arial, sans-serif;
+    background:#dfe6ed;
+    margin:20px;
+}
+
+.top-bar{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.top-bar h1{
+    color:#1f4e79;
+    margin-top:10px;
+}
+
+.back-btn{
+    background:#1f4e79;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:
+    0 4px 10px rgba(0,0,0,0.15);
+}
+
+.card h2{
+    color:#1f4e79;
+    margin-top:0;
+}
+
+#userList{
+    max-height:350px;
+    overflow-y:auto;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:15px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+textarea{
+    width:100%;
+    border-radius:10px;
+    padding:10px;
+}
+
+.button-row{
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+}
+
+button{
+    background:#1f4e79;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#2d6dad;
+}
+
+</style>
+
+</body>
+<div style="
+background:#1f4e79;
+color:white;
+padding:15px;
+border-radius:15px;
+text-align:center;
+margin-bottom:20px;
+">
+
+<h1 style="margin:0;">
+🔒 User Access Management
+</h1>
+
+<p style="margin-top:8px;">
+Process Calculator Administration Panel
+</p>
+
+</div>
+
+<h2>Add New User</h2>
+
+<label>Email Address</label>
+
+<input
+    id="email"
+    type="email"
+    placeholder="example@yahoo.com">
+<br><br>
+
+<button onclick="generateUser()">
+Generate User
+</button>
+
+<hr>
+
+<h2>Generated Link</h2>
+
+<textarea
+id="linkBox"
+rows="3"
+cols="100"></textarea>
+
+<br><br>
+
+<button onclick="copyLink()">
+Copy Link
+</button>
+
+<br><br>
+
+<button onclick="confirmAddUser()">
+Add User
+</button>
+
+<br><br>
+
+<button onclick="goBack()">
+⬅ Back to Process Calculator
+</button>
+
+<h2>Registered Users</h2>
+
+<div id="userList"
+     style="
+        border:1px solid #ccc;
+        height:300px;
+        overflow-y:auto;
+        padding:10px;
+        background:#f8f8f8;">
+</div>
+<hr>
+
+<script src="users.js"></script>
+<script src="admin.js"></script>
+
+</body>
+
+</html>

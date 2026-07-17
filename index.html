@@ -146,8 +146,17 @@ button {
 
 <body>
 
-<h1>Process Calculator</h1>
 
+<div id="welcome"
+     style="
+        font-size:20px;
+        font-weight:bold;
+        color:#1f4e79;
+        margin-bottom:15px;
+     ">
+</div>
+
+<h1>Process Calculator</h1>
 <div class="container">
 
 <!-- ✅ DA -->
@@ -238,6 +247,12 @@ Fusing Current Assumption
 
 </div>
 
+
+<button id="adminBtn">
+    🔐 User Access Management
+</button>
+
+
 </div>
 
 <script>
@@ -257,6 +272,11 @@ function goToFusingCurrentCheck(){
     window.location.href="fusing-current-check.html";
 
 }
+
+
+
+<script src="users.js"></script>
+<script src="script.js"></script>
 
 </script>
 <hr style="margin-top:20px;">
@@ -278,5 +298,37 @@ function goToFusingCurrentCheck(){
     </div>
 
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    const adminBtn = document.getElementById("adminBtn");
+
+    if(adminBtn){
+
+        adminBtn.addEventListener("click", function(){
+
+            const pwd = prompt(
+                "🔒 Enter Admin Password"
+            );
+
+            if(pwd === "tehpohpin"){
+
+                window.location.href = "admin.html";
+
+            }else{
+
+                alert("❌ Wrong Password");
+
+            }
+
+        });
+
+    }
+
+});
+
+</script>
 </body>
 </html>
