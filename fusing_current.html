@@ -511,7 +511,11 @@ window.location.href =
 }
 
 function goToWireLength(){
-    window.location.href = "estimate-wire-length-3d.html";
+
+    window.location.href =
+        "estimate-wire-length-3d.html" +
+        window.location.search;
+}
 }
 
 </script>
