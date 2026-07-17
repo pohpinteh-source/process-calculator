@@ -1,55 +1,54 @@
 let users = [];
 
-let pendingUser = null;
-
 let currentLink = "";
 
-for(const username in allowedUsers){
+// Admin account
 
 users.push({
-    email: username,
-    token: allowedUsers[username].key
+    email: "pohpin_85@yahoo.com",
+    token: "admin123",
+    role: "ADMIN"
 });
-
-}
 
 renderUsers();
 
-function generateUser(){
+function addUser() {
 
+    const email =
+        document.getElementById("email")
+        .value
+        .trim();
 
-const email =
-document.getElementById("email")
-.value
-.trim();
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.includes("@")) {
 
-if (!emailPattern.test(email)) {
+        alert("Please enter valid email.");
 
-    alert("Please enter a valid email address.");
+        return;
+    }
 
-    return;
+    const duplicate =
+        users.some(
+            x =>
+            x.email.toLowerCase()
+            ===
+            email.toLowerCase()
+        );
 
-}
+    if (duplicate) {
 
-const duplicate =
-users.some(
-    x =>
-    x.email.toLowerCase()
-    ===
-    email.toLowerCase()
-);
+        alert("User already exists.");
 
-    if(duplicate){
+        return;
+    }
 
-        const proceed =
-            confirm(
-            "Username already exists.\n\nContinue?"
-            );
+    const pwd =
+        prompt("Enter Admin Password");
 
-        if(!proceed){
-            return;
-        }
+    if (pwd !== "tehpohpin") {
+
+        alert("Wrong Password");
+
+        return;
     }
 
     const token =
@@ -57,47 +56,21 @@ users.some(
         .toString(36)
         .substring(2,12);
 
-pendingUser = {
-    email,
-    token
-};
-currentLink =
+    currentLink =
 `https://pohpinteh-source.github.io/process-calculator/?user=${email}&key=${token}`;
-
 
     document.getElementById("linkBox").value =
         currentLink;
-}
 
-function confirmAddUser(){
-
-    if(!pendingUser){
-
-        alert("Generate User First");
-        return;
-    }
-
-    const pwd =
-        prompt(
-        "Enter Admin Password"
-        );
-
-    if(pwd !== "tehpohpin"){
-
-        alert("Wrong Password");
-
-        return;
-    }
-
-    users.push(pendingUser);
+    users.push({
+        email: email,
+        token: token,
+        role: "USER"
+    });
 
     renderUsers();
 
-    alert(
-        "User Added Successfully"
-    );
-
-    pendingUser = null;
+    alert("User Added Successfully");
 }
 
 function renderUsers(){
@@ -108,7 +81,7 @@ function renderUsers(){
 
         let removeButton = "";
 
-        if(u.email !== "pohpin_85@yahoo.com"){
+        if(u.role !== "ADMIN"){
 
             removeButton =
             `<button onclick="removeUser(${index})">
@@ -121,38 +94,35 @@ function renderUsers(){
             border:1px solid #ccc;
             padding:10px;
             margin-bottom:10px;
-            border-radius:10px;
             background:white;
+            border-radius:10px;
         ">
 
-        📧 <b>${u.email}</b>
+            📧 <b>${u.email}</b>
 
-        ${
-            u.email === "pohpin_85@yahoo.com"
-            ? '<span style="color:red;font-weight:bold;"> (ADMIN)</span>'
-            : ''
-        }
+            ${
+                u.role === "ADMIN"
+                ? '<span style="color:red;font-weight:bold;"> (ADMIN)</span>'
+                : ''
+            }
 
-        <br><br>
+            <br><br>
 
-        ${removeButton}
+            ${removeButton}
 
         </div>
         `;
     });
 
-    document.getElementById("userList").innerHTML = html;
+    document.getElementById("userList").innerHTML =
+        html;
 }
+
 function removeUser(index){
 
-    if(
-        users[index].email ===
-        "pohpin_85@yahoo.com"
-    ){
+    if(users[index].role === "ADMIN"){
 
-        alert(
-            "Admin account cannot be removed."
-        );
+        alert("Admin account cannot be removed.");
 
         return;
     }
@@ -167,29 +137,26 @@ function removeUser(index){
         return;
     }
 
-    const confirmRemove =
-        confirm("Remove this user?");
-
-    if(!confirmRemove){
-        return;
-    }
-
     users.splice(index,1);
 
     renderUsers();
 }
+
 function copyLink(){
 
-    navigator.clipboard.writeText(
-        currentLink
-    );
+    if(!currentLink){
 
-    alert(
-        "Link Copied"
-    );
+        alert("Please add user first.");
+
+        return;
+    }
+
+    navigator.clipboard.writeText(currentLink);
+
+    alert("Link Copied");
 }
 
-function goBack() {
+function goBack(){
 
     window.location.href = "index.html";
 

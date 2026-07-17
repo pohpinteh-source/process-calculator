@@ -3,35 +3,60 @@ const params = new URLSearchParams(window.location.search);
 const user = params.get("user");
 const key = params.get("key");
 
-if (
-    !allowedUsers[user] ||
-    allowedUsers[user].key !== key
-) {
-    document.body.innerHTML =
-        "<h1>Access Denied</h1>";
-    throw new Error("Unauthorized");
+if (user && key) {
+
+    if (
+        allowedUsers[user] &&
+        allowedUsers[user].key === key
+    ) {
+
+        const displayName =
+            user.split("@")[0];
+
+        document.getElementById("welcome").innerHTML =
+        `
+        <span style="
+        font-size:20px;
+        font-weight:bold;
+        color:#1f4e79;
+        ">
+        Welcome, ${displayName}
+        </span>
+        `;
+
+    } else {
+
+        document.body.innerHTML =
+        `
+        <h1>Access Denied</h1>
+        <p>Please contact TEH POH PIN</p>
+        `;
+
+    }
+
 }
 
+const adminBtn =
+    document.getElementById("adminBtn");
 
-const displayName = user.split("@")[0];
+if (adminBtn) {
 
-document.getElementById("welcome").innerHTML =
-`<strong>Welcome, ${displayName}</strong>`;
+    adminBtn.onclick = function(){
 
+        const password =
+            prompt("Enter Admin Password");
 
-document.getElementById("adminBtn").onclick =
-function(){
+        if(password === "tehpohpin"){
 
-    const password =
-        prompt("Enter Admin Password");
+            window.location.href =
+                "admin.html";
 
-    if(password === "tehpohpin"){
+        } else {
 
-        window.location.href =
-            "admin.html";
-    }
-    else{
+            alert("Wrong Password");
 
-        alert("Wrong Password");
-    }
-};
+        }
+
+    };
+
+}

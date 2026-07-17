@@ -94,7 +94,11 @@ button:hover{
 
 </style>
 
-</body>
+</head>
+
+<body>
+
+
 <div style="
 background:#1f4e79;
 color:white;
@@ -119,14 +123,11 @@ Process Calculator Administration Panel
 <label>Email Address</label>
 
 <input
-    id="email"
-    type="email"
-    placeholder="example@yahoo.com">
+id="email"
+type="email"
+placeholder="Enter Email Address">
 <br><br>
 
-<button onclick="generateUser()">
-Generate User
-</button>
 
 <hr>
 
@@ -139,22 +140,30 @@ cols="100"></textarea>
 
 <br><br>
 
+
+<div style="
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+    flex-wrap:wrap;
+">
+
+<button onclick="addUser()">
+        ➕ Add User
+    </button>
+
 <button onclick="copyLink()">
-Copy Link
-</button>
+        📋 Copy Link
+    </button>
 
-<br><br>
 
-<button onclick="confirmAddUser()">
-Add User
-</button>
-
-<br><br>
 
 <button onclick="goBack()">
 ⬅ Back to Process Calculator
 </button>
 
+
+</div>
 <h2>Registered Users</h2>
 
 <div id="userList"
@@ -167,9 +176,10 @@ Add User
 </div>
 <hr>
 
+
 <script src="users.js"></script>
 <script src="admin.js"></script>
 
-</body>
 
+</body>
 </html>
