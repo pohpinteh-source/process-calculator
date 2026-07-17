@@ -451,13 +451,17 @@ function clearInputs(){
 }
 
 function goToFusingCurrent(){
-    window.location.href = "fusing_current.html";
+
+window.location.href =
+    "fusing_current.html" +
+    window.location.search;
 }
 
 
 function goToCCC(){
-
-    window.location.href="current_carrying_capacity.html";
+window.location.href =
+    "current_carrying_capacity" +
+    window.location.search;
 
 }
 
@@ -482,10 +486,28 @@ window.location.href =
 }
 function goToFCC(){
 
-    window.location.href="fusing-current-check.html";
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
 
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+    if(user && key){
+
+        window.location.href =
+            `fusing-current-check.html?user=${user}&key=${key}`;
+
+    }else{
+
+window.location.href =
+    "fusing-current-check.html" +
+    window.location.search;
+    }
 }
-
 </script>
 
 
