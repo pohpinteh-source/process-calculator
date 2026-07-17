@@ -165,10 +165,8 @@ id="email"
 type="email"
 placeholder="Enter Email Address"
 style="width:90%;">
-<br>
 
 
-<br>
 <button onclick="addUser()">
         ➕ Register New User
     </button>
@@ -212,7 +210,26 @@ style="width:90%;"></textarea>
 </div>
 <h2>Registered Users</h2>
 
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+">
+
 <h3 id="userCount"></h3>
+
+
+    <button onclick="exportUsers()"
+        style="
+        min-width:150px;
+        ">
+        📊 Export Users
+    </button>
+
+</div>
+
 
 <div id="userList"
      style="

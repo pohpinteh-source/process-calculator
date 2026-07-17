@@ -235,3 +235,36 @@ function clearForm(){
         "email"
     ).focus();
 }
+
+function exportUsers(){
+
+    let csv =
+        "Email,Key,Role,Link\n";
+
+    users.forEach(u => {
+
+        csv +=
+            `"${u.email}","${u.token}","${u.role}","${u.link}"\n`;
+
+    });
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                "text/csv"
+            }
+        );
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        URL.createObjectURL(blob);
+
+    link.download =
+        "ProcessCalculatorUsers.csv";
+
+    link.click();
+}
