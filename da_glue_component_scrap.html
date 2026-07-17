@@ -205,8 +205,7 @@ Please input values in the yellow highlighted cells only.
 </table>
 
 <button onclick="clearData()">Clear</button>
-<button onclick="goBack()">Back</button>
-
+<button onclick="goHome()">Back</button>
 </div>
 
 <!-- ✅ IMAGE -->
@@ -371,10 +370,24 @@ function clearData(){
     setFocus();
 }
 
-function goBack(){
-    window.location.href="index.html";
-}
+function goHome(){
 
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
+}
 </script>
 
 </body>

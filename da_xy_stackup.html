@@ -210,8 +210,7 @@ Please input values in the yellow highlighted cells only.
 <p><b>*Remark: Assume both chip same BLT.</b></p>
 
 <button onclick="clearData()">Clear</button>
-<button onclick="goBack()">Back</button>
-
+<button onclick="goHome()">Back</button>
 <script>
 
 let mode = "G1";
@@ -359,10 +358,24 @@ function clearData(){
 }
 
 // ✅ BACK
-function goBack(){
-    window.location.href="index.html";
-}
+function goHome(){
 
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
+}
 </script>
 
 </body>
