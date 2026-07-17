@@ -16,7 +16,8 @@ if (
 const displayName = user.split("@")[0];
 
 document.getElementById("welcome").innerHTML =
-    `<b>Welcome, ${displayName}</b>`;
+`<strong>Welcome, ${displayName}</strong>`;
+
 
 document.getElementById("adminBtn").onclick =
 function(){

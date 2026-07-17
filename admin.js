@@ -6,13 +6,11 @@ let currentLink = "";
 
 for(const username in allowedUsers){
 
-    users.push({
-        username: username,
-        displayName:
-            allowedUsers[username].displayName,
-        token:
-            allowedUsers[username].key
-    });
+users.push({
+    email: username,
+    token: allowedUsers[username].key
+});
+
 }
 
 renderUsers();
@@ -33,11 +31,6 @@ if (!emailPattern.test(email)) {
     return;
 
 }
-    if(!displayName || !username){
-
-        alert("Please fill all fields");
-        return;
-    }
 
 const duplicate =
 users.some(
@@ -113,42 +106,59 @@ function renderUsers(){
 
     users.forEach((u,index)=>{
 
+        let removeButton = "";
+
+        if(u.email !== "pohpin_85@yahoo.com"){
+
+            removeButton =
+            `<button onclick="removeUser(${index})">
+                Remove
+            </button>`;
+        }
+
         html += `
         <div style="
-            border:1px solid gray;
+            border:1px solid #ccc;
             padding:10px;
-            margin-bottom:5px;
+            margin-bottom:10px;
+            border-radius:10px;
+            background:white;
         ">
 
-📧 <b>${u.email}</b>
-        <br>
+        📧 <b>${u.email}</b>
 
-        ${u.displayName}
+        ${
+            u.email === "pohpin_85@yahoo.com"
+            ? '<span style="color:red;font-weight:bold;"> (ADMIN)</span>'
+            : ''
+        }
 
         <br><br>
 
-        <button
-        onclick="removeUser(${index})">
-
-        Remove
-
-        </button>
+        ${removeButton}
 
         </div>
         `;
     });
 
-    document.getElementById(
-        "userList"
-    ).innerHTML = html;
+    document.getElementById("userList").innerHTML = html;
 }
-
 function removeUser(index){
 
-    const pwd =
-        prompt(
-        "Enter Admin Password"
+    if(
+        users[index].email ===
+        "pohpin_85@yahoo.com"
+    ){
+
+        alert(
+            "Admin account cannot be removed."
         );
+
+        return;
+    }
+
+    const pwd =
+        prompt("Enter Admin Password");
 
     if(pwd !== "tehpohpin"){
 
@@ -158,9 +168,7 @@ function removeUser(index){
     }
 
     const confirmRemove =
-        confirm(
-        "Remove this user?"
-        );
+        confirm("Remove this user?");
 
     if(!confirmRemove){
         return;
@@ -170,7 +178,6 @@ function removeUser(index){
 
     renderUsers();
 }
-
 function copyLink(){
 
     navigator.clipboard.writeText(
