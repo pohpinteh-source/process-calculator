@@ -95,8 +95,7 @@ document.getElementById("userCount").innerHTML =
             </button>`;
         }
 
-        html += `
-
+html += `
 <div style="
     background:white;
     border:1px solid #ccc;
@@ -105,6 +104,7 @@ document.getElementById("userCount").innerHTML =
     margin-bottom:10px;
     word-break:break-word;
 ">
+
 
 📧 <b>${u.email}</b>
 
