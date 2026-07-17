@@ -207,9 +207,14 @@ function goHome(){
             "userKey"
         );
 
+    if(user && key){
 
-window.location.href =
-    "index.html" +
-    window.location.search;
+        window.location.href =
+            `index.html?user=${user}&key=${key}`;
 
+    }else{
+
+        window.location.href =
+            "index.html";
+    }
 }
