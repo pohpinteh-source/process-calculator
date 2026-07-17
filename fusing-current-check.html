@@ -1414,30 +1414,16 @@ cccRange.innerHTML="";
 prev={};
 }
 
-function goHome(){
 
-    const user =
-        sessionStorage.getItem(
-            "userEmail"
-        );
-
-    const key =
-        sessionStorage.getItem(
-            "userKey"
-        );
-
-
-window.location.href =
-    "index.html" +
-    window.location.search;
-
-}
 
 function goToWireLength(){
 
-    window.location.href="estimate-wire-length-3d.html";
 
+    window.location.href =
+        "estimate-wire-length-3d.html" +
+        window.location.search;
 }
+
 
 document.addEventListener("keydown",function(e){
 
@@ -1486,6 +1472,31 @@ document.addEventListener("keydown",function(e){
     }
 
 });
+
+function goHome(){
+
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+    if(user && key){
+
+        window.location.href =
+            `index.html?user=${user}&key=${key}`;
+
+    }else{
+
+        window.location.href =
+            "index.html";
+    }
+}
+
 
 
 </script>
