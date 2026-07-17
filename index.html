@@ -95,27 +95,8 @@ button:active{
     inset 0 2px 5px rgba(0,0,0,0.3);
 }
 
-
-.header-row{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:20px;
-    margin-bottom:20px;
-}
-
+/* mobile */
 @media (max-width:600px){
-
-    .header-row{
-        gap:10px;
-    }
-
-    .header-row img{
-        width:90px;
-    }
-
-}
-
 
 .container {
     flex-direction: column;
@@ -166,22 +147,38 @@ button {
 <body>
 
 
-<div class="header-row">
+<div id="welcome"
+     style="
+        font-size:20px;
+        font-weight:bold;
+        color:#1f4e79;
+        margin-bottom:15px;
+     ">
+</div>
+
+<div style="
+    display:flex;
+    justify-content:center;
+    align-items:left;
+    gap:12px;
+    margin-top:10px;
+    margin-bottom:10px;
+">
 
     <img
         src="Process Calculator.png"
         alt="Process Calculator"
         style="
-            width:120px;
-            height:auto;
-            border-radius:10px;
-        "
+            width:65px;
+                   "
     >
 
-    <div>
+    <h1 style="margin:0;">
+        Process Calculator
+    </h1>
 
-        <h2 id
 </div>
+
 <div class="container">
 
 <!-- ✅ DA -->
