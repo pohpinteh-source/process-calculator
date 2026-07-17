@@ -205,7 +205,8 @@ Please input values in the yellow highlighted cells only.
 
 <div class="btn-row">
 <button onclick="clearData()">Clear</button>
-<button onclick="goBack()">Back</button>
+<button onclick="goHome()">Back</button>
+
 </div>
 
 </div>
@@ -320,10 +321,24 @@ r6_min,r6_max
 }
 
 // ✅ BACK
-function goBack(){
-    window.location.href="index.html";
-}
+function goHome(){
 
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
+}
 </script>
 
 </body>

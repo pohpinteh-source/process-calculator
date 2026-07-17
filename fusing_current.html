@@ -161,8 +161,7 @@ canvas{
 
 <button onclick="clearData()">Clear</button>
 <button onclick="goToWireLength()">Go to Est. Wire Length (3D)</button>
-<button onclick="goBack()">Back</button>
-
+<button onclick="goHome()">Back</button>
 <div class="remark-box">
     <div>
         Remark #1:<br>
@@ -492,10 +491,24 @@ ctx.clearRect(0,0,canvas.width,canvas.height);
 
 }
 
-function goBack(){
-window.location.href="index.html";
-}
+function goHome(){
 
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
+}
 
 function goToWireLength(){
     window.location.href = "estimate-wire-length-3d.html";

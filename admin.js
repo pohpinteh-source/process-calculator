@@ -195,7 +195,21 @@ function copyUserLink(index){
 }
 
 
-function goBack(){
+function goHome(){
 
-    window.location.href = "index.html";
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
 }

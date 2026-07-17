@@ -205,7 +205,9 @@ button {
 
 
 <div class="btn-row">
-    <button onclick="goBack()">Back</button>
+<button onclick="goHome()">Back</button>
+
+
 </div>
 
 
@@ -219,10 +221,24 @@ Above LSL is for reference purpose. Final LSL refer to product control plan.
 
 <script>
 
-function goBack(){
-    window.location.href = "index.html";
-}
+function goHome(){
 
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
+}
 </script>
 
 </body>
