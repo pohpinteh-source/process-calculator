@@ -8,11 +8,26 @@ async function validateUser(){
             window.location.search
         );
 
-    const user =
+    let user =
         params.get("user");
 
-    const key =
+    let key =
         params.get("key");
+
+    // Recover saved login if URL has no parameters
+
+    if(!user || !key){
+
+        user =
+            sessionStorage.getItem(
+                "userEmail"
+            );
+
+        key =
+            sessionStorage.getItem(
+                "userKey"
+            );
+    }
 
     // Block direct access
 
@@ -66,6 +81,18 @@ async function validateUser(){
         });
 
         if(validUser){
+
+            // Save login session
+
+            sessionStorage.setItem(
+                "userEmail",
+                user
+            );
+
+            sessionStorage.setItem(
+                "userKey",
+                key
+            );
 
             const displayName =
                 user.split("@")[0];

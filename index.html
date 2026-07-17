@@ -266,9 +266,13 @@ Fusing Current Assumption
 
 // ✅ navigation
 function goTo(page){
-    window.location.href = page;
-}
 
+    const params =
+        window.location.search;
+
+    window.location.href =
+        page + params;
+}
 // ✅ open pdf
 function openPDF(){
     window.open("Wire Bond Guideline.pdf","_blank");
