@@ -13,10 +13,40 @@ async function validateUser(){
 
     const key =
         params.get("key");
+if(
+    user === "pohpin_85@yahoo.com" &&
+    key === "admin123"
+){
+    return;
+}
 
-    if(!user || !key){
-        return;
-    }
+
+if(!user || !key){
+
+    document.body.innerHTML =
+    `
+    <div style="
+        text-align:center;
+        margin-top:80px;
+        font-family:Arial;
+    ">
+        <h1 style="color:red;">
+            Access Denied
+        </h1>
+
+        <p>
+            This Process Calculator is restricted to authorized users.
+        </p>
+
+        <p>
+            Please contact TEH POH PIN for access.
+        </p>
+    </div>
+    `;
+
+    return;
+}
+
 
     const response =
         await fetch(
