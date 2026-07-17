@@ -218,3 +218,20 @@ function goHome(){
             "index.html";
     }
 }
+
+function clearForm(){
+
+    document.getElementById(
+        "email"
+    ).value = "";
+
+    document.getElementById(
+        "linkBox"
+    ).value = "";
+
+    currentLink = "";
+
+    document.getElementById(
+        "email"
+    ).focus();
+}

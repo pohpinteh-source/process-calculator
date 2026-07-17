@@ -155,7 +155,7 @@ Process Calculator Administration Panel
 
 </div>
 
-<h2>Add New User</h2>
+<h2>Register New User</h2>
 
 <label>Email Address</label>
 
@@ -166,6 +166,12 @@ type="email"
 placeholder="Enter Email Address"
 style="width:90%;">
 <br>
+
+
+<br>
+<button onclick="addUser()">
+        ➕ Register New User
+    </button>
 
 
 <hr>
@@ -186,15 +192,15 @@ style="width:90%;"></textarea>
     flex-wrap:wrap;
 ">
 
-<button onclick="addUser()">
-        ➕ Add User
-    </button>
+
 
 <button onclick="copyLink()">
         📋 Copy Link
     </button>
 
-
+<button onclick="clearForm()">
+    🗑 Next Register
+</button>
 
 
 <button onclick="goHome()">
