@@ -223,8 +223,7 @@ Please input values in the yellow highlighted cells only.
 <p><b>*Remark: Assume both chip same BLT.</b></p>
 
 <button onclick="clearData()">Clear</button>
-<button onclick="goBack()">Back</button>
-
+<button onclick="goHome()">Back</button>
 <script>
 
 // Focus
@@ -318,8 +317,22 @@ function clearData(){
 }
 
 // Back
-function goBack(){
-    window.location.href="index.html";
+function goHome(){
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+    if(user && key){
+        window.location.href =
+            `index.html?user=${user}&key=${key}`;
+    }else{
+        window.location.href =
+            "index.html";
+    }
 }
 
 </script>
