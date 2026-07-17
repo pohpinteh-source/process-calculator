@@ -263,10 +263,21 @@ function clearData(){
 }
 
 // back
-function goBack(){
-    window.location.href="index.html";
-}
+function goHome(){
 
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+    window.location.href =
+        `index.html?user=${user}&key=${key}`;
+}
 // alias fix (for cleaner use)
 const deltaXElem = document.getElementById("deltaX");
 const deltaYElem = document.getElementById("deltaY");
