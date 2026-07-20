@@ -578,18 +578,25 @@ if(el.id==="tMax"){
 
         }
 
-        if(
-            el.id==="wireLength3D"
-            &&
-            el.value!==""
-        ){
+if(
+    el.id==="wireLength3D"
+    &&
+    el.value!==""
+){
+    el.value=
+    parseFloat(el.value)
+    .toFixed(3);
+}
 
-            el.value=
-            parseFloat(el.value)
-            .toFixed(3);
-
-        }
-
+if(
+    el.id==="diameter"
+    &&
+    el.value!==""
+){
+    el.value=
+    parseFloat(el.value)
+    .toFixed(2);
+}
     };
 
 });
@@ -669,11 +676,13 @@ if(type==="Ag" || type==="Cu"){
     document.getElementById("deltaTFusing").innerHTML = "N/A";
 }
 else{
-    let dT = tmax - pkg;
+
+    dT = tmax - pkg;
 
     document.getElementById("deltaTFusing").innerHTML =
     dT.toFixed(1);
 }
+
 
 kValue.innerHTML=db[type].k;
 rhoValue.innerHTML=db[type].rho.toExponential(2);
