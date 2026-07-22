@@ -347,9 +347,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 "🔒 Enter Admin Password"
             );
 
-            if(pwd === "tehpohpin"){
+if(pwd === "tehpohpin"){
 
-                window.location.href = "admin.html";
+    window.location.href =
+        "admin.html" +
+        window.location.search;
 
             }else{
 
