@@ -109,7 +109,9 @@ if(validUser){
         "userKey",
         key
     );
-
+fetch(
+    `${API_URL}?action=trackUsage&user=${encodeURIComponent(user)}&calculator=LOGIN`
+);
     // Track calculator usage
 
     autoTrackUsage();
