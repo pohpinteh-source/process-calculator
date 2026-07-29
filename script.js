@@ -192,8 +192,9 @@ function trackUsage(calculator){
         );
 
     const user =
-        params.get(
-            "user"
+        params.get("user") ||
+        sessionStorage.getItem(
+            "userEmail"
         );
 
     if(!user){
@@ -204,6 +205,7 @@ function trackUsage(calculator){
         `${API_URL}?action=trackUsage&user=${encodeURIComponent(user)}&calculator=${encodeURIComponent(calculator)}`
     );
 }
+
 
 function autoTrackUsage(){
 
