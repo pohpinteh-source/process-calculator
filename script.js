@@ -2,7 +2,23 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
 
 async function validateUser(){
+// Allow local testing
 
+if(window.location.protocol === "file:"){
+
+    const welcome =
+        document.getElementById(
+            "welcome"
+        );
+
+    if(welcome){
+
+        welcome.innerHTML =
+            "Welcome, Local Test User";
+    }
+
+    return;
+}
     const params =
         new URLSearchParams(
             window.location.search
@@ -80,23 +96,26 @@ async function validateUser(){
 
         });
 
-        if(validUser){
+if(validUser){
 
-            // Save login session
+    // Save login session
 
-            sessionStorage.setItem(
-                "userEmail",
-                user
-            );
+    sessionStorage.setItem(
+        "userEmail",
+        user
+    );
 
-            sessionStorage.setItem(
-                "userKey",
-                key
-            );
+    sessionStorage.setItem(
+        "userKey",
+        key
+    );
 
-            const displayName =
-                user.split("@")[0];
+    // Track calculator usage
 
+    autoTrackUsage();
+
+    const displayName =
+        user.split("@")[0];
             const welcome =
                 document.getElementById(
                     "welcome"
@@ -164,3 +183,35 @@ async function validateUser(){
 }
 
 validateUser();
+
+function trackUsage(calculator){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+        params.get(
+            "user"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+        `${API_URL}?action=trackUsage&user=${encodeURIComponent(user)}&calculator=${encodeURIComponent(calculator)}`
+    );
+}
+
+function autoTrackUsage(){
+
+    const page =
+        window.location.pathname
+        .split("/")
+        .pop()
+        .replace(".html","");
+
+    trackUsage(page);
+}
