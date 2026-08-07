@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Universal Comparison Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    margin:10px;
+}
+
+.title{
+    background:#f4a300;
+    color:black;
+    font-size:22px;
+    text-align:center;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:4px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.drop-zone{
+    border:2px dashed #888;
+    background:white;
+    border-radius:10px;
+    padding:30px;
+    text-align:center;
+    cursor:pointer;
+    margin-bottom:15px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.drag-over{
+    background:#fff4b3;
+}
+
+.btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+button{
+    padding:10px;
+    min-width:150px;
+}
+
+.summary{
+    background:#fff3cd;
+    border:1px solid #ffcc00;
+    padding:10px;
+    margin-top:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th{
+    border:1px solid black;
+    padding:6px;
+    background:yellow;
+    color:black;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+    background:white;
+    color:black;
+}
+
+tr.diff td{
+    background:red !important;
+    color:white !important;
+}
+
+@media(max-width:600px){
+
+    .btn-row{
+        flex-direction:column;
+    }
+
+    button{
+        width:100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">
+Universal Comparison Checker
+</div>
+
+<div id="dropA" class="drop-zone">
+📄 Drop File A Here
+
+<br><br>
+
+or Click To Browse
+</div>
+
+<div id="dropB" class="drop-zone">
+📄 Drop File B Here
+
+<br><br>
+
+or Click To Browse
+</div>
+
+<div class="btn-row">
+
+<button onclick="compareFiles()">
+Compare
+</button>
+
+<button onclick="printComparison()">
+Print / Save PDF
+</button>
+
+<button onclick="clearFiles()">
+Clear
+</button>
+
+<button onclick="goHome()">
+Back
+</button>
+
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+let fileA = null;
+let fileB = null;
+
+let lastMaxRows = 0;
+let lastDiffCount = 0;
+
+initDropZone("dropA","A");
+initDropZone("dropB","B");
+
+function initDropZone(id,type){
+
+    const zone =
+        document.getElementById(id);
+
+    zone.addEventListener(
+        "click",
+        function(){
+
+            const input =
+                document.createElement("input");
+
+            input.type = "file";
+
+            input.onchange = function(){
+
+                const file =
+                    input.files[0];
+
+                if(!file){
+                    return;
+                }
+
+                if(type==="A"){
+                    fileA=file;
+                }else{
+                    fileB=file;
+                }
+
+                zone.innerHTML =
+                    "✅ " + file.name;
+            };
+
+            input.click();
+        }
+    );
+
+    zone.addEventListener(
+        "dragover",
+        function(e){
+
+            e.preventDefault();
+
+            zone.classList.add(
+                "drag-over"
+            );
+        }
+    );
+
+    zone.addEventListener(
+        "dragleave",
+        function(){
+
+            zone.classList.remove(
+                "drag-over"
+            );
+        }
+    );
+
+    zone.addEventListener(
+        "drop",
+        function(e){
+
+            e.preventDefault();
+
+            zone.classList.remove(
+                "drag-over"
+            );
+
+            const file =
+                e.dataTransfer.files[0];
+
+            if(!file){
+                return;
+            }
+
+            if(type==="A"){
+                fileA=file;
+            }else{
+                fileB=file;
+            }
+
+            zone.innerHTML =
+                "✅ " + file.name;
+        }
+    );
+}
+
+async function compareFiles(){
+
+    if(
+        !fileA ||
+        !fileB
+    ){
+
+        alert(
+            "Please select both files."
+        );
+
+        return;
+    }
+const extA =
+    fileA.name
+    .split(".")
+    .pop()
+    .toLowerCase();
+
+const extB =
+    fileB.name
+    .split(".")
+    .pop()
+    .toLowerCase();
+
+if(extA !== extB){
+
+alert(
+    "❌ Unable to compare files.\n\n" +
+    "Different file types detected.\n\n" +
+    "File A : " + fileA.name +
+    "\n" +
+    "File B : " + fileB.name +
+    "\n\n" +
+    "Please select the same file type for comparison."
+);
+
+    return;
+}
+    const textA =
+        await fileA.text();
+
+    const textB =
+        await fileB.text();
+
+    const rowsA =
+        textA.split(/\r?\n/);
+
+    const rowsB =
+        textB.split(/\r?\n/);
+let fileNameMessage = "";
+
+if(
+    fileA.name.toUpperCase() ===
+    fileB.name.toUpperCase()
+){
+
+    fileNameMessage =
+    `
+    <div style="
+        background:#ffe0e0;
+        color:red;
+        font-weight:bold;
+        padding:10px;
+        border:1px solid red;
+        margin-bottom:15px;
+    ">
+        ⚠ Same file name for both comparison files.
+        Please verify the selected files are correct.
+    </div>
+    `;
+}
+else{
+
+    fileNameMessage =
+    `
+    <div style="
+        background:#e8ffe8;
+        color:green;
+        font-weight:bold;
+        padding:10px;
+        border:1px solid green;
+        margin-bottom:15px;
+    ">
+        ✔ Different file names used for comparison.
+    </div>
+    `;
+}
+
+const maxRows =
+    Math.max(
+        rowsA.length,
+        rowsB.length
+    );
+
+let diffCount = 0;
+
+lastMaxRows = maxRows;
+    let html =
+    `
+<div class="summary">
+
+${fileNameMessage}
+
+<b>Comparison Date:</b>
+${getCurrentDateTime()}
+
+<br><br>
+
+<b>File A:</b>
+<span style="
+    color:${
+        fileA.name.toUpperCase() ===
+        fileB.name.toUpperCase()
+        ? 'green'
+        : 'red'
+    };
+    font-weight:bold;
+">
+    ${fileA.name}
+</span>
+
+<br><br>
+
+<b>File B:</b>
+<span style="
+    color:${
+        fileA.name.toUpperCase() ===
+        fileB.name.toUpperCase()
+        ? 'green'
+        : 'red'
+    };
+    font-weight:bold;
+">
+    ${fileB.name}
+</span>
+    <br><br>
+
+    <b>Total Rows Compared:</b>
+    ${maxRows}
+
+    <br><br>
+
+
+__DIFFROWS__
+
+    </div>
+
+    <table>
+
+<tr>
+
+    <th>
+        Row
+    </th>
+
+<th>
+    File A:
+    <span style="color:#0000FF;">
+        ${fileA.name}
+    </span>
+</th>
+
+<th>
+    File B:
+    <span style="color:#0000FF;">
+        ${fileB.name}
+    </span>
+</th>
+
+
+</tr>
+    `;
+
+    for(
+        let i=0;
+        i<maxRows;
+        i++
+    ){
+
+const a =
+    (rowsA[i] || "").trim();
+
+const b =
+    (rowsB[i] || "").trim();
+if(
+    a === "" &&
+    b === ""
+){
+    continue;
+}
+
+        const different =
+            a !== b;
+
+        if(different){
+            diffCount++;
+        }
+
+        html +=
+        `
+        <tr class="${
+            different
+            ? "diff"
+            : ""
+        }">
+
+            <td>${i+1}</td>
+
+            <td>${a}</td>
+
+            <td>${b}</td>
+
+        </tr>
+        `;
+    }
+lastDiffCount = diffCount;
+    html += "</table>";
+const diffDisplay =
+
+`<span style="
+    color:${
+        diffCount > 0
+        ? "red"
+        : "green"
+    };
+    font-size:24px;
+    font-weight:bold;
+">
+Different Rows: ${diffCount}
+</span>`;
+
+html = html.replace(
+    "__DIFFROWS__",
+    diffDisplay
+);
+    html =
+        html.replace(
+            "__DIFF__",
+            diffCount
+        );
+if(diffCount > 0){
+
+    html =
+        html.replace(
+            '<span id="diffRowsColor">'+diffCount+'</span>',
+            `
+            <span style="
+                color:red;
+                font-size:28px;
+                font-weight:bold;
+            ">
+                ${diffCount}
+            </span>
+            `
+        );
+}
+else{
+
+    html =
+        html.replace(
+            '<span id="diffRowsColor">0</span>',
+            `
+            <span style="
+                color:green;
+                font-size:28px;
+                font-weight:bold;
+            ">
+                0
+            </span>
+            `
+        );
+}
+
+    document.getElementById(
+        "result"
+    ).innerHTML =
+        html;
+}
+
+function clearFiles(){
+
+    fileA = null;
+    fileB = null;
+
+    document.getElementById(
+        "dropA"
+    ).innerHTML =
+    `
+    📄 Drop File A Here
+    <br><br>
+    or Click To Browse
+    `;
+
+    document.getElementById(
+        "dropB"
+    ).innerHTML =
+    `
+    📄 Drop File B Here
+    <br><br>
+    or Click To Browse
+    `;
+
+    document.getElementById(
+        "result"
+    ).innerHTML = "";
+}
+
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+}
+
+function getCurrentDateTime(){
+
+    const d = new Date();
+
+    const monthNames = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+    let hour = d.getHours();
+    let ampm = "am";
+
+    if(hour >= 12){
+        ampm = "pm";
+    }
+
+    if(hour > 12){
+        hour -= 12;
+    }
+
+    return `${d.getFullYear()}-${
+        monthNames[d.getMonth()]
+    }-${String(d.getDate()).padStart(2,"0")}
+    ${hour}:${String(d.getMinutes()).padStart(2,"0")}${ampm}`;
+}
+
+function exportToExcel(){
+
+    const table =
+        document.querySelector("table");
+
+    if(!table){
+
+        alert(
+            "Please run Compare first."
+        );
+
+        return;
+    }
+
+    const wb =
+        XLSX.utils.book_new();
+
+const summaryData = [
+
+    ["PARAMETER COMPARISON SUMMARY"],
+
+    [],
+
+    ["Comparison Date",
+     getCurrentDateTime()],
+
+    [],
+
+    ["File A",
+     fileA.name],
+
+    ["File B",
+     fileB.name],
+
+    [],
+
+    [
+        "File Name Check",
+        fileA.name.toUpperCase() ===
+        fileB.name.toUpperCase()
+        ?
+        "Same File Name For Both Comparison Files"
+        :
+        "Different File Names Used For Comparison"
+    ],
+
+    [],
+
+["Total Rows Compared",
+ "'" + lastMaxRows],
+
+["Different Rows",
+ "'" + lastDiffCount]
+
+];
+    const wsSummary =
+        XLSX.utils.aoa_to_sheet(
+            summaryData
+        );
+Object.keys(wsSummary).forEach(cell => {
+
+    if(cell[0] === "!") return;
+
+    if(cell.startsWith("B")){
+
+        wsSummary[cell].s = {
+
+            alignment:{
+                horizontal:"left"
+            }
+
+        };
+
+    }
+
+});
+
+wsSummary['!cols'] = [
+    {wch:25},
+    {wch:80}
+];
+    XLSX.utils.book_append_sheet(
+        wb,
+        wsSummary,
+        "Summary"
+    );
+
+const wsCompare =
+    XLSX.utils.table_to_sheet(
+        table
+    );
+
+const range =
+    XLSX.utils.decode_range(
+        wsCompare["!ref"]
+    );
+
+const colWidths = [];
+
+for(
+    let C = range.s.c;
+    C <= range.e.c;
+    ++C
+){
+
+    let maxWidth = 10;
+
+    for(
+        let R = range.s.r;
+        R <= range.e.r;
+        ++R
+    ){
+
+        const cell =
+            wsCompare[
+                XLSX.utils.encode_cell({
+                    r:R,
+                    c:C
+                })
+            ];
+
+        if(cell){
+
+            maxWidth =
+                Math.max(
+                    maxWidth,
+                    String(cell.v).length + 2
+                );
+        }
+    }
+
+    colWidths.push({
+        wch:maxWidth
+    });
+}
+
+wsCompare["!cols"] =
+    colWidths;
+
+XLSX.utils.book_append_sheet(
+    wb,
+    wsCompare,
+    "Comparison"
+);
+const now = new Date();
+
+const dd =
+    String(now.getDate()).padStart(2,"0");
+
+const mm =
+    String(now.getMonth()+1).padStart(2,"0");
+
+const yy =
+    String(now.getFullYear()).slice(-2);
+
+let hh =
+    now.getHours();
+
+const ampm =
+    hh >= 12 ? "PM" : "AM";
+
+hh =
+    hh % 12;
+
+if(hh === 0){
+    hh = 12;
+}
+
+const min =
+    String(now.getMinutes()).padStart(2,"0");
+
+const exportFileName =
+`Comparison_Result_${dd}${mm}${yy}_${String(hh).padStart(2,"0")}${min}${ampm}.xlsx`;
+XLSX.writeFile(
+    wb,
+    exportFileName
+);}
+
+function printComparison(){
+
+    const now = new Date();
+
+    const dd =
+        String(now.getDate()).padStart(2,"0");
+
+    const mm =
+        String(now.getMonth()+1).padStart(2,"0");
+
+    const yy =
+        String(now.getFullYear()).slice(-2);
+
+    let hh =
+        now.getHours();
+
+    const ampm =
+        hh >= 12
+        ? "PM"
+        : "AM";
+
+    hh =
+        hh % 12;
+
+    if(hh === 0){
+        hh = 12;
+    }
+
+    const min =
+        String(now.getMinutes()).padStart(2,"0");
+
+    const reportFileName =
+        `Comparison_Report_${dd}${mm}${yy}_${String(hh).padStart(2,"0")}${min}${ampm}`;
+
+const resultHtml =
+
+    document.querySelector(".summary").outerHTML +
+
+    document.querySelector("table").outerHTML;
+    const printWindow =
+        window.open("", "_blank");
+
+    printWindow.document.write(`
+        <html>
+<head>
+
+<title>${reportFileName}</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    margin:20px;
+}
+
+.summary{
+    background:#fff3cd;
+    border:1px solid #ffcc00;
+    padding:10px;
+    margin-bottom:15px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    border:1px solid black;
+    padding:6px;
+    background:yellow !important;
+    color:black;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+}
+
+tr.diff td{
+    background:red !important;
+    color:white !important;
+}
+
+@media print{
+
+    *{
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    th{
+        background:yellow !important;
+        color:black !important;
+    }
+
+    tr.diff td{
+        background:red !important;
+        color:white !important;
+    }
+}
+
+</style>
+
+</head>        <body>
+            ${resultHtml}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    setTimeout(() => printWindow.print(), 500);
+}
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+}
+</script>
+
+<script src="xlsx.full.min.js"></script>
+<script src="tracking.js"></script>
+
+</body>
+</html>
