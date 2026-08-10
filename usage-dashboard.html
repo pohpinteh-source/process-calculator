@@ -12,7 +12,7 @@
 Usage Statistics Dashboard
 </title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -87,9 +87,7 @@ th,td{
 <body>
 
 <div class="title">
-
 📊 Usage Statistics Dashboard
-
 </div>
 
 <div class="filter-bar">
@@ -113,6 +111,7 @@ Last 30 Days
 <button onclick="goHome()">
 ⬅ Back
 </button>
+
 </div>
 
 <div class="card">
@@ -146,17 +145,14 @@ Access Log
 <table>
 
 <thead>
-
 <tr>
 <th>Timestamp</th>
 <th>User</th>
 <th>Calculator</th>
 </tr>
-
 </thead>
 
 <tbody id="logBody">
-
 </tbody>
 
 </table>
@@ -227,6 +223,35 @@ async function loadLogs(){
     }
 }
 
+async function refreshData(){
+
+    try{
+
+        const response =
+            await fetch(
+                API_URL +
+                "?action=getAccessLog"
+            );
+
+        allLogs =
+            await response.json();
+
+        buildDashboard(
+            allLogs
+        );
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "Refresh failed.\n\n" +
+            err.message
+        );
+    }
+}
+
 function buildDashboard(logs){
 
     buildCalculatorChart(logs);
@@ -240,24 +265,26 @@ function buildCalculatorChart(logs){
 
     const counter = {};
 
-logs.forEach(log=>{
+    logs.forEach(log=>{
 
-    if(
-        !log.calculator ||
-        log.calculator.trim() === ""
-    ){
-        return;
-    }
+        if(
+            !log.calculator ||
+            log.calculator.trim() === "" ||
+            log.calculator === "usage_statistics_dashboard"
+        ){
+            return;
+        }
 
-    const name =
-        decodeURIComponent(
-            log.calculator
-        );
+        const name =
+            decodeURIComponent(
+                log.calculator
+            );
 
-    counter[name] =
-        (counter[name] || 0) + 1;
+        counter[name] =
+            (counter[name] || 0) + 1;
 
-});
+    });
+
     const labels =
         Object.keys(counter);
 
@@ -265,7 +292,6 @@ logs.forEach(log=>{
         Object.values(counter);
 
     if(calculatorChart){
-
         calculatorChart.destroy();
     }
 
@@ -277,6 +303,7 @@ logs.forEach(log=>{
             ),
 
             {
+
                 type:"bar",
 
                 data:{
@@ -295,6 +322,7 @@ logs.forEach(log=>{
                     }]
                 }
             }
+
         );
 }
 
@@ -303,6 +331,14 @@ function buildUserChart(logs){
     const counter = {};
 
     logs.forEach(log=>{
+
+        if(
+            !log.calculator ||
+            log.calculator.trim() === "" ||
+            log.calculator === "usage_statistics_dashboard"
+        ){
+            return;
+        }
 
         counter[log.user] =
             (counter[log.user] || 0) + 1;
@@ -316,7 +352,6 @@ function buildUserChart(logs){
         Object.values(counter);
 
     if(userChart){
-
         userChart.destroy();
     }
 
@@ -352,19 +387,23 @@ function buildUserChart(logs){
                     indexAxis:"y"
 
                 }
+
             }
+
         );
 }
+
 function formatTimestamp(timestamp){
 
-    const d = new Date(timestamp);
+    const d =
+        new Date(timestamp);
 
     const yyyy =
         d.getFullYear();
 
     const mm =
         String(
-            d.getMonth() + 1
+            d.getMonth()+1
         ).padStart(2,"0");
 
     const dd =
@@ -389,6 +428,7 @@ function formatTimestamp(timestamp){
 
     return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
 }
+
 function buildLogTable(logs){
 
     let html = "";
@@ -399,27 +439,30 @@ function buildLogTable(logs){
     .forEach(log=>{
 
         html +=
+
         `
         <tr>
 
-<td>
-    ${formatTimestamp(log.timestamp)}
-</td>
+            <td>
+                ${formatTimestamp(log.timestamp)}
+            </td>
+
             <td>
                 ${log.user}
             </td>
 
-<td>
-    ${
-        log.calculator
-        ?
-        decodeURIComponent(
-            log.calculator
-        )
-        :
-        "-"
-    }
-</td>
+            <td>
+                ${
+                    log.calculator
+                    ?
+                    decodeURIComponent(
+                        log.calculator
+                    )
+                    :
+                    "-"
+                }
+            </td>
+
         </tr>
         `;
     });
