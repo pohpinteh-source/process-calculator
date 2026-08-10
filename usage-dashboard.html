@@ -5,15 +5,15 @@
 
 <meta charset="utf-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
 <title>
 Usage Statistics Dashboard
 </title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 body{
@@ -34,70 +34,49 @@ body{
 }
 
 .filter-bar{
-
     background:white;
-
     padding:15px;
-
     border-radius:8px;
-
     margin-bottom:15px;
-
     box-shadow:0 2px 5px rgba(0,0,0,0.2);
 }
 
 button{
-
     padding:10px;
-
     min-width:140px;
-
     margin:5px;
+    cursor:pointer;
 }
 
 .card{
-
     background:white;
-
     padding:15px;
-
     border-radius:8px;
-
     margin-bottom:20px;
-
     box-shadow:0 2px 5px rgba(0,0,0,0.2);
 }
 
 h3{
-
     margin-top:0;
-
     color:#1f4e79;
 }
 
 table{
-
     width:100%;
-
     border-collapse:collapse;
 }
 
 th{
-
     background:yellow;
 }
 
 th,td{
-
     border:1px solid #ccc;
-
     padding:6px;
 }
 
 #logTable{
-
     max-height:400px;
-
     overflow:auto;
 }
 
@@ -116,37 +95,30 @@ th,td{
 <div class="filter-bar">
 
 <button onclick="loadAll()">
-
 All Data
-
 </button>
 
 <button onclick="loadLast7Days()">
-
 Last 7 Days
-
 </button>
 
 <button onclick="loadLast30Days()">
-
 Last 30 Days
+</button>
 
+<button onclick="refreshData()">
+🔄 Refresh
 </button>
 
 <button onclick="goHome()">
-
 ⬅ Back
-
 </button>
-
 </div>
 
 <div class="card">
 
 <h3>
-
 Calculator Usage Ranking
-
 </h3>
 
 <canvas id="calculatorChart"></canvas>
@@ -156,9 +128,7 @@ Calculator Usage Ranking
 <div class="card">
 
 <h3>
-
 Top Users Usage
-
 </h3>
 
 <canvas id="userChart"></canvas>
@@ -168,9 +138,7 @@ Top Users Usage
 <div class="card">
 
 <h3>
-
 Access Log
-
 </h3>
 
 <div id="logTable">
@@ -180,11 +148,9 @@ Access Log
 <thead>
 
 <tr>
-
 <th>Timestamp</th>
 <th>User</th>
 <th>Calculator</th>
-
 </tr>
 
 </thead>
@@ -206,73 +172,92 @@ const API_URL =
 
 let allLogs = [];
 
-let calculatorChart;
-let userChart;
+let calculatorChart = null;
+let userChart = null;
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+        params.get("user");
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+        API_URL +
+        "?action=trackUsage" +
+        "&user=" +
+        encodeURIComponent(user) +
+        "&calculator=usage_statistics_dashboard"
+    );
+}
 
 async function loadLogs(){
 
-try{
+    try{
 
-    const response =
-        await fetch(
-            API_URL +
-            "?action=getAccessLog"
+        const response =
+            await fetch(
+                API_URL +
+                "?action=getAccessLog"
+            );
+
+        allLogs =
+            await response.json();
+
+        buildDashboard(
+            allLogs
         );
 
-    allLogs =
-        await response.json();
+    }
+    catch(err){
 
-    buildDashboard(
-        allLogs
-    );
+        console.error(err);
 
-}
-catch(err){
-
-    alert(
-        "Unable to load Access Log.\n\n" +
-        err.message
-    );
-
-    console.error(err);
-}
-    buildDashboard(
-        allLogs
-    );
+        alert(
+            "Unable to load Access Log.\n\n" +
+            err.message
+        );
+    }
 }
 
 function buildDashboard(logs){
 
-    buildCalculatorChart(
-        logs
-    );
+    buildCalculatorChart(logs);
 
-    buildUserChart(
-        logs
-    );
+    buildUserChart(logs);
 
-    buildLogTable(
-        logs
-    );
+    buildLogTable(logs);
 }
 
 function buildCalculatorChart(logs){
 
     const counter = {};
 
-    logs.forEach(log=>{
+logs.forEach(log=>{
 
-        const name =
-            decodeURIComponent(
-                log.calculator
-            );
+    if(
+        !log.calculator ||
+        log.calculator.trim() === ""
+    ){
+        return;
+    }
 
-        counter[name] =
-            (counter[name] || 0)
-            + 1;
+    const name =
+        decodeURIComponent(
+            log.calculator
+        );
 
-    });
+    counter[name] =
+        (counter[name] || 0) + 1;
 
+});
     const labels =
         Object.keys(counter);
 
@@ -282,19 +267,16 @@ function buildCalculatorChart(logs){
     if(calculatorChart){
 
         calculatorChart.destroy();
-
     }
 
     calculatorChart =
         new Chart(
 
-            document
-            .getElementById(
+            document.getElementById(
                 "calculatorChart"
             ),
 
             {
-
                 type:"bar",
 
                 data:{
@@ -303,7 +285,7 @@ function buildCalculatorChart(logs){
 
                     datasets:[{
 
-                        label:"Usage",
+                        label:"Usage Count",
 
                         data:values,
 
@@ -311,11 +293,8 @@ function buildCalculatorChart(logs){
                         "#1f4e79"
 
                     }]
-
                 }
-
             }
-
         );
 }
 
@@ -325,15 +304,8 @@ function buildUserChart(logs){
 
     logs.forEach(log=>{
 
-        counter[
-            log.user
-        ] =
-
-        (counter[
-            log.user
-        ] || 0)
-
-        + 1;
+        counter[log.user] =
+            (counter[log.user] || 0) + 1;
 
     });
 
@@ -346,14 +318,12 @@ function buildUserChart(logs){
     if(userChart){
 
         userChart.destroy();
-
     }
 
     userChart =
         new Chart(
 
-            document
-            .getElementById(
+            document.getElementById(
                 "userChart"
             ),
 
@@ -367,7 +337,7 @@ function buildUserChart(logs){
 
                     datasets:[{
 
-                        label:"Usage",
+                        label:"Usage Count",
 
                         data:values,
 
@@ -375,9 +345,142 @@ function buildUserChart(logs){
                         "#ff9800"
 
                     }]
-
                 },
 
                 options:{
 
-                    indexAxis:"y
+                    indexAxis:"y"
+
+                }
+            }
+        );
+}
+function formatTimestamp(timestamp){
+
+    const d = new Date(timestamp);
+
+    const yyyy =
+        d.getFullYear();
+
+    const mm =
+        String(
+            d.getMonth() + 1
+        ).padStart(2,"0");
+
+    const dd =
+        String(
+            d.getDate()
+        ).padStart(2,"0");
+
+    const hh =
+        String(
+            d.getHours()
+        ).padStart(2,"0");
+
+    const min =
+        String(
+            d.getMinutes()
+        ).padStart(2,"0");
+
+    const ss =
+        String(
+            d.getSeconds()
+        ).padStart(2,"0");
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+}
+function buildLogTable(logs){
+
+    let html = "";
+
+    logs
+    .slice()
+    .reverse()
+    .forEach(log=>{
+
+        html +=
+        `
+        <tr>
+
+<td>
+    ${formatTimestamp(log.timestamp)}
+</td>
+            <td>
+                ${log.user}
+            </td>
+
+<td>
+    ${
+        log.calculator
+        ?
+        decodeURIComponent(
+            log.calculator
+        )
+        :
+        "-"
+    }
+</td>
+        </tr>
+        `;
+    });
+
+    document.getElementById(
+        "logBody"
+    ).innerHTML = html;
+}
+
+function daysFilter(days){
+
+    const cutoff =
+        new Date();
+
+    cutoff.setDate(
+        cutoff.getDate() - days
+    );
+
+    return allLogs.filter(log=>{
+
+        return new Date(
+            log.timestamp
+        ) >= cutoff;
+
+    });
+}
+
+function loadLast7Days(){
+
+    buildDashboard(
+        daysFilter(7)
+    );
+}
+
+function loadLast30Days(){
+
+    buildDashboard(
+        daysFilter(30)
+    );
+}
+
+function loadAll(){
+
+    buildDashboard(
+        allLogs
+    );
+}
+
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+}
+
+trackUsage();
+
+loadLogs();
+
+</script>
+
+</body>
+
+</html>
