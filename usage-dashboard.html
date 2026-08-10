@@ -47,7 +47,13 @@ button{
     margin:5px;
     cursor:pointer;
 }
-
+select{
+    padding:10px;
+    min-width:160px;
+    margin:5px;
+    cursor:pointer;
+    height:42px;
+}
 .card{
     background:white;
     padding:15px;
@@ -106,6 +112,11 @@ Last 7 Days
 Last 30 Days
 </button>
 
+<select id="periodFilter" onchange="filterByPeriod()">
+    <option value="">📅 Select Month/Year</option>
+</select>
+
+
 <button onclick="refreshData()">
 🔄 Refresh
 </button>
@@ -113,8 +124,8 @@ Last 30 Days
 <button onclick="goHome()">
 ⬅ Back
 </button>
-</div>
 
+</div>
 <div class="card">
 
 <h3>
@@ -199,9 +210,7 @@ function trackUsage(){
 }
 
 async function loadLogs(){
-
     try{
-
         const response =
             await fetch(
                 API_URL +
@@ -211,11 +220,13 @@ async function loadLogs(){
         allLogs =
             await response.json();
 
+        populateFilters();
+
         buildDashboard(
             allLogs
         );
-
     }
+
     catch(err){
 
         console.error(err);
@@ -260,11 +271,16 @@ function buildCalculatorChart(logs){
 
     });
 
-    const labels =
-        Object.keys(counter);
+const sortedData =
+    Object.entries(counter)
+    .sort((a, b) => b[1] - a[1]);
 
-    const values =
-        Object.values(counter);
+const labels =
+    sortedData.map(item => item[0]);
+
+const values =
+    sortedData.map(item => item[1]);
+
 
     if(calculatorChart){
 
@@ -357,12 +373,15 @@ function buildUserChart(logs){
 
     });
 
-    const labels =
-        Object.keys(counter);
+const sortedData =
+    Object.entries(counter)
+    .sort((a, b) => b[1] - a[1]);
 
-    const values =
-        Object.values(counter);
+const labels =
+    sortedData.map(item => item[0]);
 
+const values =
+    sortedData.map(item => item[1]);
     if(userChart){
 
         userChart.destroy();
@@ -535,6 +554,91 @@ function loadAll(){
         allLogs
     );
 }
+
+function populateFilters(){
+
+    const periodFilter =
+        document.getElementById("periodFilter");
+
+    periodFilter.innerHTML =
+        '<option value="">📅 Select Month/Year</option>';
+
+    const periods = [];
+
+    const uniquePeriods = new Set();
+
+    allLogs.forEach(log => {
+
+        const d = new Date(log.timestamp);
+
+        const period =
+            d.getFullYear() +
+            "-" +
+            String(d.getMonth() + 1)
+            .padStart(2, "0");
+
+        if(!uniquePeriods.has(period)){
+            uniquePeriods.add(period);
+            periods.push(period);
+        }
+    });
+
+    periods
+        .sort((a,b) => new Date(b) - new Date(a))
+        .forEach(period => {
+
+            const [year, month] =
+                period.split("-");
+
+            const monthName =
+                new Date(year, month - 1, 1)
+                .toLocaleString(
+                    "en-US",
+                    { month: "short" }
+                );
+
+            const option =
+                document.createElement("option");
+
+            option.value = period;
+
+            option.textContent =
+                `${monthName} ${year}`;
+
+            periodFilter.appendChild(option);
+        });
+}
+function filterByPeriod(){
+
+    const selected =
+        document.getElementById(
+            "periodFilter"
+        ).value;
+
+    if(!selected){
+
+        buildDashboard(allLogs);
+        return;
+    }
+
+    const filtered =
+        allLogs.filter(log => {
+
+            const d =
+                new Date(log.timestamp);
+
+            const period =
+                d.getFullYear() +
+                "-" +
+                String(d.getMonth() + 1)
+                .padStart(2,"0");
+
+            return period === selected;
+        });
+
+    buildDashboard(filtered);
+}
+
 
 function goHome(){
 
