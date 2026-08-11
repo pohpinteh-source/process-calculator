@@ -12,8 +12,13 @@ body{
     background:#dfe6ed;
     text-align:center;
     margin:10px;
+    min-height:95vh;
 }
 
+body{
+    display:flex;
+    flex-direction:column;
+}
 
 h1 {
     margin-top: 10px;
@@ -27,7 +32,9 @@ h1 {
     margin-top:20px;
     flex-wrap:nowrap;
     gap:15px;
+    flex:1;
 }
+
 
 .column {
     width: 18%;
@@ -121,10 +128,9 @@ button {
     text-align:center;
     font-size:14px;
     color:#555;
-    margin-top:50px;
+    margin-top:auto;
     padding-top:20px;
 }
-
 
 .copyright img{
     width:60px;
@@ -207,51 +213,62 @@ button {
 <button onclick="goTo('skw_parameter.html')">SKW Parameter</button>
 <button onclick="goTo('fab_calculator.html')">FAB Calculator</button>
 <button onclick="goTo('bar_calculator.html')">B.A.R Calculator</button>
-<button onclick="goTo('shear_remnant_calculator.html')">Shear Remnant Calculator</button>
 <button onclick="goTo('normalize_ball_shear.html')">Normalize Ball Shear</button>
 <button onclick="goToFusingCurrentCheck()">Fusing Current Checker (FCC)</button>
 <button onclick="goTo('estimate-wire-length-3d.html')">Est. Wire Length (3D)</button>
 <button onclick="goTo('Wire Usage Comparison.html')">Wire Usage Comparison</button>
 <button onclick="goTo('capillary_need.html')">Capillary Need</button>
 <button onclick="goTo('capillary_profile_selection.html')">Capillary Profile Selection</button>
-<button disabled class="disabled-btn">Current Carrying Capacity (CCC)</button>
-<button disabled class="disabled-btn">Fusing Current Assumption</button>
 
 
 </div>
+
+<!-- ✅ General -->
+<div class="column">
+<div class="section-title">📚 General</div>
+<button onclick="goTo('universal_comparison_checker.html')">Universal Comparison Checker</button>
+<button onclick="goTo('shear_remnant_calculator.html')">Shear Remnant Calculator</button>
+<button onclick="window.open('wire_library.xlsx','_blank')">🧵 Wire Library</button>
+<button onclick="window.open('capillary_library.xlsx','_blank')">🪡 Capillary Library</button>
+<button onclick="openPDF()">📖 Wire Bond Guideline</button>
+
+</div>
+
 
 <!-- ✅ SPEC -->
 <div class="column">
 <div class="section-title">📋 Spec</div>
-
 <button onclick="goTo('define_da_spec.html')">Define DA Spec</button>
 <button onclick="goTo('define_wb_spec.html')">Define WB Spec</button>
 <button onclick="goTo('spc_lsl.html')">SPC LSL</button>
-<button onclick="goTo('universal_comparison_checker.html')">Universal Comparison Checker</button>
+
+
+<br>
+<br>
+<button disabled class="disabled-btn">Current Carrying Capacity (CCC)</button>
+<button disabled class="disabled-btn">Fusing Current Assumption</button>
 
 </div>
 
-<!-- ✅ INFO -->
+
+<!-- ✅ Phone Setup -->
 <div class="column">
-<div class="section-title">📚 Info</div>
-<button onclick="window.open('wire_library.xlsx','_blank')">🧵 Wire Library</button>
-<button onclick="window.open('capillary_library.xlsx','_blank')">🪡 Capillary Library</button>
-<button onclick="openPDF()">📖 Wire Bond Guideline</button>
+<div class="section-title">📱 Phone Setup</div>
 <button onclick="window.open('Process Calculator Android.mp4','_blank')">🤖 Android Setup HomeScreen</button>
-<button onclick="window.open('Process Calculator IOS.mp4','_blank')">🍎 iOS Setup HomeScreen</button>
+<button onclick="window.open('Process Calculator IOS.mp4','_blank')">🍎 IOS Setup HomeScreen</button>
 
 
-</div>
+<br>
+<br>
+<br>
 
 
 <!-- ✅ ADMIN -->
-
-<div class="column">
 <div class="section-title">⚙️ Admin 🔒</div>
-
 <button onclick="openUsageDashboard()">📊 Usage Statistics Dashboard</button>
 <button id="adminBtn">👥 User Access Management</button>
 </div>
+
 </div>
 <!-- End of container -->
 <script>
