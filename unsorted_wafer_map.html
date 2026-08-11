@@ -717,6 +717,50 @@ function goHome(){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
 
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+
+        params.get("user")
+
+        ||
+
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+
+        API_URL +
+
+        "?action=trackUsage" +
+
+        "&user=" +
+
+        encodeURIComponent(user) +
+
+        "&calculator=unsorted_wafer_map"
+
+    );
+
+}
+
+trackUsage();
+
+</script>
 </body>
 </html>
