@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Shear Remnant Calculator</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    margin:15px;
+    background:#eef2f7;
+}
+
+.title{
+    text-align:center;
+    background:#1f4e79;
+    color:white;
+    padding:15px;
+    font-size:26px;
+    font-weight:bold;
+    border-radius:10px;
+}
+
+.main{
+    display:grid;
+    grid-template-columns: 1fr 260px;
+    gap:15px;
+    margin-top:15px;
+}
+
+
+.left{
+    flex:1;
+}
+
+.right{
+    width:260px;
+    flex-shrink:0;
+}
+
+.right .card{
+
+    position:sticky;
+
+    top:15px;
+
+}
+.card{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+    margin-bottom:15px;
+}
+
+#dropZone{
+    border:3px dashed #1f4e79;
+    border-radius:10px;
+    padding:25px;
+    text-align:center;
+}
+
+#dropZone.drag{
+    background:#fff4bc;
+}
+
+button{
+    padding:10px 15px;
+    margin:5px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#canvasWrapper{
+    position:relative;
+    display:inline-block;
+    border:2px solid #ccc;
+    background:white;
+    overflow:auto;
+}
+
+
+canvas{
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+.info{
+    line-height:1.8;
+    font-size:18px;
+}
+.resultBox{
+
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+
+}
+
+.resultItem{
+
+    border-bottom:1px solid #ddd;
+    padding-bottom:10px;
+
+}
+
+.resultLabel{
+
+    font-weight:bold;
+    font-size:18px;
+    color:#444;
+
+}
+
+.resultValue{
+
+    margin-top:4px;
+    font-size:28px;
+    font-weight:bold;
+
+}
+
+.percentValue{
+
+    color:#008000;
+    font-size:52px;
+    font-weight:bold;
+    text-align:center;
+
+}
+.toolbar{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+
+}
+</style>
+</head>
+<body>
+
+<div class="title">
+🔍 Shear Remnant Calculator
+</div>
+
+<div class="main">
+
+<div class="left">
+
+<div class="card">
+
+<div id="dropZone">
+
+<h3>📷 Drop Image Here</h3>
+
+OR
+
+<br><br>
+
+<input
+type="file"
+id="fileInput"
+accept="image/*,.jpg,.jpeg,.png,.bmp">
+
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="toolbar">
+
+
+<button onclick="startDrawing()">
+✏ Draw Remnant
+</button>
+
+<button onclick="undoRegion()">
+↩ Undo Last Region
+</button>
+
+<button onclick="calculateResult()">
+📊 Calculate
+</button>
+
+<button onclick="resetAll()">
+🔄 Reset
+</button>
+<button onclick="clearFile()">
+🗑 Clear File
+</button>
+
+<button onclick="goHome()">
+⬅ Back
+</button>
+</div>
+</div>
+
+<div class="card">
+
+<div id="canvasWrapper">
+
+<canvas id="imageCanvas"></canvas>
+<canvas id="overlayCanvas"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="card">
+
+<div class="resultBox">
+
+    <div class="resultItem">
+
+        <div class="resultLabel">
+            Original Area
+        </div>
+
+        <div
+            class="resultValue"
+            id="originalArea">
+
+            -
+
+        </div>
+
+    </div>
+
+    <div class="resultItem">
+
+        <div class="resultLabel">
+            Remnant Area
+        </div>
+
+        <div
+            class="resultValue"
+            id="remnantArea">
+
+            -
+
+        </div>
+
+    </div>
+
+    <div class="resultItem">
+
+        <div class="resultLabel">
+            Missing Area
+        </div>
+
+        <div
+            class="resultValue"
+            id="missingArea">
+
+            -
+
+        </div>
+
+    </div>
+<div class="resultItem">
+
+    <div class="resultLabel">
+        Region Count
+    </div>
+
+    <div
+        class="resultValue"
+        id="regionCount">
+
+        0
+
+    </div>
+
+</div>
+    <div class="resultItem">
+
+        <div class="resultLabel">
+            Remnant %
+        </div>
+
+        <div
+            id="remnantPercent"
+            class="percentValue">
+
+            -
+
+        </div>
+
+    </div>
+
+</div>
+<hr>
+
+<div style="font-size:14px;line-height:1.8">
+
+🔴 Original Ball Area
+
+<br>
+
+🔵 Move Boundary & Remnant Area
+
+<br>
+
+🟡 Resize Boundary
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+const imgCanvas =
+document.getElementById("imageCanvas");
+
+const overlayCanvas =
+document.getElementById("overlayCanvas");
+
+const imgCtx =
+imgCanvas.getContext("2d");
+
+const ctx =
+overlayCanvas.getContext("2d");
+
+let imageObj = null;
+
+let drawMode = false;
+let currentlyDrawing = false;
+
+let currentRegion = [];
+let remnantRegions = [];
+
+let activeHandle = -1;
+
+const CENTER=0;
+const TOP=1;
+const RIGHT=2;
+const BOTTOM=3;
+const LEFT=4;
+
+let shape = {
+
+cx:250,
+cy:250,
+
+top:100,
+right:100,
+
+bottom:100,
+left:100
+
+};
+
+function loadImage(file){
+
+    if(!file){
+        return;
+    }
+
+    const img = new Image();
+
+    img.onload = function(){
+
+        imageObj = img;
+
+        imgCanvas.width = img.width;
+        imgCanvas.height = img.height;
+
+        overlayCanvas.width = img.width;
+        overlayCanvas.height = img.height;
+
+        const wrapper =
+        document.getElementById(
+            "canvasWrapper"
+        );
+
+        wrapper.style.width =
+        img.width + "px";
+
+        wrapper.style.height =
+        img.height + "px";
+
+        imgCtx.clearRect(
+            0,
+            0,
+            imgCanvas.width,
+            imgCanvas.height
+        );
+
+        imgCtx.drawImage(
+            img,
+            0,
+            0
+        );
+
+        resetShape();
+
+    };
+
+    img.src =
+    URL.createObjectURL(file);
+
+}
+
+function resetShape(){
+
+    if(!imageObj){
+        return;
+    }
+
+    let r =
+    Math.min(
+        imgCanvas.width,
+        imgCanvas.height
+    ) * 0.15;
+
+    shape.cx =
+    imgCanvas.width / 2;
+
+    shape.cy =
+    imgCanvas.height / 2;
+
+    shape.top = r;
+    shape.right = r;
+    shape.bottom = r;
+    shape.left = r;
+
+    redraw();
+
+}
+
+     
+function drawHandle(x,y,color){
+
+ctx.beginPath();
+
+ctx.arc(
+x,y,8,0,Math.PI*2
+);
+
+ctx.fillStyle=color;
+ctx.fill();
+
+ctx.strokeStyle="red";
+ctx.lineWidth=2;
+ctx.stroke();
+
+}
+
+function drawRedBoundary(){
+
+ctx.beginPath();
+
+ctx.moveTo(
+shape.cx,
+shape.cy-shape.top
+);
+
+ctx.bezierCurveTo(
+shape.cx+shape.right,
+shape.cy-shape.top,
+
+shape.cx+shape.right,
+shape.cy+shape.bottom,
+
+shape.cx,
+shape.cy+shape.bottom
+);
+
+ctx.bezierCurveTo(
+shape.cx-shape.left,
+shape.cy+shape.bottom,
+
+shape.cx-shape.left,
+shape.cy-shape.top,
+
+shape.cx,
+shape.cy-shape.top
+);
+
+ctx.strokeStyle="red";
+ctx.lineWidth=3;
+ctx.stroke();
+
+drawHandle(
+shape.cx,
+shape.cy,
+"cyan"
+);
+
+drawHandle(
+shape.cx,
+shape.cy-shape.top,
+"yellow"
+);
+
+drawHandle(
+shape.cx+shape.right,
+shape.cy,
+"yellow"
+);
+
+drawHandle(
+shape.cx,
+shape.cy+shape.bottom,
+"yellow"
+);
+
+drawHandle(
+shape.cx-shape.left,
+shape.cy,
+"yellow"
+);
+
+}
+function pointInsideRedBoundary(x,y){
+
+    const dx =
+    x - shape.cx;
+
+    const dy =
+    y - shape.cy;
+
+    const rx =
+    dx >= 0
+    ? shape.right
+    : shape.left;
+
+    const ry =
+    dy >= 0
+    ? shape.bottom
+    : shape.top;
+
+    return (
+        (dx*dx)/(rx*rx)
+        +
+        (dy*dy)/(ry*ry)
+    ) <= 1;
+
+}
+
+function redraw(){
+
+ctx.clearRect(
+0,
+0,
+overlayCanvas.width,
+overlayCanvas.height
+);
+
+drawRedBoundary();
+
+ctx.strokeStyle="blue";
+ctx.lineWidth=3;
+
+remnantRegions.forEach(r=>{
+
+if(r.length<2)return;
+
+ctx.beginPath();
+
+ctx.moveTo(
+    r[0].x,
+    r[0].y
+);
+
+for(
+    let i=1;
+    i<r.length-1;
+    i++
+){
+
+    let xc =
+    (
+        r[i].x +
+        r[i+1].x
+    ) / 2;
+
+    let yc =
+    (
+        r[i].y +
+        r[i+1].y
+    ) / 2;
+
+    ctx.quadraticCurveTo(
+        r[i].x,
+        r[i].y,
+        xc,
+        yc
+    );
+
+}
+
+ctx.closePath();
+
+ctx.strokeStyle = "blue";
+
+ctx.lineWidth = 3;
+
+ctx.stroke();
+
+});
+
+if(currentRegion.length>1){
+
+ctx.beginPath();
+
+ctx.moveTo(
+currentRegion[0].x,
+currentRegion[0].y
+);
+
+for(let i=1;i<currentRegion.length;i++){
+
+ctx.lineTo(
+currentRegion[i].x,
+currentRegion[i].y
+);
+
+}
+
+ctx.strokeStyle="blue";
+ctx.stroke();
+
+}
+
+}
+
+function startDrawing(){
+
+drawMode=true;
+
+}
+
+function getMouse(e){
+
+const rect=
+overlayCanvas.getBoundingClientRect();
+
+return{
+
+x:e.clientX-rect.left,
+y:e.clientY-rect.top
+
+};
+
+}
+
+overlayCanvas.addEventListener(
+"mousedown",
+function(e){
+
+if(drawMode){
+
+currentlyDrawing=true;
+
+currentRegion=[];
+
+const p=getMouse(e);
+
+if(
+    pointInsideRedBoundary(
+        p.x,
+        p.y
+    )
+){
+
+    if(
+
+        currentRegion.length===0 ||
+
+        dist(
+            p.x,
+            p.y,
+            currentRegion[currentRegion.length-1].x,
+            currentRegion[currentRegion.length-1].y
+
+        ) > 2
+
+    ){
+
+        currentRegion.push(p);
+
+    }
+
+}return;
+
+}
+
+const p=getMouse(e);
+
+if(dist(
+p.x,p.y,
+shape.cx,
+shape.cy
+)<12){
+activeHandle=CENTER;
+return;
+}
+
+if(dist(
+p.x,p.y,
+shape.cx,
+shape.cy-shape.top
+)<12){
+activeHandle=TOP;
+return;
+}
+
+if(dist(
+p.x,p.y,
+shape.cx+shape.right,
+shape.cy
+)<12){
+activeHandle=RIGHT;
+return;
+}
+
+if(dist(
+p.x,p.y,
+shape.cx,
+shape.cy+shape.bottom
+)<12){
+activeHandle=BOTTOM;
+return;
+}
+
+if(dist(
+p.x,p.y,
+shape.cx-shape.left,
+shape.cy
+)<12){
+activeHandle=LEFT;
+return;
+}
+
+});
+
+overlayCanvas.addEventListener(
+"mousemove",
+function(e){
+
+const p=getMouse(e);
+
+if(currentlyDrawing){
+
+if(
+    pointInsideRedBoundary(
+        p.x,
+        p.y
+    )
+){
+
+    if(
+
+        currentRegion.length===0 ||
+
+        dist(
+            p.x,
+            p.y,
+            currentRegion[currentRegion.length-1].x,
+            currentRegion[currentRegion.length-1].y
+
+        ) > 2
+
+    ){
+
+        currentRegion.push(p);
+
+    }
+
+}    redraw();
+
+    return;
+}
+
+
+if(activeHandle===-1)
+return;
+
+if(activeHandle===CENTER){
+
+shape.cx=p.x;
+shape.cy=p.y;
+
+}
+
+if(activeHandle===TOP){
+
+shape.top=
+Math.max(
+10,
+shape.cy-p.y
+);
+
+}
+
+if(activeHandle===RIGHT){
+
+shape.right=
+Math.max(
+10,
+p.x-shape.cx
+);
+
+}
+
+if(activeHandle===BOTTOM){
+
+shape.bottom=
+Math.max(
+10,
+p.y-shape.cy
+);
+
+}
+
+if(activeHandle===LEFT){
+
+shape.left=
+Math.max(
+10,
+shape.cx-p.x
+);
+
+}
+
+redraw();
+
+});
+
+window.addEventListener(
+"mouseup",
+function(){
+
+if(currentlyDrawing){
+
+currentlyDrawing=false;
+
+if(currentRegion.length > 10){
+
+    remnantRegions.push(
+        [...currentRegion]
+    );
+
+    currentRegion=[];
+
+    drawMode=false;
+
+    redraw();
+
+    calculateResult();
+
+}
+}
+
+activeHandle=-1;
+
+
+});
+
+function undoRegion(){
+
+    if(
+        remnantRegions.length > 0
+    ){
+
+        remnantRegions.pop();
+
+        redraw();
+
+        calculateResult();
+
+    }
+
+}
+
+
+function dist(
+x1,y1,x2,y2
+){
+return Math.hypot(
+x1-x2,
+y1-y2
+);
+}
+
+function polygonArea(points){
+
+let area=0;
+
+for(
+let i=0,
+j=points.length-1;
+i<points.length;
+j=i++
+){
+
+area+=
+(points[j].x*points[i].y)
+-
+(points[i].x*points[j].y);
+
+}
+
+return Math.abs(area/2);
+
+}
+
+function getOriginalArea(){
+
+return Math.PI*
+(
+(shape.left+shape.right)/2
+)*
+(
+(shape.top+shape.bottom)/2
+);
+
+}
+
+function calculateResult(){
+
+    if(!imageObj){
+        return;
+    }
+
+    // hidden canvas
+    const maskCanvas =
+    document.createElement("canvas");
+
+    maskCanvas.width =
+    overlayCanvas.width;
+
+    maskCanvas.height =
+    overlayCanvas.height;
+
+    const maskCtx =
+    maskCanvas.getContext("2d");
+
+    // -------------------------
+    // RED AREA
+    // -------------------------
+
+    maskCtx.clearRect(
+        0,
+        0,
+        maskCanvas.width,
+        maskCanvas.height
+    );
+
+    maskCtx.beginPath();
+
+    maskCtx.moveTo(
+        shape.cx,
+        shape.cy-shape.top
+    );
+
+    maskCtx.bezierCurveTo(
+        shape.cx+shape.right,
+        shape.cy-shape.top,
+
+        shape.cx+shape.right,
+        shape.cy+shape.bottom,
+
+        shape.cx,
+        shape.cy+shape.bottom
+    );
+
+    maskCtx.bezierCurveTo(
+        shape.cx-shape.left,
+        shape.cy+shape.bottom,
+
+        shape.cx-shape.left,
+        shape.cy-shape.top,
+
+        shape.cx,
+        shape.cy-shape.top
+    );
+
+    maskCtx.closePath();
+
+    maskCtx.fillStyle="red";
+    maskCtx.fill();
+
+    const redData =
+    maskCtx.getImageData(
+        0,
+        0,
+        maskCanvas.width,
+        maskCanvas.height
+    ).data;
+
+    let originalPixels = 0;
+
+    for(let i=3;i<redData.length;i+=4){
+
+        if(redData[i] > 0){
+
+            originalPixels++;
+
+        }
+
+    }
+
+    // -------------------------
+    // BLUE AREA
+    // -------------------------
+
+    maskCtx.clearRect(
+        0,
+        0,
+        maskCanvas.width,
+        maskCanvas.height
+    );
+
+    maskCtx.fillStyle="blue";
+
+    remnantRegions.forEach(region=>{
+
+        if(region.length<3){
+            return;
+        }
+
+        maskCtx.beginPath();
+
+        maskCtx.moveTo(
+            region[0].x,
+            region[0].y
+        );
+
+        for(let i=1;i<region.length;i++){
+
+            maskCtx.lineTo(
+                region[i].x,
+                region[i].y
+            );
+
+        }
+
+        maskCtx.closePath();
+
+        maskCtx.fill();
+
+    });
+
+    const blueData =
+    maskCtx.getImageData(
+        0,
+        0,
+        maskCanvas.width,
+        maskCanvas.height
+    ).data;
+
+let remnantPixels = 0;
+
+for(let i=3;i<blueData.length;i+=4){
+
+    if(
+        redData[i] > 0 &&
+        blueData[i] > 0
+    ){
+
+        remnantPixels++;
+
+    }
+
+}
+
+    // -------------------------
+    // SAFETY
+    // -------------------------
+
+    remnantPixels =
+    Math.min(
+        remnantPixels,
+        originalPixels
+    );
+
+    const missingPixels =
+    originalPixels -
+    remnantPixels;
+
+    const percent =
+    (
+        remnantPixels
+        /
+        originalPixels
+    ) * 100;
+
+    document.getElementById(
+        "originalArea"
+    ).innerHTML =
+    originalPixels.toLocaleString();
+
+    document.getElementById(
+        "remnantArea"
+    ).innerHTML =
+    remnantPixels.toLocaleString();
+
+    document.getElementById(
+        "missingArea"
+    ).innerHTML =
+    missingPixels.toLocaleString();
+
+    document.getElementById(
+        "remnantPercent"
+    ).innerHTML =
+    percent.toFixed(2)
+    + " %";
+document.getElementById(
+    "regionCount"
+).innerHTML =
+remnantRegions.length;
+
+}
+
+
+function resetAll(){
+
+    remnantRegions = [];
+
+    currentRegion = [];
+
+    redraw();
+
+    document.getElementById(
+        "remnantArea"
+    ).innerHTML = "-";
+
+    document.getElementById(
+        "missingArea"
+    ).innerHTML = "-";
+
+    document.getElementById(
+        "remnantPercent"
+    ).innerHTML = "-";
+document.getElementById(
+    "regionCount"
+).innerHTML = 0;
+}
+
+
+
+const dropZone =
+document.getElementById("dropZone");
+
+dropZone.addEventListener(
+"dragover",
+function(e){
+
+e.preventDefault();
+
+dropZone.classList.add(
+"drag"
+);
+
+});
+
+dropZone.addEventListener(
+"dragleave",
+function(){
+
+dropZone.classList.remove(
+"drag"
+);
+
+});
+
+dropZone.addEventListener(
+"drop",
+function(e){
+
+    e.preventDefault();
+
+    e.stopPropagation();
+
+    dropZone.classList.remove(
+        "drag"
+    );
+
+    const files =
+    e.dataTransfer.files;
+
+    if(
+        files &&
+        files.length > 0
+    ){
+
+        loadImage(
+            files[0]
+        );
+
+    }
+
+});
+
+
+document
+.getElementById("fileInput")
+.addEventListener(
+"change",
+function(e){
+
+    const files =
+    e.target.files;
+
+    if(
+        files &&
+        files.length>0
+    ){
+
+        loadImage(
+            files[0]
+        );
+
+    }
+
+});
+
+function clearFile(){
+
+    imageObj = null;
+
+    remnantRegions = [];
+
+    currentRegion = [];
+
+    imgCtx.clearRect(
+        0,
+        0,
+        imgCanvas.width,
+        imgCanvas.height
+    );
+
+    ctx.clearRect(
+        0,
+        0,
+        overlayCanvas.width,
+        overlayCanvas.height
+    );
+
+    imgCanvas.width = 0;
+    imgCanvas.height = 0;
+
+    overlayCanvas.width = 0;
+    overlayCanvas.height = 0;
+
+    document.getElementById(
+        "fileInput"
+    ).value = "";
+
+    document.getElementById(
+        "originalArea"
+    ).innerHTML = "-";
+
+    document.getElementById(
+        "remnantArea"
+    ).innerHTML = "-";
+
+    document.getElementById(
+        "missingArea"
+    ).innerHTML = "-";
+
+    document.getElementById(
+        "remnantPercent"
+    ).innerHTML = "-";
+document.getElementById(
+    "regionCount"
+).innerHTML = 0;
+}
+// ✅ BACK
+function goHome(){
+
+    const user =
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    const key =
+        sessionStorage.getItem(
+            "userKey"
+        );
+
+
+window.location.href =
+    "index.html" +
+    window.location.search;
+
+}
+</script>
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+
+        params.get("user")
+
+        ||
+
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+
+        API_URL +
+
+        "?action=trackUsage" +
+
+        "&user=" +
+
+        encodeURIComponent(user) +
+
+        "&calculator=shear_remnant_calculator"
+
+    )
+    .catch(console.error);
+
+}
+</script>
+</body>
+</html>
