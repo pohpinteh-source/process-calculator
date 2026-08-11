@@ -79,9 +79,9 @@ button{
     display:inline-block;
     border:2px solid #ccc;
     background:white;
-    overflow:auto;
+    overflow:hidden;
+    max-width:100%;
 }
-
 
 canvas{
     position:absolute;
@@ -175,7 +175,17 @@ accept="image/*,.jpg,.jpeg,.png,.bmp">
 
 <div class="toolbar">
 
+<select id="boundaryType">
 
+    <option value="circle">
+        🔴 Circle
+    </option>
+
+    <option value="square">
+        🟦 Square / Rectangle
+    </option>
+
+</select>
 <button onclick="startDrawing()">
 ✏ Draw Remnant
 </button>
@@ -347,7 +357,7 @@ const TOP=1;
 const RIGHT=2;
 const BOTTOM=3;
 const LEFT=4;
-
+let boundaryType = "circle";
 let shape = {
 
 cx:250,
@@ -360,6 +370,19 @@ bottom:100,
 left:100
 
 };
+document
+.getElementById("boundaryType")
+.addEventListener(
+    "change",
+    function(){
+
+        boundaryType =
+            this.value;
+
+        redraw();
+
+    }
+);
 
 function loadImage(file){
 
@@ -373,35 +396,64 @@ function loadImage(file){
 
         imageObj = img;
 
-        imgCanvas.width = img.width;
-        imgCanvas.height = img.height;
+const wrapper =
+document.getElementById(
+    "canvasWrapper"
+);
 
-        overlayCanvas.width = img.width;
-        overlayCanvas.height = img.height;
+// Maximum display size
+const maxWidth = 1000;
+const maxHeight = 700;
 
-        const wrapper =
-        document.getElementById(
-            "canvasWrapper"
-        );
+// Calculate scale
+const scale =
+Math.min(
+    maxWidth / img.width,
+    maxHeight / img.height,
+    1
+);
 
-        wrapper.style.width =
-        img.width + "px";
+const displayWidth =
+    img.width * scale;
 
-        wrapper.style.height =
-        img.height + "px";
+const displayHeight =
+    img.height * scale;
 
-        imgCtx.clearRect(
-            0,
-            0,
-            imgCanvas.width,
-            imgCanvas.height
-        );
+// Resize canvases
+imgCanvas.width =
+    displayWidth;
 
-        imgCtx.drawImage(
-            img,
-            0,
-            0
-        );
+imgCanvas.height =
+    displayHeight;
+
+overlayCanvas.width =
+    displayWidth;
+
+overlayCanvas.height =
+    displayHeight;
+
+// Resize wrapper
+wrapper.style.width =
+    displayWidth + "px";
+
+wrapper.style.height =
+    displayHeight + "px";
+
+// Draw scaled image
+imgCtx.clearRect(
+    0,
+    0,
+    displayWidth,
+    displayHeight
+);
+
+imgCtx.drawImage(
+    img,
+    0,
+    0,
+    displayWidth,
+    displayHeight
+);
 
         resetShape();
 
@@ -459,92 +511,134 @@ ctx.stroke();
 
 function drawRedBoundary(){
 
-ctx.beginPath();
+    ctx.strokeStyle="red";
+    ctx.lineWidth=3;
 
-ctx.moveTo(
-shape.cx,
-shape.cy-shape.top
-);
+    if(boundaryType==="circle"){
 
-ctx.bezierCurveTo(
-shape.cx+shape.right,
-shape.cy-shape.top,
+        ctx.beginPath();
 
-shape.cx+shape.right,
-shape.cy+shape.bottom,
+        ctx.moveTo(
+            shape.cx,
+            shape.cy-shape.top
+        );
 
-shape.cx,
-shape.cy+shape.bottom
-);
+        ctx.bezierCurveTo(
+            shape.cx+shape.right,
+            shape.cy-shape.top,
 
-ctx.bezierCurveTo(
-shape.cx-shape.left,
-shape.cy+shape.bottom,
+            shape.cx+shape.right,
+            shape.cy+shape.bottom,
 
-shape.cx-shape.left,
-shape.cy-shape.top,
+            shape.cx,
+            shape.cy+shape.bottom
+        );
 
-shape.cx,
-shape.cy-shape.top
-);
+        ctx.bezierCurveTo(
+            shape.cx-shape.left,
+            shape.cy+shape.bottom,
 
-ctx.strokeStyle="red";
-ctx.lineWidth=3;
-ctx.stroke();
+            shape.cx-shape.left,
+            shape.cy-shape.top,
 
-drawHandle(
-shape.cx,
-shape.cy,
-"cyan"
-);
+            shape.cx,
+            shape.cy-shape.top
+        );
 
-drawHandle(
-shape.cx,
-shape.cy-shape.top,
-"yellow"
-);
+        ctx.stroke();
 
-drawHandle(
-shape.cx+shape.right,
-shape.cy,
-"yellow"
-);
+    }
+    else{
 
-drawHandle(
-shape.cx,
-shape.cy+shape.bottom,
-"yellow"
-);
+        ctx.strokeRect(
 
-drawHandle(
-shape.cx-shape.left,
-shape.cy,
-"yellow"
-);
+            shape.cx - shape.left,
+
+            shape.cy - shape.top,
+
+            shape.left + shape.right,
+
+            shape.top + shape.bottom
+
+        );
+
+    }
+
+    drawHandle(
+        shape.cx,
+        shape.cy,
+        "cyan"
+    );
+
+    drawHandle(
+        shape.cx,
+        shape.cy-shape.top,
+        "yellow"
+    );
+
+    drawHandle(
+        shape.cx+shape.right,
+        shape.cy,
+        "yellow"
+    );
+
+    drawHandle(
+        shape.cx,
+        shape.cy+shape.bottom,
+        "yellow"
+    );
+
+    drawHandle(
+        shape.cx-shape.left,
+        shape.cy,
+        "yellow"
+    );
 
 }
+
+
 function pointInsideRedBoundary(x,y){
 
+    if(boundaryType==="square"){
+
+        return (
+
+            x >= shape.cx-shape.left &&
+
+            x <= shape.cx+shape.right &&
+
+            y >= shape.cy-shape.top &&
+
+            y <= shape.cy+shape.bottom
+
+        );
+
+    }
+
     const dx =
-    x - shape.cx;
+        x-shape.cx;
 
     const dy =
-    y - shape.cy;
+        y-shape.cy;
 
     const rx =
-    dx >= 0
-    ? shape.right
-    : shape.left;
+        dx>=0
+        ? shape.right
+        : shape.left;
 
     const ry =
-    dy >= 0
-    ? shape.bottom
-    : shape.top;
+        dy>=0
+        ? shape.bottom
+        : shape.top;
 
     return (
+
         (dx*dx)/(rx*rx)
+
         +
+
         (dy*dy)/(ry*ry)
+
     ) <= 1;
 
 }

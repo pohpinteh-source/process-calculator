@@ -212,9 +212,6 @@ FAB Calculator
 B.A.R Calculator
 </button>
 
-<button onclick="goTo('shear_remnant_calculator.html')">
-    Shear Remnant Calculator
-</button>
 
 
 <!-- ✅ NEW TOOL -->
@@ -237,17 +234,12 @@ Est. Wire Length (3D)
     Wire Usage Comparison
 </button>
 
-
 <button onclick="goTo('capillary_need.html')">
 Capillary Need
 </button>
 
 <button onclick="goTo('capillary_profile_selection.html')">
 Capillary Profile Selection
-</button>
-
-<button onclick="goTo('shear_remnant_calculator.html')">
-Shear Remnant Calculator
 </button>
 
 <button disabled class="disabled-btn">
@@ -268,6 +260,7 @@ Fusing Current Assumption
 <button onclick="goTo('define_da_spec.html')">Define DA Spec</button>
 <button onclick="goTo('define_wb_spec.html')">Define WB Spec</button>
 <button onclick="goTo('spc_lsl.html')">SPC LSL</button>
+<button onclick="goTo('shear_remnant_calculator.html')">Shear Remnant Calculator</button>
 <button onclick="goTo('universal_comparison_checker.html')">Universal Comparison Checker</button>
 
 </div>
@@ -275,8 +268,14 @@ Fusing Current Assumption
 <!-- ✅ INFO -->
 <div class="column">
 <div class="section-title">📚 Info</div>
+<button onclick="window.open('wire_library.xlsx','_blank')">
+    🧵 Wire Library
+</button>
 
-<button onclick="openPDF()">Wire Bond Guideline</button>
+<button onclick="window.open('capillary_library.xlsx','_blank')">
+    🪡 Capillary Library
+</button>
+<button onclick="openPDF()">📖 Wire Bond Guideline</button>
 
 <button onclick="window.open('Process Calculator Android.mp4','_blank')">
     📱 Android Setup HomeScreen 
@@ -286,8 +285,8 @@ Fusing Current Assumption
     🍎 iOS Setup HomeScreen 
 </button>
 
-<button onclick="goTo('usage-dashboard.html')">
-📊 Usage Statistics Dashboard
+<button onclick="openUsageDashboard()">
+📊 Usage Statistics Dashboard 🔒
 </button>
 
 </div>
@@ -311,7 +310,32 @@ function goTo(page){
     window.location.href =
         page + params;
 }
+function openUsageDashboard(){
 
+    const pwd =
+        prompt(
+            "🔒 Enter Admin Password (Wife's name)"
+        );
+
+    if(
+        pwd ===
+        "changsiewtheng"
+    ){
+
+        goTo(
+            "usage-dashboard.html"
+        );
+
+    }
+    else{
+
+        alert(
+            "❌ Wrong Password"
+        );
+
+    }
+
+}
 function openUnsortedWaferMap(){
     window.location.href =
         "unsorted_wafer_map.html" +
@@ -387,6 +411,8 @@ if(pwd === "changsiewtheng"){
     }
 
 });
+
+
 
 </script>
 </body>
