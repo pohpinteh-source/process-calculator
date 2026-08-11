@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unsorted Wafer Map</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    margin:10px;
+}
+
+.container{
+    width:100%;
+    margin:auto;
+}
+
+.title{
+    background:#1f4e79;
+    color:white;
+    font-size:26px;
+    text-align:center;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+
+.drop-zone{
+    border:2px dashed #666;
+    background:white;
+    padding:40px;
+    text-align:center;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.drag-over{
+    background:#fff4b3;
+}
+
+.btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+button{
+    padding:10px;
+    min-width:160px;
+    cursor:pointer;
+}
+
+select{
+    padding:8px;
+    min-width:90px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.summary{
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+    margin-bottom:15px;
+}
+
+.map-container{
+    position:relative;
+    background:white;
+    text-align:left;
+    overflow:auto;
+    display:inline-block;
+}
+
+
+.wafer-circle{
+    display:block;
+    padding:10px;
+}
+
+table{
+    border-collapse:collapse;
+    margin-left:0;
+    margin-right:auto;
+}
+
+
+
+th{
+    background:#1f4e79;
+    color:white;
+    border:1px solid #aaa;
+    width:10px;
+    height:10px;
+    font-size:7px;
+    padding:0;
+}
+
+td{
+    width:20px;
+    height:45px;
+    padding:0;
+    font-size:10px;
+    font-weight:bold;
+    text-align:center;
+    border:1px solid #e0e0e0;
+}
+
+
+.good{
+    background:#00cc00;
+    color:white;
+}
+
+.goodBlue{
+    background:#0000FF;
+    color:white;
+}
+
+.other{
+    background:white;
+}
+
+.empty{
+    background:#f5f5f5;
+    color:#999;
+    border:1px solid #e0e0e0;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">
+🟢 Unsorted Wafer Map
+</div>
+
+<div id="dropZone" class="drop-zone">
+📄 Drop Wafer Map File Here
+<br><br>
+or Click To Browse
+</div>
+
+<div class="btn-row">
+
+<button onclick="processWaferMap()">
+Process Wafer Map
+</button>
+
+<button onclick="clearFile()">
+Clear
+</button>
+
+<label style="margin-left:20px;font-weight:bold;">
+Zoom:
+</label>
+<select onchange="setZoom(this.value)">
+<option value="0.10">10%</option>
+<option value="0.20">20%</option>
+<option value="0.21" selected>21%</option>
+
+<option value="0.30">30%</option>
+
+<option value="0.40">40%</option>
+<option value="0.50">50%</option>
+<option value="0.60">60%</option>
+<option value="0.70">70%</option>
+<option value="0.80">80%</option>
+<option value="0.90">90%</option>
+<option value="1.00">100%</option>
+</select>
+
+<button onclick="exportExcel()">
+Export to Excel
+</button>
+
+<button onclick="exportPDF()">
+Export to PDF
+</button>
+
+<button onclick="goHome()">
+Back
+</button>
+
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+let waferFile = null;
+
+const zone =
+document.getElementById("dropZone");
+
+zone.addEventListener("click",function(){
+
+    const input =
+        document.createElement("input");
+
+    input.type = "file";
+
+    input.onchange = function(){
+
+        waferFile =
+            input.files[0];
+
+        if(!waferFile){
+            return;
+        }
+
+        zone.innerHTML =
+            "✅ " + waferFile.name;
+    };
+
+    input.click();
+});
+
+zone.addEventListener("dragover",function(e){
+
+    e.preventDefault();
+
+    zone.classList.add("drag-over");
+
+});
+
+zone.addEventListener("dragleave",function(){
+
+    zone.classList.remove("drag-over");
+
+});
+
+zone.addEventListener("drop",function(e){
+
+    e.preventDefault();
+
+    zone.classList.remove("drag-over");
+
+    waferFile =
+        e.dataTransfer.files[0];
+
+    if(!waferFile){
+        return;
+    }
+
+    zone.innerHTML =
+        "✅ " + waferFile.name;
+});
+
+async function processWaferMap(){
+
+    if(!waferFile){
+
+        alert(
+            "Please select a wafer map file."
+        );
+
+        return;
+    }
+
+    const text =
+        await waferFile.text();
+
+    buildWaferMap(text);
+
+    setTimeout(() => {
+
+        setZoom(
+            document.querySelector("select").value
+        );
+
+    }, 0);
+}
+
+
+function buildWaferMap(text){
+
+    const originalRows =
+        text
+        .trim()
+        .split(/\r?\n/)
+        .map(row => row.trim().split(/\s+/));
+
+let goodDie = 0;
+let ocrCount = 0;
+let mapType = "";
+
+const count001 =
+    (text.match(/\b001\b/g) || []).length;
+
+const count000 =
+    (text.match(/\b000\b/g) || []).length;
+
+if(count000 > count001){
+    mapType = "Used Map";
+}
+else{
+    mapType = "New Map";
+}
+
+const goodCode =
+    mapType === "Used Map"
+    ? "000"
+    : "001";
+
+    /* Rotate 90° Anti-Clockwise */
+
+    const rowCount =
+        originalRows.length;
+
+    const colCount =
+        Math.max(
+            ...originalRows.map(
+                r => r.length
+            )
+        );
+
+    const rotated = [];
+
+
+    for(let c = colCount - 1; c >= 0; c--){
+
+        const newRow = [];
+
+        for(let r = 0; r < rowCount; r++){
+
+            newRow.push(
+                originalRows[r][c] || ""
+            );
+
+        }
+
+        rotated.push(newRow);
+    }
+
+let table =
+'<div id="waferMapImage" class="map-container"><div class="wafer-circle"><table>';
+
+    /* Column Header */
+
+    table += '<tr>';
+    table += '<th></th>';
+
+for(let c=1;c<=rotated[0].length;c++){
+
+        table +=
+        `<th>${c}</th>`;
+
+    }
+
+    table += '</tr>';
+
+    /* Body */
+
+    rotated.forEach((row,rowIndex)=>{
+
+        table += '<tr>';
+
+        table +=
+        `<th>${rowIndex+1}</th>`;
+
+        row.forEach(value=>{
+
+value = value.trim();
+
+if(value === goodCode){
+
+    goodDie++;
+
+    table += `
+    <td class="good">
+        ${value}
+    </td>
+    `;
+
+}
+else if(
+
+    value.toUpperCase() === "@@F"
+
+    ||
+
+    (
+        value.length === 3 &&
+        value.toUpperCase().startsWith("F")
+    )
+
+)
+{
+    ocrCount++;
+
+    table += `
+    <td class="goodBlue">
+        ${value}
+    </td>
+    `;
+}
+else if(
+    value === "---" ||
+    value === "___" ||
+    value === ""
+){
+    table += `
+    <td class="empty">
+    </td>
+    `;
+}
+
+
+else{
+
+    table += `
+    <td class="other">
+        ${value}
+    </td>
+    `;
+
+}
+ });
+
+        table += '</tr>';
+
+    });
+
+table += '</table></div></div>';
+
+
+    document.getElementById(
+        "result"
+    ).innerHTML =
+
+    `
+    <div class="summary">
+
+<h3>Wafer Summary</h3>
+
+<div style="
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:15px;
+">
+    Map Type:
+    <span style="
+        color:#1f4e79;
+        font-size:24px;
+        font-weight:bold;
+    ">
+        ${mapType}
+    </span>
+</div>
+
+<div style="
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:10px;
+">
+    Total Good Die (${goodCode}):
+
+    <span style="
+        color:green;
+        font-size:32px;
+        font-weight:bold;
+    ">
+        ${goodDie}
+    </span>
+</div>
+
+<div style="
+    font-size:20px;
+    font-weight:bold;
+">
+    Total OCR:
+
+    <span style="
+        color:#0000FF;
+        font-size:32px;
+        font-weight:bold;
+    ">
+        ${ocrCount}
+    </span>
+</div>
+
+</div>
+
+
+    ${table}
+    `;
+}
+
+function setZoom(value){
+
+    const waferArea =
+        document.querySelector(".map-container");
+
+    if(!waferArea){
+        return;
+    }
+
+    waferArea.style.zoom = value;
+}
+    
+
+function clearFile(){
+
+    waferFile = null;
+
+    document.getElementById(
+        "dropZone"
+    ).innerHTML =
+    `
+    📄 Drop Wafer Map File Here
+    <br><br>
+    or Click To Browse
+    `;
+
+    document.getElementById(
+        "result"
+    ).innerHTML = "";
+}
+function getTimestamp(){
+
+    const now = new Date();
+
+    const dd =
+        String(now.getDate()).padStart(2,"0");
+
+    const mm =
+        String(now.getMonth()+1).padStart(2,"0");
+
+    const yy =
+        String(now.getFullYear()).slice(-2);
+
+    let hh =
+        now.getHours();
+
+    const ampm =
+        hh >= 12 ? "PM" : "AM";
+
+    hh = hh % 12;
+
+    if(hh === 0){
+        hh = 12;
+    }
+
+    const min =
+        String(now.getMinutes()).padStart(2,"0");
+
+    return `${dd}${mm}${yy}_${hh}${min}${ampm}`;
+}
+function exportExcel(){
+
+    const table =
+        document.querySelector("table");
+
+    if(!table){
+        alert("Please process wafer map first.");
+        return;
+    }
+
+    let html = `
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    </head>
+    <body>
+    ${table.outerHTML}
+    </body>
+    </html>
+    `;
+
+    const blob = new Blob(
+        [html],
+        {
+            type:"application/vnd.ms-excel"
+        }
+    );
+
+    const a =
+        document.createElement("a");
+
+    let exportName =
+        waferFile.name.replace(
+            /\.[^/.]+$/,
+            ""
+        );
+
+    a.href =
+        URL.createObjectURL(blob);
+
+    a.download =
+        exportName +
+        "_" +
+        getTimestamp() +
+        ".xls";
+
+    a.click();
+
+}
+
+async function exportPDF(){
+
+    if(!window.jspdf){
+        alert("jsPDF library not loaded.");
+        return;
+    }
+
+    if(!waferFile){
+        alert("Please process wafer map first.");
+        return;
+    }
+
+    const summary =
+        document.querySelector(".summary");
+
+    const waferMap =
+        document.getElementById("waferMapImage");
+
+
+    let exportName =
+        waferFile.name.replace(
+            /\.[^/.]+$/,
+            ""
+        );
+
+    const canvas =
+        await html2canvas(
+            waferMap,
+            {
+                scale:2
+            }
+        );
+
+    const imgData =
+        canvas.toDataURL(
+            "image/jpeg",
+            1.0
+        );
+
+const { jsPDF } = window.jspdf;
+
+const pdf =
+    new jsPDF(
+        "landscape",
+        "mm",
+        "a4"
+    );
+
+
+    /* PAGE 1 */
+    pdf.setFontSize(20);
+    pdf.text(
+        "Wafer Summary",
+        15,
+        20
+    );
+
+    pdf.setFontSize(14);
+
+    pdf.text(
+        summary.innerText,
+        15,
+        35
+    );
+
+    /* PAGE 2 */
+    pdf.addPage();
+
+    const pageWidth =
+        pdf.internal.pageSize.getWidth();
+
+    const pageHeight =
+        pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(
+        imgData,
+        "JPEG",
+        5,
+        5,
+        pageWidth - 10,
+        pageHeight - 10
+    );
+
+    pdf.save(
+        exportName +
+        "_" +
+        getTimestamp() +
+        ".pdf"
+    );
+}
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+}
+
+</script>
+<script src="xlsx.full.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</body>
+</html>

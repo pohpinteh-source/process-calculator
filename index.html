@@ -190,6 +190,9 @@ button {
 <button onclick="goTo('da_collet.html')">DA Collet</button>
 <button onclick="goTo('da_xy_stackup.html')">DA XY Stackup</button>
 <button onclick="goTo('da_glue_component_scrap.html')">DA Glue Component Scrap</button>
+<button onclick="openUnsortedWaferMap()">
+    Unsorted Wafer Map
+</button>
 
 </div>
 
@@ -301,6 +304,14 @@ function goTo(page){
     window.location.href =
         page + params;
 }
+
+function openUnsortedWaferMap(){
+    window.location.href =
+        "unsorted_wafer_map.html" +
+        window.location.search;
+}
+
+
 // ✅ open pdf
 function openPDF(){
     window.open("Wire Bond Guideline.pdf","_blank");
