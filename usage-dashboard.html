@@ -61,7 +61,29 @@ select{
     margin-bottom:20px;
     box-shadow:0 2px 5px rgba(0,0,0,0.2);
 }
+.chartRow{
 
+    display:flex;
+
+    gap:20px;
+
+}
+
+.chartCard{
+
+    flex:1;
+
+}
+
+@media (max-width:900px){
+
+    .chartRow{
+
+        flex-direction:column;
+
+    }
+
+}
 h3{
     margin-top:0;
     color:#1f4e79;
@@ -85,7 +107,114 @@ th,td{
     max-height:400px;
     overflow:auto;
 }
+.summaryPanel{
+    display:flex;
+    gap:20px;
+}
 
+#summaryPanel{
+
+    display:flex;
+
+    gap:20px;
+
+    justify-content:flex-start;
+
+    align-items:flex-start;
+
+    flex-wrap:nowrap;
+
+    width:100%;
+
+}
+
+.summaryCard{
+
+    min-width:250px;
+
+    background:#f9f9f9;
+
+    padding:20px;
+
+    border-radius:10px;
+
+    text-align:left;
+
+    box-shadow:
+        0 2px 5px rgba(0,0,0,.15);
+
+}
+.summaryTitle{
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    color:#1f4e79;
+
+    margin-bottom:15px;
+
+}
+
+.summaryLine{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    margin:10px 0;
+
+}
+
+.summaryCard h2{
+
+    color:#1f4e79;
+
+    margin:5px 0;
+
+    font-size:24px;
+
+}
+
+.active{
+
+    color:green;
+
+    font-weight:bold;
+
+}
+
+.disabled{
+
+    color:red;
+
+    font-weight:bold;
+
+}
+.summaryCard{
+
+    min-width:250px;
+
+    background:#ffffff;
+
+    padding:20px;
+
+    border-radius:12px;
+
+    border-left:4px solid #1f4e79;
+
+    text-align:left;
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,.12);
+
+}
 </style>
 
 </head>
@@ -124,28 +253,96 @@ Last 30 Days
 <button onclick="goHome()">
 ⬅ Back
 </button>
-
-</div>
-<div class="card">
-
-<h3>
-Calculator Usage Ranking
-</h3>
-
-<canvas id="calculatorChart"></canvas>
-
-</div>
+  </div>
 
 <div class="card">
 
 <h3>
-Top Users Usage
+📈 Dashboard Summary
 </h3>
 
-<canvas id="userChart"></canvas>
+<div id="summaryPanel">
+
+<div class="summaryCard">
+
+    <div class="summaryTitle">
+        👥 Total Users
+    </div>
+
+    <div
+        id="totalUsers"
+        class="summaryLine"
+    >
+        -
+    </div>
+
+</div>
+<div class="summaryCard">
+
+    <div class="summaryTitle">
+        🧮 Calculators
+    </div>
+
+    <div class="summaryLine">
+
+        <span>Total</span>
+
+        <span id="totalCalculator">
+            23
+        </span>
+
+    </div>
+
+    <div class="summaryLine active">
+
+        <span>Active</span>
+
+        <span id="activeCalculator">
+            21
+        </span>
+
+    </div>
+
+    <div class="summaryLine disabled">
+
+        <span>Disabled</span>
+
+        <span id="disabledCalculator">
+            2
+        </span>
+
+    </div>
 
 </div>
 
+</div>
+
+</div>
+
+</div>
+<div class="chartRow">
+
+    <div class="card chartCard">
+
+        <h3>
+            Calculator Usage Ranking
+        </h3>
+
+        <canvas id="calculatorChart"></canvas>
+
+    </div>
+
+    <div class="card chartCard">
+
+        <h3>
+            Top Users Usage
+        </h3>
+
+        <canvas id="userChart"></canvas>
+
+    </div>
+
+</div>
 <div class="card">
 
 <h3>
@@ -219,7 +416,7 @@ async function loadLogs(){
 
         allLogs =
             await response.json();
-
+loadUserCount();
         populateFilters();
 
         buildDashboard(
@@ -639,7 +836,64 @@ function filterByPeriod(){
     buildDashboard(filtered);
 }
 
+async function loadUserCount(){
 
+    const response =
+        await fetch(
+            API_URL +
+            "?action=getUsers"
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        "totalUsers"
+    ).innerHTML =
+        data.length - 1;
+}
+function loadCalculatorCount(){
+
+    document.getElementById(
+        "totalCalculator"
+    ).innerHTML = 23;
+
+    document.getElementById(
+        "activeCalculator"
+    ).innerHTML = 21;
+
+    document.getElementById(
+        "disabledCalculator"
+    ).innerHTML = 2;
+
+}
+
+async function loadUserCount(){
+
+    try{
+
+        const response =
+            await fetch(
+                API_URL +
+                "?action=getUsers"
+            );
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "totalUsers"
+        ).innerHTML =
+        data.length - 1;
+
+    }
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}
 function goHome(){
 
     window.location.href =
@@ -650,7 +904,7 @@ function goHome(){
 trackUsage();
 
 loadLogs();
-
+loadCalculatorCount();
 </script>
 
 </body>
