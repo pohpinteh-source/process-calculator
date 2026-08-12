@@ -512,38 +512,49 @@ const values =
 
                 },
 
-                options:{
+options:{
 
-                    responsive:true,
+    responsive:true,
 
-                    scales:{
+    scales:{
 
-                        y:{
+        x:{
 
-                            beginAtZero:true,
+            ticks:{
 
-                            min:0,
+                minRotation:90,
 
-                            ticks:{
+                maxRotation:90
 
-                                stepSize:1,
+            }
 
-                                callback:function(value){
+        },
 
-                                    return Number.isInteger(value)
-                                        ? value
-                                        : null;
+        y:{
 
-                                }
+            beginAtZero:true,
 
-                            }
+            min:0,
 
-                        }
+            ticks:{
 
-                    }
+                stepSize:1,
+
+                callback:function(value){
+
+                    return Number.isInteger(value)
+                        ? value
+                        : null;
 
                 }
 
+            }
+
+        }
+
+    }
+
+}
             }
 
         );
