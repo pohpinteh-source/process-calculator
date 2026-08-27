@@ -34,11 +34,14 @@ td{
     padding:6px;
     text-align:center;
 }
-
+.blankCell{
+    border:none !important;
+    background:transparent;
+}
 .header{
     background:#d9c2ad;
     font-weight:bold;
-    font-size:18px;
+    font-size:14px;
 }
 
 .input-box{
@@ -54,10 +57,26 @@ td{
     background:#f2f2f2;
 }
 
-.au-box{background:gold;}
-.ag-box{background:silver;}
-.al-box{background:#d9d9d9;}
-.cu-box{background:#b87333;color:black;}
+.au-box{
+    background:gold;
+    font-weight:bold;
+}
+
+.ag-box{
+    background:silver;
+    font-weight:bold;
+}
+
+.cu-box{
+    background:#b87333;
+    color:black;
+    font-weight:bold;
+}
+
+.al-box{
+    background:#F2F2F2;
+    font-weight:bold;
+}
 
 input,select{
     width:100%;
@@ -76,7 +95,10 @@ input,select{
     padding:10px;
     margin-top:10px;
 }
-
+.selectedLengthBox{
+    background:#F1A983;
+    font-weight:bold;
+}
 .left{
     width:350px;
 }
@@ -97,7 +119,9 @@ input,select{
     font-weight:bold;
 }
 
-
+.wireHeader{
+    background:#9DC3E6 !important;
+}
 .nearest{
     background:lightgreen;
     font-weight:bold;
@@ -108,7 +132,22 @@ input,select{
     color:black;
     font-weight:bold;
 }
+.fusingResult{
+    background:#8fd98f;
+    font-weight:bold;
+}
 
+.cccResult{
+    background:#b7d7ff;
+    font-weight:bold;
+}
+
+.cccFooter{
+    background:#E49EDD;
+    font-weight:400 !important;
+    font-size:16px;
+    text-align:center;
+}
 
 .info-box{
     border:1px solid black;
@@ -126,6 +165,35 @@ canvas{
     display:none;
 
 }
+
+/* Column B */
+td:nth-child(2){
+    width:45px;
+    font-weight:bold;
+}
+/* Column A */
+.top table td:first-child{
+    width:180px;
+}
+/* Column C */
+#selectedCCC_RT,
+#cccRange_RT{
+    min-width:105px;
+}
+
+/* Column D */
+#selectedCCC_HT,
+#cccRange_HT{
+    min-width:105px;
+}
+#resultTable{
+    table-layout:fixed;
+}
+
+#resultTable td{
+    width:25%;
+}
+
 .remark-box{
     margin-top:10px;
     border:2px solid red;
@@ -139,6 +207,9 @@ canvas{
 
 .top,.left,.right{
     width:100%;
+}
+.cccCol{
+    width:120px;
 }
 
 
@@ -166,6 +237,7 @@ Fusing Current Checker (FCC) per wire
 
 <tr>
 <td>Wire Type</td>
+<td></td>
 <td id="wireTypeBox" class="input-box">
 
 <select id="wireType">
@@ -177,57 +249,89 @@ Fusing Current Checker (FCC) per wire
 </select>
 
 </td>
-<td></td>
 </tr>
 
 <tr>
 <td>Wire Diameter</td>
-
+<td>µm</td>
 <td id="diameterBox" class="input-box">
 <input id="diameter">
 </td>
-
-<td>µm</td>
 </tr>
 
 <tr>
 <td>3D Wire Length</td>
-
+<td>mm</td>
 <td id="lengthBox" class="input-box">
 <input id="wireLength3D">
 </td>
+</tr>
 
-<td>mm</td>
-</tr>
 <tr>
-<td>Selected Wire Length</td>
-<td id="selectedLength" class="nearest"></td>
+<td>Reference Length</td>
 <td>mm</td>
+<td id="selectedLength" class="selectedLengthBox"></td>
 </tr>
+
 
 <tr>
 <td>Est. Fusing Current</td>
-<td id="selectedAmpacity" class="nearest"></td>
 <td>A</td>
+<td id="selectedAmpacity" class="fusingResult"></td>
 </tr>
-
-<tr>
-<td>Est. Current Carrying Capacity</td>
-<td id="selectedCCC" class="nearest"></td>
-<td>A</td>
-</tr>
-
 
 <tr>
 <td>Fusing Current Range (Max)</td>
-<td id="ampRange" class="range"></td>
 <td>A</td>
+<td id="ampRange" class="fusingResult"></td>
+</tr>
+
+
+<tr>
+<td>
+Est. CCC
+</td>
+
+<td>A</td>
+
+<td id="selectedCCC_RT"
+    class="cccResult">
+</td>
+
+<td id="selectedCCC_HT"
+    class="cccResult">
+</td>
 </tr>
 
 <tr>
-<td>Current Carrying Capacity Range (Max)</td>
-<td id="cccRange" class="range"></td>
+<td>
+CCC Range (Max)
+</td>
+
 <td>A</td>
+
+<td id="cccRange_RT"
+    class="cccResult">
+</td>
+
+<td id="cccRange_HT"
+    class="cccResult"></td>
+
+</tr>
+
+<tr>
+    <td colspan="2" class="blankCell"></td>
+
+<td class="cccFooter"
+    title="RT = Room Temperature @ 25°C">
+    RT@25°C
+</td>
+
+<td class="cccFooter"
+    title="HT = High Temperature @ 50% Wire Melting Point">
+    HT@50% MP
+</td>
+
 </tr>
 
 
@@ -268,7 +372,7 @@ Please input values in the yellow highlighted cells only.
 <table>
 
 <tr>
-<td class="header" colspan="3">
+<td class="header" colspan="4">
 Fusing Current per wire
 </td>
 </tr>
@@ -305,7 +409,7 @@ Fusing Current per wire
 
 <tr>
 <td>ΔT</td>
-<td id="deltaTFusing" class="result-box"></td>
+</td><td id="deltaTFusing" class="result-box"></td>
 <td>°C</td>
 </tr>
 
@@ -382,8 +486,11 @@ Please input values in the yellow highlighted cells only.
 </tr>
 
 <tr>
-<td>ΔT</td>
-<td class="property-box">390</td>
+<td
+    title="Temperature difference between the wire's two ends"
+    style="cursor:help;">
+    ΔT
+</td><td class="property-box">390</td>
 <td>K</td>
 </tr>
 
@@ -413,27 +520,88 @@ Please input values in the yellow highlighted cells only.
 
 <br><br>
 
-<b>Thermal Conductivity</b><br>
-Copper (Cu): 390 W/mK<br>
-Silver (Ag): 430 W/mK<br>
-Aluminium (Al): 237 W/mK<br>
-Gold (Au): 310 W/mK
+RT = Room Temperature (25°C)
+
+<br>
+
+50% MP = 50% Melting Point Temperature
 
 <br><br>
-
-<b>Wire Resistivity</b><br>
-Copper (Cu): 1.68E-8 Ω·m<br>
-Silver (Ag): 1.59E-8 Ω·m<br>
-Aluminium (Al): 2.82E-8 Ω·m<br>
-Gold (Au): 2.44E-8 Ω·m
-
-<br><br>
-
 <b>Wire Melting Temperature</b><br>
-Copper (Cu): 1085°C<br>
-Silver (Ag): 961°C<br>
-Aluminium (Al): 660°C<br>
+
+Copper (Cu): 1085°C
+
+<br>
+
+Silver (Ag): 961°C
+
+<br>
+
+Aluminium (Al): 660°C
+
+<br>
+
 Gold (Au): 1064°C
+<br><br>
+<b>Thermal Conductivity (W/mK)</b><br>
+
+Cu:
+RT (@25°C): 390
+|
+50% MP (@543°C): 300
+
+<br>
+
+Ag:
+RT (@25°C): 430
+|
+50% MP (@481°C): 340
+
+<br>
+
+Al:
+RT (@25°C): 237
+|
+50% MP (@330°C): 185
+
+<br>
+
+Au:
+RT (@25°C): 310
+|
+50% MP (@532°C): 235
+
+<br><br>
+
+<b>Wire Resistivity (Ω·m)</b><br>
+
+Cu:
+RT (@25°C): 1.68E-8
+|
+50% MP (@543°C): 5.00E-8
+
+<br>
+
+Ag:
+RT (@25°C): 1.59E-8
+|
+50% MP (@481°C): 4.50E-8
+
+<br>
+
+Al:
+RT (@25°C): 2.82E-8
+|
+50% MP (@330°C): 5.60E-8
+
+<br>
+
+Au:
+RT (@25°C): 2.44E-8
+|
+50% MP (@532°C): 5.80E-8
+
+<br><br>
 
 </div>
 
@@ -446,9 +614,26 @@ Gold (Au): 1064°C
 <table id="resultTable">
 
 <tr>
-<td class="header">Wire Length (mm)</td>
-<td class="header">Max Fusing Current, Ampacity (A)</td>
-<td class="header">Max Current Carrying Capacity (A)</td></tr>
+<td class="header wireHeader">
+Wire Length (mm)
+</td>
+
+<td class="header">
+Fusing Current,<br>
+Ampacity (A)
+</td>
+
+<td class="header">
+Current Carrying Capacity (A)<br>
+@ RT (25°C)
+</td>
+
+<td class="header">
+Current Carrying Capacity (A)<br>
+@ HT (50% MP)
+</td>
+
+</tr>
 
 </table>
 
@@ -484,35 +669,58 @@ Physical validation is recommended before engineering or production use.
 const db = {
 
 Ag:{
-k:430,
-rho:1.59e-8,
-melt:961,
-tmax:200
+    k:430,
+    rho:1.59e-8,
+    melt:961,
+    tmax:200
 },
 
 Au:{
-k:310,
-rho:2.44e-8,
-melt:1064,
-tmax:220
+    k:310,
+    rho:2.44e-8,
+    melt:1064,
+    tmax:220
 },
 
 Cu:{
-k:390,
-rho:1.68e-8,
-melt:1085,
-tmax:240
+    k:390,
+    rho:1.68e-8,
+    melt:1085,
+    tmax:240
 },
 
 Al:{
-k:237,
-rho:2.82e-8,
-melt:660,
-tmax:180
+    k:237,
+    rho:2.82e-8,
+    melt:660,
+    tmax:180
 }
 
 };
 
+const highTempDB = {
+
+Ag:{
+    k:340,
+    rho:4.50e-8
+},
+
+Au:{
+    k:235,
+    rho:5.80e-8
+},
+
+Cu:{
+    k:300,
+    rho:5.00e-8
+},
+
+Al:{
+    k:185,
+    rho:5.60e-8
+}
+
+};
 const wireType=document.getElementById("wireType");
 const diameter=document.getElementById("diameter");
 const wireLength3D=document.getElementById("wireLength3D");
@@ -706,11 +914,9 @@ dT
 );
 
 let x=[];
-
 let ampY=[];
-
 let cccY=[];
-
+let cccHTY=[];
 
 for(let i=1;i<=40;i++){
 
@@ -734,6 +940,21 @@ db[type].rho
 )
 *
 Math.sqrt(390);
+
+let cccHT =
+(Math.PI/4)
+*
+Math.sqrt(
+highTempDB[type].k/
+highTempDB[type].rho
+)
+*
+(
+(D*D)/Lm
+)
+*
+Math.sqrt(390);
+
     if(type==="Au"){
 
         amp=
@@ -777,7 +998,7 @@ x.push(L);
 ampY.push(amp);
 
 cccY.push(ccc);
-
+cccHTY.push(cccHT);
 
     }
 
@@ -846,11 +1067,56 @@ if(selectedIndex >= 0){
 
     }
 
-    document.getElementById(
-        "selectedCCC"
-    ).innerHTML =
-    cccY[selectedIndex]
-    .toFixed(4);
+const cccRT =
+cccY[selectedIndex];
+
+document.getElementById(
+    "selectedCCC_RT"
+).innerHTML =
+cccRT.toFixed(4);
+
+const DHT =
+d * 1e-6;
+
+const LmHT =
+nearestLength * 1e-3;
+
+const cccHT =
+
+(Math.PI/4)
+
+*
+
+Math.sqrt(
+
+highTempDB[type].k
+
+/
+
+highTempDB[type].rho
+
+)
+
+*
+
+(
+
+(DHT*DHT)
+
+/
+
+LmHT
+
+)
+
+*
+
+Math.sqrt(390);
+
+document.getElementById(
+    "selectedCCC_HT"
+).innerHTML =
+cccHT.toFixed(4);
 if(
     type==="Au" ||
     type==="Al"
@@ -888,7 +1154,7 @@ let minCCC =
 Math.min(...rangeCCC);
 
 document.getElementById(
-    "cccRange"
+    "cccRange_RT"
 ).innerHTML =
 maxCCC.toFixed(4)
 +
@@ -896,18 +1162,54 @@ maxCCC.toFixed(4)
 +
 minCCC.toFixed(4);
 
+const deratingFactor =
+
+Math.sqrt(
+
+(
+highTempDB[type].k
+/
+highTempDB[type].rho
+)
+
+/
+
+(
+db[type].k
+/
+db[type].rho
+)
+
+);
+
+document.getElementById(
+    "cccRange_HT"
+).innerHTML =
+
+(maxCCC * deratingFactor)
+.toFixed(4)
+
++
+
+" ~ "
+
++
+
+(minCCC * deratingFactor)
+.toFixed(4);
 }
 
 
 drawGraph(
-
     x,
     ampY,
     cccY,
+    cccHTY,
     nearestLength,
     type
+);
 
-);}
+}
 
 function buildTable(type,d,Tavg,dTval){
 
@@ -916,12 +1218,25 @@ document.getElementById("resultTable");
 
 table.innerHTML=`
 <tr>
-<td class="header">Wire Length (mm)</td>
-<td class="header">Fusing Current, Ampacity (A)</td>
-<td class="header">Current Carrying Capacity (A)</td>
+<td class="header wireHeader">Wire Length (mm)</td>
+
+<td class="header">
+Fusing Current,<br>
+Ampacity (A)
+</td>
+
+<td class="header">
+Current Carrying Capacity (A)<br>
+@ RT (25°C)
+</td>
+
+<td class="header">
+Current Carrying Capacity (A)<br>
+@ HT (50% MP)
+</td>
+
 </tr>
 `;
-
 
 
 let target =
@@ -994,6 +1309,19 @@ db[type].rho
 *
 Math.sqrt(390);
 
+let CCC_HT =
+(Math.PI/4)
+*
+Math.sqrt(
+highTempDB[type].k /
+highTempDB[type].rho
+)
+*
+(
+(D*D)/Lm
+)
+*
+Math.sqrt(390);
 
 
 
@@ -1029,6 +1357,9 @@ typeof amp==="number"
 : "N/A"
 }</td>
 <td>${CCC.toFixed(4)}</td>
+
+<td>${CCC_HT.toFixed(4)}</td>
+
 </tr>
 `;
 
@@ -1099,14 +1430,16 @@ function drawTriangle(
 
 }
 function drawGraph(
-
     x,
     ampY,
     cccY,
+    cccHTY,
     nearestLength,
     type
+)
 
-){
+
+{
 
     canvas.style.display="block";
 
@@ -1129,11 +1462,12 @@ function drawGraph(
     canvas.height-padT-padB;
 
 let maxGraph=
-
 Math.max(
     ...ampY,
-    ...cccY
+    ...cccY,
+    ...cccHTY
 );
+
 
 let axis=
 getNiceAxis(maxGraph);
@@ -1276,6 +1610,42 @@ for(let i=0;i<x.length;i++){
     }
 
 }
+/* HT CCC */
+ctx.fillStyle="red";
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (cccHTY[i]/maxY)*h;
+
+    if(
+        Math.abs(x[i]-nearestLength)<0.0001
+    ){
+
+        drawTriangle(
+            px,
+            py,
+            8,
+            "red"
+        );
+
+    }
+    else{
+
+        ctx.fillRect(
+            px-2,
+            py-2,
+            4,
+            4
+        );
+
+    }
+}
+
 /* Legend */
 
 let selectedAmp =
@@ -1319,17 +1689,38 @@ ctx.fillText(
 
 
 ctx.fillStyle="blue";
-ctx.fillRect(100,40,12,12);
+ctx.fillRect(100,45,12,12);
 
 ctx.fillStyle="blue";
 ctx.font="bold 12px Arial";
 
 ctx.fillText(
-   "Current Carrying Capacity ≈ "
+   "CCC @ RT ≈ "
     + selectedCCC.toFixed(4)
     + " A",
-    125,
-    50
+    138,
+    55
+);
+
+let selectedCCCHT =
+cccHTY.find((v,idx)=>
+Math.abs(
+x[idx]-nearestLength
+)<0.0001
+);
+
+ctx.fillStyle="#C000C0";
+ctx.fillRect(100,70,12,12);
+
+ctx.fillStyle="#C000C0";
+ctx.font="bold 12px Arial";
+
+ctx.fillText(
+    "CCC @ HT ≈ "
+    + selectedCCCHT.toFixed(4)
+    + " A",
+    138,
+    80
 );
 /* X Axis Label */
 
@@ -1391,7 +1782,8 @@ lengthBox.className="input-box";
 
 selectedLength.innerHTML="";
 selectedAmpacity.innerHTML="";
-selectedCCC.innerHTML="";
+selectedCCC_RT.innerHTML="";
+selectedCCC_HT.innerHTML="";
 
     kValue.innerHTML="";
     rhoValue.innerHTML="";
@@ -1401,7 +1793,8 @@ selectedCCC.innerHTML="";
     modifiedCCC.innerHTML="";
 
 ampRange.innerHTML="";
-cccRange.innerHTML="";
+cccRange_RT.innerHTML="";
+cccRange_HT.innerHTML="";
 
     canvas.style.display="none";
 
@@ -1412,14 +1805,29 @@ cccRange.innerHTML="";
         canvas.height
     );
 
-    resultTable.innerHTML=
-    `
-    <tr>
-        <td class="header">Wire Length (mm)</td>
-        <td class="header">Fusing Current, Ampacity (A)</td>
-        <td class="header">Current Carrying Capacity (A)</td>
-    </tr>
-    `;
+resultTable.innerHTML=
+`
+<tr>
+<td class="header">Wire Length (mm)</td>
+
+<td class="header">
+Fusing Current,<br>
+Ampacity (A)
+</td>
+
+<td class="header">
+Current Carrying Capacity (A)<br>
+@ RT (25°C)
+</td>
+
+<td class="header">
+Current Carrying Capacity (A)<br>
+@ HT (50% MP)
+</td>
+
+</tr>
+`;
+
 prev={};
 }
 
