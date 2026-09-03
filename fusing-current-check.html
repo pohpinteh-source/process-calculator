@@ -83,11 +83,15 @@ input,select{
     border:none;
     background:transparent;
     text-align:center;
+    font-size:14px;
+}
+.selectedLengthBox,
+.fusingResult{
     font-size:16px;
 }
 
 .top{
-    width:420px;
+    width:730px;
 }
 
 .top button{
@@ -140,15 +144,20 @@ input,select{
 .cccResult{
     background:#b7d7ff;
     font-weight:bold;
+    font-size:16px;
 }
+
 
 .cccFooter{
     background:#E49EDD;
     font-weight:400 !important;
-    font-size:16px;
+    font-size:15px;
     text-align:center;
+    line-height:1.0;
+    padding:6px 2px;
+    height:48px;
+    vertical-align:middle;
 }
-
 .info-box{
     border:1px solid black;
     padding:10px;
@@ -172,13 +181,31 @@ td:nth-child(2){
     font-weight:bold;
 }
 /* Column A */
-.top table td:first-child{
-    width:180px;
+.top table td:nth-child(1){
+    width:170px;
+    font-size:13px;
+    line-height:1.1;
 }
+.top table td:nth-child(2){
+    width:45px;
+    font-size:14px;
+}
+.top table td:nth-child(3),
+.top table td:nth-child(4),
+.top table td:nth-child(5){
+    width:110px;
+}
+
 /* Column C */
 #selectedCCC_RT,
-#cccRange_RT{
-    min-width:105px;
+#selectedCCC_OP,
+#selectedCCC_HT,
+#cccRange_RT,
+#cccRange_OP,
+#cccRange_HT{
+    width:140px;
+    min-width:140px;
+    font-size:14px;
 }
 
 /* Column D */
@@ -191,7 +218,7 @@ td:nth-child(2){
 }
 
 #resultTable td{
-    width:25%;
+    width:20%;
 }
 
 .remark-box{
@@ -211,7 +238,25 @@ td:nth-child(2){
 .cccCol{
     width:120px;
 }
+.cccResult{
+    background:#b7d7ff;
+    font-weight:bold;
+    font-size:18px;
+}
+.top table{
+    table-layout:fixed;
+}
 
+#selectedCCC_RT,
+#selectedCCC_OP,
+#selectedCCC_HT,
+#cccRange_RT,
+#cccRange_OP,
+#cccRange_HT{
+    width:110px;
+    min-width:110px;
+    font-size:13px;
+}
 
 }
 
@@ -266,7 +311,43 @@ Fusing Current Checker (FCC) per wire
 <input id="wireLength3D">
 </td>
 </tr>
+<tr>
+<td
+title="
+Recommended source for Operating Temperature:
 
+1. PRS (Product Requirement Specification)
+2. CRS (Customer Requirement Specification)
+3. Reliability Test Plan (SSLT/HTOL)
+4. Thermal Simulation Report
+5. Measured Junction / Package Temperature
+
+If no specification is available, use a conservative engineering estimate.
+">
+Operating Temperature (?)
+</td><td>°C</td>
+<td class="input-box">
+<input
+id="operatingTemp"
+value="125"
+title="
+Typical Operating Temperature Reference
+
+Low Power LED:
+25°C ~ 85°C
+
+General LED Package:
+85°C ~ 125°C
+
+Automotive LED:
+125°C ~ 150°C
+
+High Power LED:
+150°C ~ 175°C
+
+Use PRS / CRS / SSLT values whenever available.
+"></td>
+</tr>
 <tr>
 <td>Reference Length</td>
 <td>mm</td>
@@ -288,48 +369,154 @@ Fusing Current Checker (FCC) per wire
 
 
 <tr>
-<td>
-Est. CCC
-</td>
+<td
+title="
+CCC (Current Carrying Capacity) is an estimated single-wire current capability based on wire material, diameter, thermal conductivity, resistivity, and 3D wire length.
 
+Design CCC:
+Calculated using 25°C → 150°C.
+Used as a standard engineering benchmark for comparing wire designs.
+
+Operating CCC:
+Calculated using User Operating Temperature → Wire Tmax.
+This is the primary value for product design, wire-size selection, and maximum recommended continuous current estimation.
+
+Extreme Stress CCC:
+Calculated using 50% Melting Point → 80% Melting Point.
+This is a high-temperature stress model used for material robustness comparison only.
+
+Why can Operating CCC be lower than Extreme Stress CCC?
+
+Because Operating CCC uses the actual product operating temperature and a smaller allowable temperature-rise window (ΔT), while Extreme Stress CCC uses a larger thermal window based on melting temperature.
+
+A larger ΔT may mathematically produce a higher CCC value.
+
+For LED package design:
+
+Use Operating CCC as the primary design limit.
+
+Use Design CCC for comparison.
+
+Use Extreme Stress CCC as a thermal-stress reference only.
+"
+style="cursor:help;"
+>
+Est. CCC (?)
+</td>
 <td>A</td>
 
 <td id="selectedCCC_RT"
     class="cccResult">
 </td>
 
-<td id="selectedCCC_HT"
+<td id="selectedCCC_OP"
     class="cccResult">
 </td>
-</tr>
+
+<td id="selectedCCC_HT"
+    class="cccResult">
+</td></tr>
 
 <tr>
-<td>
-CCC Range (Max)
-</td>
+<td
+title="
+CCC Range (Min ~ Max) is provided as an engineering reference.
+*Min = worst case scenario
 
+The range is calculated from the selected reference wire length and the next two longer wire-length points in the table (+0.1 mm and +0.2 mm).
+
+Purpose:
+• To show how CCC changes if actual wire length varies slightly during package design.
+• To provide an expected CCC window around the selected 3D wire length.
+• Longer wire length generally results in lower CCC.
+
+Example:
+If the selected reference length is 1.0 mm,
+the range is generated from:
+1.1 mm and 1.2 mm data points.
+
+Use the lower value as the more conservative design reference.
+"
+style="cursor:help;"
+>
+CCC Range (Min ~ Max) (?)
+</td>
 <td>A</td>
 
 <td id="cccRange_RT"
     class="cccResult">
 </td>
 
+<td id="cccRange_OP"
+    class="cccResult">
+</td>
+
 <td id="cccRange_HT"
     class="cccResult"></td>
-
 </tr>
 
 <tr>
     <td colspan="2" class="blankCell"></td>
 
 <td class="cccFooter"
-    title="RT = Room Temperature @ 25°C">
-    RT@25°C
+title="
+Design CCC:
+25°C → 150°C benchmark condition.
+
+Operating CCC:
+Operating Temperature → Wire Tmax.
+Primary value for wire-size selection.
+
+Extreme Stress CCC:
+50%MP → 80%MP thermal-stress condition.
+
+Extreme Stress CCC may sometimes be higher than Operating CCC because a larger allowable temperature rise (ΔT) is used in the calculation.
+
+For product design, always use Operating CCC as the recommended limit.
+">
+Design<br>CCC
+
 </td>
 
+
 <td class="cccFooter"
-    title="HT = High Temperature @ 50% Wire Melting Point">
-    HT@50% MP
+title="
+Design CCC:
+25°C → 150°C benchmark condition.
+
+Operating CCC:
+Operating Temperature → Wire Tmax.
+Primary value for wire-size selection.
+
+Extreme Stress CCC:
+50%MP → 80%MP thermal-stress condition.
+
+Extreme Stress CCC may sometimes be higher than Operating CCC because a larger allowable temperature rise (ΔT) is used in the calculation.
+
+For product design, always use Operating CCC as the recommended limit.
+">
+Operating<br>CCC
+
+</td>
+
+
+<td class="cccFooter"
+title="
+Design CCC:
+25°C → 150°C benchmark condition.
+
+Operating CCC:
+Operating Temperature → Wire Tmax.
+Primary value for wire-size selection.
+
+Extreme Stress CCC:
+50%MP → 80%MP thermal-stress condition.
+
+Extreme Stress CCC may sometimes be higher than Operating CCC because a larger allowable temperature rise (ΔT) is used in the calculation.
+
+For product design, always use Operating CCC as the recommended limit.
+">
+Extreme<br>Stress CCC
 </td>
 
 </tr>
@@ -359,6 +546,22 @@ Please input values in the yellow highlighted cells only.
 </button>
 
 <button onclick="goHome()">Back</button>
+<br>
+
+<div style="
+border:2px solid #4472C4;
+background:white;
+text-align:center;
+padding:5px;
+margin-top:10px;
+">
+
+<img
+src="Fusing Current Checker (FCC) per wire.png"
+style="
+max-width:100%;
+height:auto;
+"
 
 </div>
 
@@ -372,7 +575,7 @@ Please input values in the yellow highlighted cells only.
 <table>
 
 <tr>
-<td class="header" colspan="4">
+<td class="header" colspan="5">
 Fusing Current per wire
 </td>
 </tr>
@@ -487,11 +690,27 @@ Please input values in the yellow highlighted cells only.
 
 <tr>
 <td
-    title="Temperature difference between the wire's two ends"
+
+title="
+ΔT (Allowable Temperature Rise)
+
+Design ΔT:
+150°C - 25°C = 125°C
+
+Operating ΔT:
+Wire Tmax - User Operating Temperature
+
+Extreme ΔT:
+80% Melting Point - 50% Melting Point
+
+A larger ΔT allows more temperature rise before the wire reaches its limit and therefore may result in a higher CCC value."
     style="cursor:help;">
-    ΔT
-</td><td class="property-box">390</td>
+
+    Design ΔT
+</td>
+<td id="cccDeltaT" class="property-box"></td>
 <td>K</td>
+
 </tr>
 
 <tr>
@@ -513,6 +732,14 @@ Please input values in the yellow highlighted cells only.
 <button onclick="openPDF()">
     Open Current carrying capacity.pdf
 </button>
+
+<br>
+
+<button onclick="openFCCPDF()">
+    Open Fusing Current Checker (FCC) per wire.pdf
+</button>
+
+<br>
 <br>
 <div class="info-box">
 
@@ -624,15 +851,19 @@ Ampacity (A)
 </td>
 
 <td class="header">
-Current Carrying Capacity (A)<br>
-@ RT (25°C)
+Design CCC (A)<br>
+25°C → 150°C
 </td>
 
 <td class="header">
-Current Carrying Capacity (A)<br>
-@ HT (50% MP)
+Operating CCC (A)<br>
+User Temp → Tmax
 </td>
 
+<td class="header">
+Extreme Stress CCC (A)<br>
+50% MP → 80% MP
+</td>
 </tr>
 
 </table>
@@ -659,7 +890,12 @@ Actual current carrying capability may vary depending on wire geometry, package 
 
 <b>Remark #4:</b><br>
 Physical validation is recommended before engineering or production use.
+<br><br>
 
+<b>Remark #5:</b><br>
+Operating CCC is the primary value for wire-size selection.
+Design CCC is for benchmark comparison.
+Extreme Stress CCC is for thermal-stress comparison only and shall not be used as the product operating limit.
 </div>
 
 
@@ -724,6 +960,7 @@ Al:{
 const wireType=document.getElementById("wireType");
 const diameter=document.getElementById("diameter");
 const wireLength3D=document.getElementById("wireLength3D");
+const operatingTemp=document.getElementById("operatingTemp");
 const tChip=document.getElementById("tChip");
 const tLead=document.getElementById("tLead");
 const tMax=document.getElementById("tMax");
@@ -748,6 +985,7 @@ let prev={};
 [
     diameter,
     wireLength3D,
+    operatingTemp,
     tChip,
     tLead,
     tMax
@@ -762,7 +1000,7 @@ let prev={};
 
     el.onblur=()=>{
 
-        if(el.value===""){
+if(el.value===""){
 
 if(el.id==="tMax"){
     if(wireType.value==="Au"){
@@ -778,13 +1016,17 @@ if(el.id==="tMax"){
         el.value=prev[el.id] || "";
     }
 }
-            else{
 
-                el.value=prev[el.id] || "";
+else if(el.id==="operatingTemp"){
+    el.value=prev[el.id] || "125";
+}
 
-            }
+else{
+    el.value=prev[el.id] || "";
+}
 
-        }
+}
+
 
 if(
     el.id==="wireLength3D"
@@ -805,6 +1047,15 @@ if(
     parseFloat(el.value)
     .toFixed(2);
 }
+if(
+    el.id==="operatingTemp"
+    &&
+    el.value!==""
+){
+    el.value=
+    parseFloat(el.value)
+    .toFixed(0);
+}
     };
 
 });
@@ -813,10 +1064,12 @@ if(
 wireType,
 diameter,
 wireLength3D,
+operatingTemp,
 tChip,
 tLead,
 tMax
-].forEach(x=>x.addEventListener("input",calc));
+]
+.forEach(x=>x.addEventListener("input",calc));
 
 wireType.addEventListener("change",function(){
 
@@ -916,7 +1169,9 @@ dT
 let x=[];
 let ampY=[];
 let cccY=[];
+let cccOPY=[];
 let cccHTY=[];
+
 
 for(let i=1;i<=40;i++){
 
@@ -927,33 +1182,84 @@ let D=d*1e-6;
 
 let Lm=L*1e-3;
 
-let ccc=
+const ambientRT = 25;
+const allowRT = 150;
+const allowTemp = db[type].tmax;
+
+const deltaT_RT =
+allowRT - ambientRT;
+
+const opTemp =
+parseFloat(
+operatingTemp.value
+) || 125;
+
+const deltaT_OP =
+allowTemp - opTemp;
+
+if(deltaT_OP <= 0){
+    alert(
+      "Operating Temperature must be lower than wire Tmax."
+    );
+    return;
+}
+
+document.getElementById(
+    "cccDeltaT"
+).innerHTML =
+deltaT_RT.toFixed(0);
+let ccc =
 (Math.PI/4)
 *
 Math.sqrt(
-db[type].k/
+db[type].k /
 db[type].rho
 )
 *
 (
-(D*D)/Lm
+(D * D) / Lm
 )
 *
-Math.sqrt(390);
+Math.sqrt(deltaT_RT);
+let cccOP =
+(Math.PI/4)
+*
+Math.sqrt(
+db[type].k /
+db[type].rho
+)
+*
+(
+(D * D) / Lm
+)
+*
+Math.sqrt(deltaT_OP);
+
+const melt =
+db[type].melt;
+
+const ambientHT =
+0.5 * melt;
+
+const allowHT =
+0.8 * melt;
+
+const deltaT_HT =
+allowHT - ambientHT;
 
 let cccHT =
 (Math.PI/4)
 *
 Math.sqrt(
-highTempDB[type].k/
+highTempDB[type].k /
 highTempDB[type].rho
 )
 *
 (
-(D*D)/Lm
+(D * D) / Lm
 )
 *
-Math.sqrt(390);
+Math.sqrt(deltaT_HT);
 
     if(type==="Au"){
 
@@ -998,8 +1304,8 @@ x.push(L);
 ampY.push(amp);
 
 cccY.push(ccc);
+cccOPY.push(cccOP);
 cccHTY.push(cccHT);
-
     }
 
 }
@@ -1018,6 +1324,8 @@ v-nearestLength
 
 let rangeAmp = [];
 let rangeCCC = [];
+let rangeCCCOP = [];
+
 
 for(
     let i=selectedIndex+1;
@@ -1034,7 +1342,9 @@ for(
         rangeCCC.push(
             cccY[i]
         );
-
+rangeCCCOP.push(
+    cccOPY[i]
+);
     }
 
 }
@@ -1075,44 +1385,49 @@ document.getElementById(
 ).innerHTML =
 cccRT.toFixed(4);
 
+const cccOP =
+cccOPY[selectedIndex];
+
+document.getElementById(
+    "selectedCCC_OP"
+).innerHTML =
+cccOP.toFixed(4);
+
+
 const DHT =
 d * 1e-6;
 
 const LmHT =
 nearestLength * 1e-3;
 
+const melt =
+db[type].melt;
+
+const ambientHT =
+0.5 * melt;
+
+const allowHT =
+0.8 * melt;
+
+const deltaT_HT =
+allowHT - ambientHT;
+
 const cccHT =
-
 (Math.PI/4)
-
 *
-
 Math.sqrt(
-
 highTempDB[type].k
-
 /
-
 highTempDB[type].rho
-
 )
-
 *
-
 (
-
 (DHT*DHT)
-
 /
-
 LmHT
-
 )
-
 *
-
-Math.sqrt(390);
-
+Math.sqrt(deltaT_HT);
 document.getElementById(
     "selectedCCC_HT"
 ).innerHTML =
@@ -1131,12 +1446,11 @@ Math.min(...rangeAmp);
 document.getElementById(
     "ampRange"
 ).innerHTML =
-maxAmp.toFixed(4)
+minAmp.toFixed(4)
 +
 " ~ "
 +
-minAmp.toFixed(4);
-
+maxAmp.toFixed(4);
 }
 else{
 
@@ -1146,64 +1460,81 @@ else{
     "N/A";
 
 }
-
 let maxCCC =
 Math.max(...rangeCCC);
 
 let minCCC =
 Math.min(...rangeCCC);
 
+
+let maxCCCOP =
+Math.max(...rangeCCCOP);
+
+let minCCCOP =
+Math.min(...rangeCCCOP);
+
+document.getElementById(
+    "cccRange_OP"
+).innerHTML =
+minCCCOP.toFixed(4)
++
+" ~ "
++
+maxCCCOP.toFixed(4);
+
 document.getElementById(
     "cccRange_RT"
 ).innerHTML =
-maxCCC.toFixed(4)
+minCCC.toFixed(4)
 +
 " ~ "
 +
-minCCC.toFixed(4);
+maxCCC.toFixed(4);
 
-const deratingFactor =
+let rangeCCCHT = [];
 
-Math.sqrt(
+for(
+    let i=selectedIndex+1;
+    i<=selectedIndex+2;
+    i++
+){
+    if(i < cccHTY.length){
+        rangeCCCHT.push(
+            cccHTY[i]
+        );
+    }
+}
 
-(
-highTempDB[type].k
-/
-highTempDB[type].rho
-)
+let maxCCCHT =
+rangeCCCHT.length
+?
+Math.max(...rangeCCCHT)
+:
+0;
 
-/
-
-(
-db[type].k
-/
-db[type].rho
-)
-
-);
-
+let minCCCHT =
+rangeCCCHT.length
+?
+Math.min(...rangeCCCHT)
+:
+0;
 document.getElementById(
     "cccRange_HT"
 ).innerHTML =
-
-(maxCCC * deratingFactor)
-.toFixed(4)
-
+minCCCHT.toFixed(4)
 +
-
 " ~ "
-
 +
+maxCCCHT.toFixed(4);
 
-(minCCC * deratingFactor)
-.toFixed(4);
-}
 
+}   // <-- IMPORTANT
 
 drawGraph(
     x,
     ampY,
     cccY,
+    cccOPY,
     cccHTY,
     nearestLength,
     type
@@ -1218,26 +1549,46 @@ document.getElementById("resultTable");
 
 table.innerHTML=`
 <tr>
-<td class="header wireHeader">Wire Length (mm)</td>
+<td class="header wireHeader">
+Wire Length (mm)
+</td>
 
 <td class="header">
-Fusing Current,<br>
+Fusing Current<br>
 Ampacity (A)
 </td>
 
-<td class="header">
-Current Carrying Capacity (A)<br>
-@ RT (25°C)
+<td class="header"
+title="
+Design CCC:
+25°C → 150°C benchmark condition.
+">
+Design CCC (A)<br>
+25°C → 150°C
 </td>
 
-<td class="header">
-Current Carrying Capacity (A)<br>
-@ HT (50% MP)
+<td class="header"
+title="
+Operating CCC:
+Operating Temperature → Wire Tmax.
+Primary value for wire-size selection.
+">
+Operating CCC (A)<br>
+Op Temp → Tmax
+</td>
+
+<td class="header"
+title="
+Extreme Stress CCC:
+50% MP → 80% MP thermal-stress condition.
+Used for material robustness comparison only.
+">
+Extreme Stress CCC (A)<br>
+50% MP → 80% MP
 </td>
 
 </tr>
 `;
-
 
 let target =
 parseFloat(wireLength3D.value);
@@ -1295,21 +1646,66 @@ else if(type==="Al"){
 let D=d*1e-6;
 let Lm=L*1e-3;
 
-let CCC=
+const ambientRT = 25;
+const allowRT = 150;
+const allowTemp = db[type].tmax;
+
+const deltaT_RT =
+allowRT - ambientRT;
+const opTemp =
+parseFloat(
+operatingTemp.value
+) || 125;
+
+const deltaT_OP =
+allowTemp - opTemp;
+
+if(deltaT_OP <= 0){
+    alert(
+      "Operating Temperature must be lower than wire Tmax."
+    );
+    return;
+}
+let ccc =
 (Math.PI/4)
 *
 Math.sqrt(
-db[type].k/
+db[type].k /
 db[type].rho
 )
 *
 (
-(D*D)/Lm
+(D * D) / Lm
 )
 *
-Math.sqrt(390);
+Math.sqrt(deltaT_RT);
+let cccOP =
+(Math.PI/4)
+*
+Math.sqrt(
+db[type].k /
+db[type].rho
+)
+*
+(
+(D * D) / Lm
+)
+*
+Math.sqrt(deltaT_OP);
 
-let CCC_HT =
+const melt =
+db[type].melt;
+
+const ambientHT =
+0.5 * melt;
+
+const allowHT =
+0.8 * melt;
+
+const deltaT_HT =
+allowHT - ambientHT;
+
+let cccHT =
 (Math.PI/4)
 *
 Math.sqrt(
@@ -1318,11 +1714,10 @@ highTempDB[type].rho
 )
 *
 (
-(D*D)/Lm
+(D * D) / Lm
 )
 *
-Math.sqrt(390);
-
+Math.sqrt(deltaT_HT);
 
 
 let cls="";
@@ -1356,10 +1751,9 @@ typeof amp==="number"
 ? amp.toFixed(4)
 : "N/A"
 }</td>
-<td>${CCC.toFixed(4)}</td>
-
-<td>${CCC_HT.toFixed(4)}</td>
-
+<td>${ccc.toFixed(4)}</td>
+<td>${cccOP.toFixed(4)}</td>
+<td>${cccHT.toFixed(4)}</td>
 </tr>
 `;
 
@@ -1433,11 +1827,11 @@ function drawGraph(
     x,
     ampY,
     cccY,
+    cccOPY,
     cccHTY,
     nearestLength,
     type
 )
-
 
 {
 
@@ -1455,16 +1849,18 @@ function drawGraph(
     let padT=10;
     let padR=30;
 
-    let w=
-    canvas.width-padL-padR;
+let w=
+canvas.width-padL-padR;
 
-    let h=
-    canvas.height-padT-padB;
+let h=
+canvas.height-padT-padB;
+
 
 let maxGraph=
 Math.max(
     ...ampY,
     ...cccY,
+    ...cccOPY,
     ...cccHTY
 );
 
@@ -1535,6 +1931,30 @@ getNiceAxis(maxGraph);
 
 /* Ampacity */
 
+ctx.strokeStyle="brown";
+ctx.lineWidth=2;
+ctx.beginPath();
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (ampY[i]/maxY)*h;
+
+    if(i===0){
+        ctx.moveTo(px,py);
+    }
+    else{
+        ctx.lineTo(px,py);
+    }
+}
+ctx.stroke();
+
+/* Markers */
+
 ctx.fillStyle="brown";
 
 for(let i=0;i<x.length;i++){
@@ -1549,30 +1969,48 @@ for(let i=0;i<x.length;i++){
     if(
         Math.abs(x[i]-nearestLength)<0.0001
     ){
-
         drawTriangle(
             px,
             py,
             8,
             "brown"
         );
-
-
     }
     else{
-
         ctx.fillRect(
             px-2,
             py-2,
             4,
             4
         );
-
     }
-
 }
 
-/* CCC */
+/* Design CCC Line */
+
+ctx.strokeStyle="blue";
+ctx.lineWidth=2;
+ctx.beginPath();
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (cccY[i]/maxY)*h;
+
+    if(i===0){
+        ctx.moveTo(px,py);
+    }
+    else{
+        ctx.lineTo(px,py);
+    }
+}
+ctx.stroke();
+
+/* Design CCC Markers */
 
 ctx.fillStyle="blue";
 
@@ -1588,30 +2026,107 @@ for(let i=0;i<x.length;i++){
     if(
         Math.abs(x[i]-nearestLength)<0.0001
     ){
-
         drawTriangle(
             px,
             py,
             8,
             "blue"
         );
-
-
     }
     else{
-
         ctx.fillRect(
             px-2,
             py-2,
             4,
             4
         );
-
     }
-
 }
-/* HT CCC */
-ctx.fillStyle="red";
+
+/* Operating CCC Line */
+
+ctx.strokeStyle="green";
+ctx.lineWidth=3;
+ctx.beginPath();
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (cccOPY[i]/maxY)*h;
+
+    if(i===0){
+        ctx.moveTo(px,py);
+    }
+    else{
+        ctx.lineTo(px,py);
+    }
+}
+ctx.stroke();
+
+/* Operating CCC Markers */
+
+ctx.fillStyle="green";
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (cccOPY[i]/maxY)*h;
+
+    if(
+        Math.abs(x[i]-nearestLength)<0.0001
+    ){
+        drawTriangle(
+            px,
+            py,
+            8,
+            "green"
+        );
+    }
+    else{
+        ctx.fillRect(
+            px-2,
+            py-2,
+            4,
+            4
+        );
+    }
+}
+
+/* Extreme CCC Line */
+
+ctx.strokeStyle="#C000C0";
+ctx.lineWidth=2;
+ctx.beginPath();
+
+for(let i=0;i<x.length;i++){
+
+    let px=
+    padL+(x[i]/xRange)*w;
+
+    let py=
+    padT+h-
+    (cccHTY[i]/maxY)*h;
+
+    if(i===0){
+        ctx.moveTo(px,py);
+    }
+    else{
+        ctx.lineTo(px,py);
+    }
+}
+ctx.stroke();
+
+/* Extreme CCC Markers */
+
+ctx.fillStyle="#C000C0";
 
 for(let i=0;i<x.length;i++){
 
@@ -1625,24 +2140,20 @@ for(let i=0;i<x.length;i++){
     if(
         Math.abs(x[i]-nearestLength)<0.0001
     ){
-
         drawTriangle(
             px,
             py,
             8,
-            "red"
+            "#C000C0"
         );
-
     }
     else{
-
         ctx.fillRect(
             px-2,
             py-2,
             4,
             4
         );
-
     }
 }
 
@@ -1665,7 +2176,7 @@ x[idx]-nearestLength
 /* Legend */
 
 ctx.fillStyle="brown";
-ctx.fillRect(100,20,12,12);
+ctx.fillRect(98,20,12,12);
 
 ctx.fillStyle="brown";
 ctx.font="bold 12px Arial";
@@ -1683,24 +2194,46 @@ selectedAmp.toFixed(4)+" A"
 ctx.fillText(
     "Fusing Current ≈ "
     + ampText,
-    151,
+    150,
     30
 );
 
 
 ctx.fillStyle="blue";
-ctx.fillRect(100,45,12,12);
+ctx.fillRect(98,39,12,12);
 
 ctx.fillStyle="blue";
 ctx.font="bold 12px Arial";
 
 ctx.fillText(
-   "CCC @ RT ≈ "
+   "Design CCC ≈ "
     + selectedCCC.toFixed(4)
     + " A",
-    138,
-    55
+    129,
+    50
 );
+
+let selectedCCCOP =
+cccOPY.find((v,idx)=>
+Math.abs(
+x[idx]-nearestLength
+)<0.0001
+);
+
+ctx.fillStyle="green";
+ctx.fillRect(98,70,12,12);
+
+ctx.fillStyle="green";
+ctx.font="bold 12px Arial";
+
+ctx.fillText(
+    "Operating CCC ≈ "
+    + selectedCCCOP.toFixed(4)
+    + " A",
+    113,
+    80
+);
+
 
 let selectedCCCHT =
 cccHTY.find((v,idx)=>
@@ -1710,18 +2243,19 @@ x[idx]-nearestLength
 );
 
 ctx.fillStyle="#C000C0";
-ctx.fillRect(100,70,12,12);
+ctx.fillRect(98,100,12,12);
 
 ctx.fillStyle="#C000C0";
 ctx.font="bold 12px Arial";
 
 ctx.fillText(
-    "CCC @ HT ≈ "
+    "Extreme CCC ≈ "
     + selectedCCCHT.toFixed(4)
     + " A",
-    138,
-    80
+    122,
+    110
 );
+
 /* X Axis Label */
 
 ctx.fillStyle="black";
@@ -1761,7 +2295,14 @@ function openPDF(){
 
 }
 
+function openFCCPDF(){
 
+    window.open(
+        "Fusing Current Checker (FCC) per wire.pdf",
+        "_blank"
+    );
+
+}
 
 function clearData(){
 
