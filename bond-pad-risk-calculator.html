@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Bond Pad Risk Calculator</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    font-size:14px;
+    background:#f5f5f5;
+    margin:10px;
+}
+
+table{
+    border-collapse:collapse;
+    width:700px;
+}
+
+td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+.header{
+    background:#d9c2ad;
+    font-weight:bold;
+}
+
+.input-box{
+    background:yellow;
+}
+
+.pass{
+    background:#92D050;
+    font-weight:bold;
+}
+
+.warning{
+    background:#FFD966;
+    font-weight:bold;
+}
+
+.fail{
+    background:#FF6666;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-size:14px;
+}
+
+button{
+    width:230px;
+    padding:10px;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+#results{
+    margin-top:15px;
+}
+
+.remark-box{
+    width:680px;
+    margin-top:15px;
+    background:white;
+    border:1px solid black;
+    padding:10px;
+    line-height:1.5;
+    text-align:left;
+}
+
+</style>
+</head>
+
+<body>
+
+<table>
+
+<tr>
+<td colspan="3" class="header" style="font-size:20px;">
+Bond Pad Risk Calculator
+</td>
+</tr>
+<tr>
+<td>Calculated Min BPO</td>
+<td>µm</td>
+<td id="bpoMinCalc" class="pass">
+</td>
+</tr>
+
+<tr>
+<td>Nominal BPO</td>
+<td>µm</td>
+<td class="input-box">
+<input id="bpoNominal">
+</td>
+</tr>
+
+<tr>
+<td>BPO Tolerance</td>
+<td>±µm</td>
+<td class="input-box">
+<input id="bpoTol" value="5.00">
+</td>
+</tr>
+
+<tr>
+<td>Allowable Bond Out of Pad (BOOP) per Side</td>
+<td>µm</td>
+<td class="input-box">
+<input id="boop">
+</td>
+</tr>
+
+<tr>
+<td>Target Ball Diameter</td>
+<td>µm</td>
+<td class="input-box">
+<input id="ballTarget">
+</td>
+</tr>
+
+<tr>
+<td>Ball Tolerance</td>
+<td>±µm</td>
+<td class="input-box">
+<input id="ballTol" value="5.00">
+</td>
+</tr>
+<tr>
+<td colspan="3" class="header">
+Design Tolerance Stack-Up
+</td>
+</tr>
+
+<tr>
+<td>Bond Accuracy (±)</td>
+<td>µm</td>
+<td class="input-box">
+<input id="placementAcc" value="3.00">
+</td>
+</tr>
+
+<tr>
+<td>Placement Sigma Level</td>
+<td>σ</td>
+<td class="input-box">
+<input id="placementSigmaLevel" value="3.00">
+</td>
+</tr>
+
+<tr>
+<td>Operator Teaching (±)</td>
+<td>µm</td>
+<td class="input-box">
+<input id="operatorTeaching">
+</td>
+</tr>
+
+<tr>
+<td>Teaching Sigma Level</td>
+<td>σ</td>
+<td class="input-box">
+<input id="teachingSigmaLevel" value="3.00">
+</td>
+</tr>
+
+
+
+<tr>
+<td
+title="
+Tolerance converted to equivalent 5σ basis.
+
+Bond Accuracy @5σ
++
+Operator Teaching @5σ
+">
+Total Design Tolerance (5σ)</td>
+<td>µm</td>
+<td id="totalTolerance" class="pass">
+</td>
+</tr>
+<tr>
+<td colspan="3" class="header">
+Optional Statistical Inputs
+</td>
+</tr>
+
+<tr>
+<td>Mean Ball Diameter</td>
+<td>µm</td>
+<td class="input-box">
+<input id="ballMean">
+</td>
+</tr>
+
+<tr>
+<td>Sigma</td>
+<td>µm</td>
+<td class="input-box">
+<input id="ballSigma">
+</td>
+</tr>
+
+</table>
+
+<button type="button" onclick="calculateRisk()">
+Calculate
+</button>
+
+<button type="button" onclick="clearData()">
+Clear
+</button>
+
+<button type="button" onclick="goHome()">
+Back
+</button>
+
+
+<div id="results"></div>
+
+<div class="remark-box">
+
+<b>Remark #1:</b><br>
+Design Margin Analysis works without historical data.
+
+<br><br>
+
+<b>Remark #2:</b><br>
+Sigma Analysis is only shown when Mean Ball Diameter and Sigma are entered.
+
+<br><br>
+
+<b>Remark #3:</b><br>
+Actual manufacturing PPM requires measured production data.
+
+</div>
+
+<script>
+
+let prev = {};
+
+const inputs = [
+
+    "bpoNominal",
+    "bpoTol",
+
+    "boop",
+    "ballTarget",
+    "ballTol",
+
+    "placementAcc",
+    "placementSigmaLevel",
+
+    "operatorTeaching",
+    "teachingSigmaLevel",
+
+    "ballMean",
+    "ballSigma"
+
+];
+inputs.forEach(id => {
+
+    const el = document.getElementById(id);
+
+    el.onfocus = function(){
+
+        prev[id] = el.value;
+
+        if(el.value !== ""){
+            el.value = "";
+        }
+
+    };
+
+    el.onblur = function(){
+
+        if(el.value === ""){
+
+            el.value = prev[id] || "";
+
+            return;
+        }
+
+        const num = parseFloat(el.value);
+
+        if(!isNaN(num)){
+
+            el.value = num.toFixed(2);
+
+        }
+
+    };
+
+});
+
+function erf(x){
+
+    const sign = x >= 0 ? 1 : -1;
+
+    x = Math.abs(x);
+
+    const a1 = 0.254829592;
+    const a2 = -0.284496736;
+    const a3 = 1.421413741;
+    const a4 = -1.453152027;
+    const a5 = 1.061405429;
+    const p  = 0.3275911;
+
+    const t = 1/(1+p*x);
+
+    const y =
+        1 -
+        (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)
+        * t
+        * Math.exp(-x*x);
+
+    return sign*y;
+}
+
+function normalCDF(x){
+
+    return 0.5 *
+        (1 + erf(x/Math.sqrt(2)));
+}
+function calculateRisk(){
+
+const bpoNominal =
+    parseFloat(
+        document.getElementById("bpoNominal").value
+    ) || 0;
+
+const bpoTol =
+    parseFloat(
+        document.getElementById("bpoTol").value
+    ) || 5;
+
+const bpoMin =
+    bpoNominal - bpoTol;
+
+document.getElementById(
+    "bpoMinCalc"
+).innerHTML =
+    bpoMin.toFixed(2);
+    const boop =
+        parseFloat(document.getElementById("boop").value) || 0;
+
+    const target =
+        parseFloat(document.getElementById("ballTarget").value) || 0;
+
+    const tol =
+        parseFloat(document.getElementById("ballTol").value) || 0;
+const placement =
+    parseFloat(
+        document.getElementById("placementAcc").value
+    ) || 0;
+
+const placementSigmaLevel =
+    parseFloat(
+        document.getElementById("placementSigmaLevel").value
+    ) || 3;
+
+const teaching =
+    parseFloat(
+        document.getElementById("operatorTeaching").value
+    ) || 0;
+
+const teachingSigmaLevel =
+    parseFloat(
+        document.getElementById("teachingSigmaLevel").value
+    ) || 3;
+
+/* Convert all tolerances to 5σ basis */
+
+const placement5Sigma =
+    placement *
+    (5 / placementSigmaLevel);
+
+const teaching5Sigma =
+    teaching *
+    (5 / teachingSigmaLevel);
+
+const totalTolerance =
+    placement5Sigma +
+    teaching5Sigma;
+
+document.getElementById(
+    "totalTolerance"
+).innerHTML =
+    totalTolerance.toFixed(2)
+    + " (5σ)";
+    const mean =
+        parseFloat(document.getElementById("ballMean").value);
+
+    const sigma =
+        parseFloat(document.getElementById("ballSigma").value);
+
+    const ballMin = target - tol;
+    const ballMax = target + tol;
+
+const limit =
+    bpoMin +
+    (2 * boop) -
+    totalTolerance;
+
+
+    const marginMin = limit - ballMin;
+    const marginTarget = limit - target;
+    const marginMax = limit - ballMax;
+
+    let status = "PASS";
+    let css = "pass";
+
+    if(marginMax < 0){
+        status = "FAIL";
+        css = "fail";
+    }
+    else if(marginMax <= 5){
+        status = "WARNING";
+        css = "warning";
+    }
+
+    let html = `
+
+    <table>
+<tr>
+<td>Total Design Tolerance (5σ)</td>
+<td>${totalTolerance.toFixed(2)} µm</td>
+</tr>
+
+<tr>
+<td>Min BPO</td>
+<td>${bpoMin.toFixed(2)} µm</td>
+</tr>
+
+    <tr>
+        <td colspan="2" class="header">
+        Design Margin Analysis
+        </td>
+    </tr>
+
+    <tr>
+        <td>Ball Min</td>
+        <td>${ballMin.toFixed(2)} µm</td>
+    </tr>
+
+    <tr>
+        <td>Ball Target</td>
+        <td>${target.toFixed(2)} µm</td>
+    </tr>
+
+    <tr>
+        <td>Ball Max</td>
+        <td>${ballMax.toFixed(2)} µm</td>
+    </tr>
+
+    <tr>
+<td
+title="
+Maximum allowable ball diameter after considering:
+1. Minimum BPO
+2. Allowable BOOP
+3. Bond Accuracy
+4. Operator Teaching
+">
+Maximum Allowable Ball Diameter
+</td> 
+
+       <td>${limit.toFixed(2)} µm</td>
+    </tr>
+
+<tr>
+<td>Margin vs Mean Ball</td>
+<td>
+${
+ !isNaN(mean)
+ ? (limit - mean).toFixed(2) + " µm"
+ : "N/A"
+}
+</td>
+</tr>
+
+
+
+
+        <td>Margin @ Min</td>
+        <td>${marginMin.toFixed(2)} µm</td>
+    </tr>
+
+    <tr>
+        <td>Margin @ Target</td>
+        <td>${marginTarget.toFixed(2)} µm</td>
+    </tr>
+
+    <tr>
+        <td>Margin @ Max</td>
+        <td>${marginMax.toFixed(2)} µm</td>
+    </tr>
+
+    <tr>
+        <td class="${css}">Design Status</td>
+        <td class="${css}">${status}</td>
+    </tr>
+
+    </table>
+    `;
+
+    if(
+        !isNaN(mean) &&
+        !isNaN(sigma) &&
+        sigma > 0
+    ){
+
+
+        html += `
+
+        <br>
+
+        <table>
+
+        <tr>
+            <td colspan="5" class="header">
+            Sigma Analysis
+            </td>
+        </tr>
+
+<tr class="header">
+    <td>Sigma</td>
+
+    <td title="
+Mean Ball Diameter + N Sigma
+">
+Mean + Nσ Ball
+</td>
+
+    <td>Margin</td>
+
+    <td>Status</td>
+</tr>
+
+        `;
+
+        for(let s=1; s<=6; s++){
+
+            const dia =
+                mean + (s * sigma);
+
+            const margin =
+                limit - dia;
+
+            let rowColor = "";
+
+            if(margin < 0){
+                rowColor =
+                "style='background:#FFCCCC;'";
+            }
+
+            html += `
+            <tr ${rowColor}>
+                <td>${s}σ</td>
+                <td>${dia.toFixed(2)}</td>
+                <td>${margin.toFixed(2)}</td>
+                <td>${margin >= 0 ? "PASS" : "BOOP Risk"}</td>
+            </tr>
+            `;
+        }
+
+        const z =
+            (limit - mean) / sigma;
+const ppm =
+(
+    1 -
+    normalCDF(z)
+)
+*
+1000000;
+let zAssessment = "";
+
+if(z > 6){
+    zAssessment = "Excellent";
+}
+else if(z > 5){
+    zAssessment = "Very Good";
+}
+else if(z > 4){
+    zAssessment = "Acceptable";
+}
+else if(z > 3){
+    zAssessment = "Review Design";
+}
+else{
+    zAssessment = "High Risk";
+}
+
+let ppmAssessment = "";
+
+if(ppm < 1){
+    ppmAssessment = "Excellent";
+}
+else if(ppm < 10){
+    ppmAssessment = "Very Good";
+}
+else if(ppm < 100){
+    ppmAssessment = "Acceptable";
+}
+else if(ppm < 1000){
+    ppmAssessment = "Review Design";
+}
+else{
+    ppmAssessment = "High Risk";
+}
+
+let zColor = "#92D050";
+
+if(z <= 3){
+    zColor = "#FF6666";
+}
+else if(z <= 4){
+    zColor = "#F4B183";
+}
+else if(z <= 5){
+    zColor = "#FFD966";
+}
+let ppmColor = "#92D050";
+
+if(ppm > 1000){
+    ppmColor = "#FF6666";
+}
+else if(ppm > 100){
+    ppmColor = "#F4B183";
+}
+else if(ppm > 10){
+    ppmColor = "#FFD966";
+}
+else{
+    ppmColor = "#92D050";
+}
+
+
+html += `
+<tr>
+<td colspan="5"
+style="
+background:${zColor};
+font-weight:bold;
+">BOOP Z Margin = ${z.toFixed(2)}σ
+
+<br><br>
+
+Assessment :
+<b>${zAssessment}</b>
+
+<span
+style="
+cursor:help;
+color:#0078D7;
+font-size:16px;
+font-weight:bold;
+margin-left:5px;
+"
+title="
+Excellent:
+Extremely robust design with near-zero BOOP risk.
+
+Very Good:
+Strong design margin with very low BOOP risk.
+
+Acceptable:
+Generally suitable for production use.
+
+Review Design:
+Limited design margin. Engineering review recommended.
+
+High Risk:
+High BOOP risk. Design or process improvement recommended.
+"
+>
+ⓘ
+</span><br>
+<br>
+
+Rating Guide
+
+<br>
+<br>
+
+Excellent : Z > 6σ
+
+<br>
+
+Very Good : 5σ < Z ≤ 6σ
+
+<br>
+
+Acceptable : 4σ < Z ≤ 5σ
+
+<br>
+
+Review Design : 3σ < Z ≤ 4σ
+
+<br>
+
+High Risk : Z ≤ 3σ
+    </td>
+</tr>
+
+<tr>
+<td colspan="5"
+style="
+background:${ppmColor};
+font-weight:bold;
+">
+
+
+Predicted BOOP Risk =
+${ppm.toFixed(2)} PPM
+
+<br><br>
+
+Assessment :
+<b>${ppmAssessment}</b>
+
+<span
+style="
+cursor:help;
+color:#0078D7;
+font-size:16px;
+font-weight:bold;
+margin-left:5px;
+"
+title="
+Excellent:
+PPM < 1.
+Extremely robust design.
+
+Very Good:
+1 ≤ PPM < 10.
+Very low BOOP risk.
+
+Acceptable:
+10 ≤ PPM < 100.
+Generally acceptable for production.
+
+Review Design:
+100 ≤ PPM < 1000.
+Design margin should be reviewed.
+
+High Risk:
+PPM ≥ 1000.
+Design or process optimization is strongly recommended.
+"
+>
+ⓘ
+</span>
+<br>
+<br>
+
+Rating Guide
+
+<br>
+<br>
+
+Excellent : PPM < 1
+
+<br>
+
+Very Good : 1 ≤ PPM < 10
+
+<br>
+
+Acceptable : 10 ≤ PPM < 100
+
+<br>
+
+Review Design : 100 ≤ PPM < 1000
+
+<br>
+
+High Risk : PPM ≥ 1000
+</td>
+</tr>
+
+</table>
+`;
+
+
+    }
+
+    document.getElementById("results").innerHTML = html;
+}
+
+function clearData(){
+
+document.getElementById("bpoNominal").value = "";
+
+document.getElementById("bpoTol").value = "5.00";
+
+document.getElementById("bpoMinCalc").innerHTML = "";    document.getElementById("boop").value = "";
+    document.getElementById("ballTarget").value = "";
+    document.getElementById("ballTol").value = "5.00";
+    document.getElementById("ballMean").value = "";
+    document.getElementById("ballSigma").value = "";
+document.getElementById("placementAcc").value = "3.00";
+
+document.getElementById("operatorTeaching").value = "";
+document.getElementById("placementSigmaLevel").value = "3.00";
+
+document.getElementById("teachingSigmaLevel").value = "3.00";
+document.getElementById("totalTolerance").innerHTML = "";
+
+    document.getElementById("results").innerHTML = "";
+
+    prev = {};
+
+document.getElementById("bpoNominal").focus();
+
+}
+
+document.addEventListener("keydown", function(e){
+
+    if(e.key !== "Enter"){
+        return;
+    }
+
+    e.preventDefault();
+
+    const active = document.activeElement.id;
+
+if(active === "bpoNominal"){
+    document.getElementById("bpoTol").focus();
+}
+else if(active === "bpoTol"){
+    document.getElementById("boop").focus();
+}
+else if(active === "boop"){
+    document.getElementById("ballTarget").focus();
+}
+else if(active === "ballTarget"){
+    document.getElementById("ballTol").focus();
+}
+else if(active === "ballTol"){
+    document.getElementById("placementAcc").focus();
+}
+else if(active === "placementAcc"){
+    document.getElementById("placementSigmaLevel").focus();
+}
+else if(active === "placementSigmaLevel"){
+    document.getElementById("operatorTeaching").focus();
+}
+else if(active === "operatorTeaching"){
+    document.getElementById("teachingSigmaLevel").focus();
+}
+else if(active === "teachingSigmaLevel"){
+    document.getElementById("ballMean").focus();
+}
+else if(active === "ballMean"){
+    document.getElementById("ballSigma").focus();
+}
+else if(active === "ballSigma"){
+    calculateRisk();
+}
+
+});
+</script>
+
+<script>
+
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+
+}
+
+</script>
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+
+        params.get("user")
+
+        ||
+
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+
+        API_URL +
+
+        "?action=trackUsage" +
+
+        "&user=" +
+
+        encodeURIComponent(user) +
+
+        "&calculator=bond_pad_risk_calculator"
+
+    );
+
+}
+
+window.addEventListener(
+    "load",
+    trackUsage
+);
+</script>
+</body>
+</html>
