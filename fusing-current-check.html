@@ -16,13 +16,13 @@ body{
 }
 
 .container{
-
     display:flex;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
     gap:15px;
     margin-top:20px;
-
+    align-items:flex-start;
 }
+
 
 table{
     border-collapse:collapse;
@@ -86,14 +86,31 @@ input,select{
     font-size:14px;
 }
 .selectedLengthBox,
-.fusingResult{
-    font-size:16px;
+.fusingResult,
+.cccResult{
+    font-size:14px;
 }
-
 .top{
     width:730px;
 }
 
+.topSection{
+    display:flex;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.guidePanel{
+    width:450px;
+    border:2px solid #4472C4;
+    background:white;
+    padding:10px;
+}
+
+.guidePanel img{
+    width:100%;
+    height:auto;
+}
 .top button{
     width:100%;
     padding:10px;
@@ -109,6 +126,21 @@ input,select{
 
 .right{
     width:350px;
+}
+.referencePanel{
+    width:400px;
+}
+
+.info-box{
+    border:1px solid black;
+    padding:10px;
+    background:white;
+    text-align:left;
+    line-height:1.5;
+    margin-top:0px;
+    font-size:14px;
+
+    height:415px;
 }
 
 .right button{
@@ -139,14 +171,13 @@ input,select{
 .fusingResult{
     background:#8fd98f;
     font-weight:bold;
+    font-size:14px;
 }
-
 .cccResult{
     background:#b7d7ff;
     font-weight:bold;
-    font-size:16px;
+    font-size:14px;
 }
-
 
 .cccFooter{
     background:#E49EDD;
@@ -158,15 +189,6 @@ input,select{
     height:32px;
     vertical-align:middle;
 }
-.info-box{
-    border:1px solid black;
-    padding:10px;
-    background:white;
-    text-align:left;
-    line-height:1.5;
-    margin-top:10px;
-}
-
 canvas{
 
     border:2px solid black;
@@ -228,7 +250,7 @@ td:nth-child(2){
     color:red;
     padding:10px;
     text-align:left;
-    font-size:12px;
+    font-size:14px;
 }
 @media(max-width:1000px){
 
@@ -267,10 +289,11 @@ td:nth-child(2){
 
 <!-- TOP INPUT TABLE -->
 
+<div class="topSection">
+
 <div class="top">
 
 <table>
-
 
 
 <tr>
@@ -551,21 +574,18 @@ Please input values in the yellow highlighted cells only.
 
 <button onclick="goHome()">Back</button>
 <br>
+</div>
 
-<div style="
-border:2px solid #4472C4;
-background:white;
-text-align:center;
-padding:5px;
-margin-top:10px;
-">
+<div class="guidePanel">
 
 <img
 src="Fusing Current Checker (FCC) per wire.png"
-style="
-max-width:100%;
-height:auto;
-"
+alt="FCC Guide">
+<br><br>
+<canvas id="chart" width="445" height="305"></canvas>
+
+
+</div>
 
 </div>
 
@@ -579,10 +599,10 @@ height:auto;
 <table>
 
 <tr>
-<td class="header" colspan="5">
+<td class="header" colspan="5"
+    style="font-size:16px;">
 Fusing Current per wire
-</td>
-</tr>
+</td></tr>
 
 <tr>
 <td>Temp_Chip</td>
@@ -650,7 +670,7 @@ Please input values in the yellow highlighted cells only.
 
 <div style="text-align:center;">
 
-    <div style="font-weight:bold;font-size:18px;">
+    <div style="font-weight:bold;font-size:16px;">
         Current Carrying Capacity (CCC) per wire
     </div>
 
@@ -745,17 +765,16 @@ A larger ΔT allows more temperature rise before the wire reaches its limit and 
 
 <br>
 <br>
+
+</div>
+
+<div class="referencePanel">
+
 <div class="info-box">
 
-<b>Reference Material Data</b>
-
-<br><br>
-
-RT = Room Temperature (25°C)
-
-<br>
-
-50% MP = 50% Melting Point Temperature
+<b style="font-size:20px;">
+Reference Material Data
+</b>
 
 <br><br>
 <b>Wire Melting Temperature</b><br>
@@ -832,7 +851,7 @@ RT (@25°C): 2.44E-8
 |
 50% MP (@532°C): 5.80E-8
 
-<br><br>
+<br>
 
 </div>
 
@@ -874,8 +893,6 @@ Extreme Stress CCC (A)<br>
 
 <br>
 
-<canvas id="chart" width="400" height="280"></canvas>
-<br>
 
 
 <div class="remark-box">
@@ -1801,9 +1818,8 @@ function drawTriangle(
 ){
 
     ctx.fillStyle=color;
-    ctx.strokeStyle="black";
+    ctx.strokeStyle=color;
     ctx.lineWidth=2;
-
     ctx.beginPath();
 
     ctx.moveTo(
@@ -1970,25 +1986,16 @@ for(let i=0;i<x.length;i++){
     padT+h-
     (ampY[i]/maxY)*h;
 
-    if(
-        Math.abs(x[i]-nearestLength)<0.0001
-    ){
-        drawTriangle(
-            px,
-            py,
-            8,
-            "brown"
-        );
-    }
-    else{
-        ctx.fillRect(
-            px-2,
-            py-2,
-            4,
-            4
-        );
-    }
-}
+if(
+    Math.abs(x[i]-nearestLength)<0.0001
+){
+    drawTriangle(
+        px,
+        py,
+        8,
+        "brown"
+    );
+}}
 
 /* Design CCC Line */
 
@@ -2027,25 +2034,16 @@ for(let i=0;i<x.length;i++){
     padT+h-
     (cccY[i]/maxY)*h;
 
-    if(
-        Math.abs(x[i]-nearestLength)<0.0001
-    ){
-        drawTriangle(
-            px,
-            py,
-            8,
-            "blue"
-        );
-    }
-    else{
-        ctx.fillRect(
-            px-2,
-            py-2,
-            4,
-            4
-        );
-    }
-}
+if(
+    Math.abs(x[i]-nearestLength)<0.0001
+){
+    drawTriangle(
+        px,
+        py,
+        8,
+        "blue"
+    );
+}}
 
 /* Operating CCC Line */
 
@@ -2084,25 +2082,16 @@ for(let i=0;i<x.length;i++){
     padT+h-
     (cccOPY[i]/maxY)*h;
 
-    if(
-        Math.abs(x[i]-nearestLength)<0.0001
-    ){
-        drawTriangle(
-            px,
-            py,
-            8,
-            "green"
-        );
-    }
-    else{
-        ctx.fillRect(
-            px-2,
-            py-2,
-            4,
-            4
-        );
-    }
-}
+if(
+    Math.abs(x[i]-nearestLength)<0.0001
+){
+    drawTriangle(
+        px,
+        py,
+        8,
+        "green"
+    );
+}}
 
 /* Extreme CCC Line */
 
@@ -2141,26 +2130,33 @@ for(let i=0;i<x.length;i++){
     padT+h-
     (cccHTY[i]/maxY)*h;
 
-    if(
-        Math.abs(x[i]-nearestLength)<0.0001
-    ){
-        drawTriangle(
-            px,
-            py,
-            8,
-            "#C000C0"
-        );
-    }
-    else{
-        ctx.fillRect(
-            px-2,
-            py-2,
-            4,
-            4
-        );
-    }
-}
+if(
+    Math.abs(x[i]-nearestLength)<0.0001
+){
+    drawTriangle(
+        px,
+        py,
+        8,
+        "#C000C0"
+    );
+}}
+ctx.fillStyle="white";
+ctx.strokeStyle="black";
+ctx.lineWidth=1;
 
+ctx.fillRect(
+    150,
+    15,
+    210,
+    110
+);
+
+ctx.strokeRect(
+    150,
+    15,
+    210,
+    110
+);
 /* Legend */
 
 let selectedAmp =
@@ -2180,7 +2176,7 @@ x[idx]-nearestLength
 /* Legend */
 
 ctx.fillStyle="brown";
-ctx.fillRect(98,20,12,12);
+ctx.fillRect(163,24,12,12);
 
 ctx.fillStyle="brown";
 ctx.font="bold 12px Arial";
@@ -2198,13 +2194,13 @@ selectedAmp.toFixed(4)+" A"
 ctx.fillText(
     "Fusing Current ≈ "
     + ampText,
-    150,
-    30
+    185,
+    35
 );
 
 
 ctx.fillStyle="blue";
-ctx.fillRect(98,39,12,12);
+ctx.fillRect(163,49,12,12);
 
 ctx.fillStyle="blue";
 ctx.font="bold 12px Arial";
@@ -2213,8 +2209,8 @@ ctx.fillText(
    "Design CCC ≈ "
     + selectedCCC.toFixed(4)
     + " A",
-    129,
-    50
+    185,
+    60
 );
 
 let selectedCCCOP =
@@ -2225,7 +2221,7 @@ x[idx]-nearestLength
 );
 
 ctx.fillStyle="green";
-ctx.fillRect(98,70,12,12);
+ctx.fillRect(163,74,12,12);
 
 ctx.fillStyle="green";
 ctx.font="bold 12px Arial";
@@ -2234,8 +2230,8 @@ ctx.fillText(
     "Operating CCC ≈ "
     + selectedCCCOP.toFixed(4)
     + " A",
-    113,
-    80
+    185,
+    85
 );
 
 
@@ -2247,7 +2243,7 @@ x[idx]-nearestLength
 );
 
 ctx.fillStyle="#C000C0";
-ctx.fillRect(98,100,12,12);
+ctx.fillRect(163,99,12,12);
 
 ctx.fillStyle="#C000C0";
 ctx.font="bold 12px Arial";
@@ -2256,7 +2252,7 @@ ctx.fillText(
     "Extreme CCC ≈ "
     + selectedCCCHT.toFixed(4)
     + " A",
-    122,
+    185,
     110
 );
 
