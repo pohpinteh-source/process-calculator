@@ -131,17 +131,6 @@ input,select{
     width:400px;
 }
 
-.info-box{
-    border:1px solid black;
-    padding:10px;
-    background:white;
-    text-align:left;
-    line-height:1.5;
-    margin-top:0px;
-    font-size:14px;
-
-    height:415px;
-}
 
 .right button{
     width:100%;
@@ -243,6 +232,53 @@ td:nth-child(2){
     width:20%;
 }
 
+.reference-box{
+    width:400px;
+    height:415px;
+
+    border:1px solid black;
+    background:white;
+
+    padding:10px;
+
+    text-align:left;
+    line-height:1.5;
+    font-size:14px;
+
+    overflow:auto;
+}
+
+.purpose-box{
+    width:100%;
+    box-sizing:border-box;
+
+    border:1px solid #cccccc;
+    background:white;
+    color:black;
+
+    padding:10px;
+    text-align:left;
+    font-size:14px;
+    line-height:1.6;
+
+    margin-top:10px;
+}
+
+.remark-box{
+    width:100%;
+    box-sizing:border-box;
+
+    border:2px solid red;
+    background:#ffe6e6;
+    color:red;
+
+    padding:10px;
+    text-align:left;
+    font-size:14px;
+    line-height:1.6;
+
+    margin-top:10px;
+}
 .remark-box{
     margin-top:10px;
     border:2px solid red;
@@ -251,6 +287,7 @@ td:nth-child(2){
     padding:10px;
     text-align:left;
     font-size:14px;
+    line-height:1.6;
 }
 @media(max-width:1000px){
 
@@ -770,9 +807,10 @@ A larger ΔT allows more temperature rise before the wire reaches its limit and 
 
 <div class="referencePanel">
 
-<div class="info-box">
+<div class="reference-box">
 
-<b style="font-size:20px;">
+
+<b style="font-size:18px;">
 Reference Material Data
 </b>
 
@@ -895,11 +933,10 @@ Extreme Stress CCC (A)<br>
 
 
 
-<div class="remark-box">
+<div class="purpose-box">
 
 <b>Purpose:</b><br>
-Estimate the maximum current capability of a wire bond based on
-wire material, wire diameter, wire length, and operating temperature.
+Estimate the maximum current capability of a wire bond based on wire material, wire diameter, wire length, and operating temperature.
 
 <br><br>
 
@@ -909,8 +946,7 @@ Estimated current that may cause the wire to fuse or melt.
 <br><br>
 
 <b>Current Carrying Capacity (CCC):</b><br>
-Estimated continuous current capability based on the wire's thermal
-conductivity and electrical resistivity.
+Estimated continuous current capability based on thermal conductivity and electrical resistivity.
 
 <br><br>
 
@@ -920,8 +956,7 @@ Uses room-temperature material properties.
 <br><br>
 
 <b>HT (50% MP):</b><br>
-Uses material properties at approximately 50% of the wire melting
-temperature to provide a more conservative high-temperature estimate.
+Uses material properties at approximately 50% of the wire melting temperature.
 
 <br><br>
 
@@ -935,11 +970,13 @@ Shorter wire length generally provides higher CCC.
 
 <br>
 
-HT CCC is lower than RT CCC because thermal conductivity decreases and
-electrical resistivity increases at elevated temperatures.
+HT CCC is lower than RT CCC because electrical resistivity increases at higher temperatures.
 
 
-<br><br>
+</div>
+
+<div class="remark-box">
+
 <b>Remark #1:</b><br>
 Fusing Current (A) & Current carrying capacity values are estimated using analytical equations.
 <br><br>
@@ -960,8 +997,8 @@ Physical validation is recommended before engineering or production use.
 Operating CCC is the primary value for wire-size selection.
 Design CCC is for benchmark comparison.
 Extreme Stress CCC is for thermal-stress comparison only and shall not be used as the product operating limit.
-</div>
 
+</div>
 
 
 <script>
