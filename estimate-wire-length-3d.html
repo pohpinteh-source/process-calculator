@@ -27,7 +27,7 @@ body{
 
 .container{
 
-    max-width:500px;
+    max-width:700px;
     margin-left:0;
     margin-right:auto;
 
@@ -68,16 +68,17 @@ input{
 }
 
 button{
-    width:60%;
+    width:220px;
     padding:10px;
     margin-top:8px;
+    margin-bottom:8px;
     font-size:16px;
+    display:block;
 }
-
 
 .loop-img{
 
-    width:220px;
+    width:400px;
     height:auto;
     display:block;
 
@@ -89,6 +90,15 @@ button{
 
     border:1px solid black;
 
+}
+.bottom-btn-row{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.bottom-btn-row button{
+    width:220px;
 }
 
 @media screen and (max-width:600px){
@@ -133,6 +143,7 @@ button{
         font-size:18px;
         padding:12px;
     }
+
 }
 </style>
 </head>
@@ -147,6 +158,44 @@ button{
     Est. Wire Length (3D)
 </div>
 
+</div>
+
+<div style="
+width:680px;
+margin-top:8px;
+margin-bottom:8px;
+padding:10px;
+background:white;
+border:1px solid #cccccc;
+text-align:left;
+line-height:1.6;
+">
+<b>Purpose</b><br>
+
+Estimate the actual 3D wire length used during wire bonding.
+
+<br><br>
+
+<b>Formula</b><br>
+
+3D Wire Length ≈ Span + Loop Height Contribution
+
+<br><br>
+
+<b>Application</b><br>
+
+Used for wire consumption estimation, CCC calculation, FCC calculation, and bonding design review.
+
+</div>
+
+
+<div style="
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:10px;
+">
+
 <button onclick="showLoop('sq')">
 Forward Sq Loop
 </button>
@@ -159,27 +208,8 @@ Forward Q Loop
 RBSOB
 </button>
 
-<button onclick="clearInputs()">
-Clear
-</button>
+</div></div>
 
-<button onclick="goToFCC()">
-    Back To Fusing Current Check (FCC)
-</button>
-
-<button onclick="goToCCC()"
-<button disabled>
-    Back To Current Carrying Capacity (CCC)
-</button>
-
-<button onclick="goToFusingCurrent()"
-<button disabled>
-Back to Fusing Current Assumption
-</button>
-
-<button onclick="goHome()">Back</button>
-
-</div>
 </div>
 
 <div
@@ -199,7 +229,32 @@ Please input values in the yellow highlighted cells only.
 
 <div id="content"></div>
 
+<div class="bottom-btn-row">
 
+<button onclick="goToFCC()">
+    Back To Fusing Current Check (FCC)
+</button>
+
+<button onclick="clearInputs()">
+    Clear
+</button>
+
+<button onclick="goHome()">
+    Back
+</button>
+
+</div>
+<button disabled>
+    Back To Current Carrying Capacity (CCC)
+</button>
+
+<button disabled>
+    Back to Fusing Current Assumption
+</button>
+
+
+
+</div>
 
 <script>
 

@@ -205,18 +205,35 @@ button{
 <body>
 <div class="title">B.A.R Calculator</div>
 
-
-
-<!-- ✅ IMAGE ON TOP -->
-<div style="margin-bottom:15px;">
-<img src="Normalize Ball Shear.png" style="max-width:100%;">
 </div>
 
-<!-- ✅ MODE -->
-<div class="mode-row">
-<button class="mode-btn" onclick="setMode('diameter')">Min Ball Diameter</button>
-<button class="mode-btn" onclick="setMode('shear')">Min Ball Shear Value</button>
-<button class="mode-btn" onclick="setMode('strength')">Normalize Ball Shear</button>
+<div style="
+margin-top:8px;
+margin-bottom:8px;
+padding:10px;
+background:white;
+border:1px solid #cccccc;
+text-align:left;
+line-height:1.6;
+">
+
+<b>Purpose</b><br>
+
+Normalize ball shear results to a common ball size or predict the
+required ball diameter or shear value based on ball shear strength.
+
+<br><br><br>
+<!-- ✅ IMAGE ON TOP -->
+<div style="margin-bottom:15px;">
+<img src="Normalize Ball Shear.png" style="max-width:50%;">
+</div>
+
+
+<b>Typical Use</b><br>
+
+Compare ball shear performance from different ball sizes using a
+common normalized shear strength basis.
+
 </div>
 
 <!-- YELLOW MESSAGE -->
@@ -234,6 +251,15 @@ text-align:center;
 >
 Please input values in the yellow highlighted cells only.
 </div>
+
+
+<!-- ✅ MODE -->
+<div class="mode-row">
+<button class="mode-btn" onclick="setMode('diameter')">Min Ball Diameter</button>
+<button class="mode-btn" onclick="setMode('shear')">Min Ball Shear Value</button>
+<button class="mode-btn" onclick="setMode('strength')">Normalize Ball Shear</button>
+</div>
+
 
 <!-- ✅ TABLE -->
 <table id="calcTable">

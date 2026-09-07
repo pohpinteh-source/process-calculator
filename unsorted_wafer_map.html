@@ -5,6 +5,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
+
 <style>
 
 body{
@@ -150,11 +152,36 @@ td{
 🟢 Unsorted Wafer Map
 </div>
 
+<div style="
+margin-top:8px;
+margin-bottom:8px;
+padding:10px;
+background:white;
+border:1px solid #cccccc;
+text-align:left;
+line-height:1.6;
+">
+
+<b>Purpose</b><br>
+
+Convert an unsorted wafer map file into a visual wafer map and automatically classify good dies and OCR dies.
+
+<br><br>
+
+<b>Application</b><br>
+
+Used for quick wafer map review, OCR verification, die count validation, and production yield assessment.
+
+</div>
+
+
+
 <div id="dropZone" class="drop-zone">
 📄 Drop Wafer Map File Here
 <br><br>
 or Click To Browse
 </div>
+
 
 <div class="btn-row">
 
@@ -202,7 +229,58 @@ Back
 <div id="result"></div>
 
 </div>
+<div style="
+    margin-top:15px;
+    background:#ffe6e6;
+    border:2px solid red;
+    padding:10px;
+    line-height:1.6;
+    text-align:left;
+    color:red;line-height:1.6;
 
+
+">
+
+
+<b>Calculation Logic</b><br>
+
+The calculator reads the wafer map file, determines whether the map is a New Map or Used Map, and counts:
+
+<br>
+
+• Total Good Die
+
+<br>
+
+• Total OCR Die
+
+<br>
+
+• Wafer Map Type
+
+<br><br>
+
+The wafer map is automatically rotated to match the standard viewing orientation and displayed in a color-coded format.
+
+<br><br>
+
+<b>Color Definition</b><br>
+
+🟩 Green = Good Die
+
+<br>
+
+🟦 Blue = OCR Die
+
+<br>
+
+⬜ White = Other Bin Code
+
+<br>
+
+⬛ Empty Cell = No Die Position
+
+</div>
 <script>
 
 let waferFile = null;

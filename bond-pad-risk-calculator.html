@@ -6,6 +6,66 @@
 
 <title>Bond Pad Risk Calculator</title>
 
+<div class="info-box">
+
+<b>Purpose:</b><br>
+Evaluate the risk of Bond Out Of Pad (BOOP) by comparing the available bond pad area against the ball diameter, placement variation, and operator teaching variation.
+
+<br><br>
+
+<b>Key Formula:</b><br>
+
+Minimum BPO =
+Nominal BPO − BPO Tolerance
+
+<br>
+
+Maximum Allowable Ball Diameter =
+Minimum BPO +
+(2 × BOOP) −
+Total Design Tolerance
+
+<br>
+
+Margin =
+Maximum Allowable Ball Diameter −
+Actual Ball Diameter
+
+<br><br>
+
+<b>Result Interpretation:</b><br>
+
+PASS = Sufficient design margin available.
+
+<br>
+
+WARNING = Low design margin. Review recommended.
+
+<br>
+
+FAIL = Potential BOOP risk.
+
+<br><br>
+
+<b>Sigma Analysis:</b><br>
+
+Z Margin =
+(Maximum Allowable Ball Diameter − Mean Ball Diameter)
+/ Sigma
+
+<br><br>
+
+Higher Z Margin indicates a more robust design and lower BOOP risk.
+
+<br>
+
+Predicted PPM estimates the probability of Bond Out Of Pad occurrence.
+
+<br><br>
+
+
+</div>
+
 <style>
 
 body{
@@ -72,13 +132,24 @@ button{
 .remark-box{
     width:680px;
     margin-top:15px;
-    background:white;
-    border:1px solid black;
+    background:#ffe6e6;
+    border:2px solid red;
     padding:10px;
-    line-height:1.5;
+    line-height:1.6;
     text-align:left;
+    color:red;
 }
 
+.info-box{
+    width:680px;
+    margin-top:15px;
+    margin-bottom:15px;
+    background:white;
+    border:1px solid #cccccc;
+    padding:10px;
+    line-height:1.6;
+    text-align:left;
+}
 </style>
 </head>
 
@@ -233,17 +304,27 @@ Back
 <div class="remark-box">
 
 <b>Remark #1:</b><br>
-Design Margin Analysis works without historical data.
+Design Margin Analysis can be used without historical production data.
 
 <br><br>
 
 <b>Remark #2:</b><br>
-Sigma Analysis is only shown when Mean Ball Diameter and Sigma are entered.
+Sigma Analysis is only available when Mean Ball Diameter and Sigma are entered.
 
 <br><br>
 
 <b>Remark #3:</b><br>
-Actual manufacturing PPM requires measured production data.
+Predicted PPM is a statistical estimation and should not be treated as actual production PPM.
+
+<br><br>
+
+<b>Remark #4:</b><br>
+Actual BOOP performance may vary depending on ball formation, bonding parameters, capillary design, and process variation.
+
+<br><br>
+
+<b>Remark #5:</b><br>
+Physical validation is recommended before engineering release or production implementation.
 
 </div>
 
