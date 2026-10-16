@@ -147,14 +147,34 @@ input[type=range]{
 
 
 
-    Drag & Drop Image Here
+<h3>
+📥 Drop Image Here
+</h3>
+<br><br>
 
-    <br><br>
+<button
+    onclick="document.getElementById('imageInput').click()">
+    📁 Select Image
+</button>
 
-    <input
-        type="file"
-        id="imageInput"
-        accept="image/*">
+<button
+    onclick="document.getElementById('cameraInput').click()">
+    📷 Take Photo
+</button>
+
+<br><br>
+<input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+    style="display:none;">
+<input
+    type="file"
+    id="cameraInput"
+    accept="image/*"
+    capture="environment"
+    style="display:none;">
+
 
 </div>
 
@@ -263,31 +283,36 @@ Min Blob Area (50 - 300) :
 <button
     onclick="clearAll()"
     style="
-        padding:12px 30px;
+        width:170px;
+        height:70px;
         font-size:18px;
         font-weight:bold;
         background:#ff9800;
         color:white;
         border:none;
-        border-radius:6px;
+        border-radius:8px;
         cursor:pointer;
     ">
     New Image
 </button>
+
+
 <button
     onclick="goHome()"
     style="
-        padding:12px 30px;
+        width:170px;
+        height:70px;
         font-size:18px;
         font-weight:bold;
         background:#1f4e79;
         color:white;
         border:none;
-        border-radius:6px;
+        border-radius:8px;
         cursor:pointer;
     ">
     Back
 </button>
+
 </div>
  <br>
 
@@ -360,6 +385,13 @@ inputCanvas.getContext("2d");
 
 document
 .getElementById("imageInput")
+.addEventListener(
+"change",
+loadImage
+);
+
+document
+.getElementById("cameraInput")
 .addEventListener(
 "change",
 loadImage
