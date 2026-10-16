@@ -288,7 +288,7 @@ Last 30 Days
         <span>Total</span>
 
         <span id="totalCalculator">
-            23
+            27
         </span>
 
     </div>
@@ -298,7 +298,7 @@ Last 30 Days
         <span>Active</span>
 
         <span id="activeCalculator">
-            21
+            25
         </span>
 
     </div>
@@ -863,111 +863,22 @@ async function loadUserCount(){
     ).innerHTML =
         data.length - 1;
 }
-async function loadCalculatorCount(){
+function loadCalculatorCount(){
 
-    try{
+    document.getElementById(
+        "totalCalculator"
+    ).innerHTML = 27;
 
-        const response =
-            await fetch("index.html");
+    document.getElementById(
+        "activeCalculator"
+    ).innerHTML = 25;
 
-        const html =
-            await response.text();
-
-        const parser =
-            new DOMParser();
-
-        const doc =
-            parser.parseFromString(
-                html,
-                "text/html"
-            );
-
-const headers =
-    Array.from(
-        doc.querySelectorAll(
-            ".section-title"
-        )
-    );
-        let total = 0;
-        let disabled = 0;
-
-headers.forEach(header=>{
-
-    const title =
-        header.textContent.trim();
-
-    if(
-        title.includes("Phone Setup")
-        ||
-        title.includes("Admin")
-    ){
-        return;
-    }
-
-    let next =
-        header.nextElementSibling;
-
-    while(
-        next &&
-        !next.classList.contains(
-            "section-title"
-        )
-    ){
-
-        if(
-            next.tagName === "BUTTON"
-        ){
-
-            total++;
-
-            if(
-                next.disabled
-            ){
-                disabled++;
-            }
-
-        }
-
-        next =
-            next.nextElementSibling;
-
-    }
-
-});
-
-        });
-
-        document
-        .getElementById(
-            "totalCalculator"
-        )
-        .innerHTML =
-        total;
-
-        document
-        .getElementById(
-            "activeCalculator"
-        )
-        .innerHTML =
-        total - disabled;
-
-        document
-        .getElementById(
-            "disabledCalculator"
-        )
-        .innerHTML =
-        disabled;
-
-    }
-    catch(err){
-
-        console.error(
-            err
-        );
-
-    }
+    document.getElementById(
+        "disabledCalculator"
+    ).innerHTML = 2;
 
 }
+
 async function loadUserCount(){
 
     try{
@@ -992,14 +903,6 @@ async function loadUserCount(){
         console.error(err);
 
     }
-
-}
-
-function refreshData(){
-
-    loadLogs();
-
-    loadCalculatorCount();
 
 }
 function goHome(){
