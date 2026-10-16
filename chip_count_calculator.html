@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Chip Counter</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f2f2f2;
+    margin:20px;
+}
+
+h1{
+    text-align:center;
+    color:#e67e22;
+}
+
+.dropzone{
+    border:2px dashed #999;
+    background:white;
+    padding:15px;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.toolbar{
+    text-align:center;
+    margin-bottom:15px;
+}
+button{
+
+    background:#ffffff;
+
+    border:1px solid #cfcfcf;
+
+    border-radius:8px;
+
+    min-width:36px;
+
+    min-height:36px;
+
+    cursor:pointer;
+
+    transition:all .2s ease;
+
+    font-weight:bold;
+
+}
+
+button:hover{
+
+    background:#f5f5f5;
+
+    transform:scale(1.05);
+
+}
+
+button:active{
+
+    transform:scale(0.95);
+
+}
+
+
+.container{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.previewPanel{
+
+    flex:3;
+
+    background:white;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    overflow:auto;
+
+}
+.resultPanel{
+
+    flex:1;
+    background:white;
+    padding:15px;
+    border-radius:8px;
+
+}
+canvas{
+
+    width:auto;
+    height:auto;
+
+    max-width:100%;
+    max-height:600px;
+
+    object-fit:contain;
+
+    border:1px solid #ccc;
+
+}
+
+
+.result{
+    margin-top:15px;
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+input[type=range]{
+    width:300px;
+}
+@media (max-width: 768px){
+
+    .container{
+        flex-direction:column;
+    }
+
+    .previewPanel{
+        flex:none;
+        width:100%;
+    }
+
+    .resultPanel{
+        flex:none;
+        width:100%;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<h1>Chip Counter</h1>
+
+<div class="dropzone" id="dropZone">
+
+
+
+    Drag & Drop Image Here
+
+    <br><br>
+
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/*">
+
+</div>
+
+<div class="toolbar">
+
+<div style="display:flex;justify-content:center;align-items:center;gap:10px;">
+
+<label><b>Threshold (0 - 255):</b></label>
+    <input
+        type="range"
+        id="thresholdSlider"
+        min="0"
+        max="255"
+        value="200"
+        style="width:250px;">
+
+    <input
+        type="number"
+        id="thresholdValue"
+        min="0"
+        max="255"
+        value="200"
+        style="
+            width:90px;
+            text-align:center;
+            font-size:18px;
+            font-weight:bold;
+        ">
+
+    <div style="display:flex;flex-direction:column;">
+
+        <button onclick="changeThreshold(1)">▲</button>
+
+        <button onclick="changeThreshold(-1)">▼</button>
+
+    </div>
+
+
+
+Dot Size (1 - 20):
+
+
+<input
+    type="number"
+    id="dotSize"
+    value="4"
+    min="1"
+    max="20"
+    onchange="refreshCount()"
+
+    style="
+        width:90px;
+        text-align:center;
+            font-size:18px;
+            font-weight:bold;
+
+    ">
+
+<div style="display:inline-flex;flex-direction:column;">
+
+    <button onclick="changeDotSize(1)">
+        ▲
+    </button>
+
+    <button onclick="changeDotSize(-1)">
+        ▼
+    </button>
+
+</div>
+&nbsp;&nbsp;&nbsp;
+
+
+
+Min Blob Area (50 - 300) :
+
+<input
+    type="number"
+    id="minBlobArea"
+    value="80"
+    min="1"
+    onchange="countDies()"
+    style="
+        width:90px;
+        text-align:center;
+            font-size:18px;
+            font-weight:bold;
+
+    ">
+
+<div style="display:inline-flex;flex-direction:column;">
+
+    <button onclick="changeBlobArea(10)">
+        ▲
+    </button>
+
+    <button onclick="changeBlobArea(-10)">
+        ▼
+    </button>
+
+</div>
+&nbsp;&nbsp;&nbsp;
+
+
+
+
+<button
+    onclick="clearAll()"
+    style="
+        padding:12px 30px;
+        font-size:18px;
+        font-weight:bold;
+        background:#ff9800;
+        color:white;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+    ">
+    New Image
+</button>
+<button
+    onclick="goHome()"
+    style="
+        padding:12px 30px;
+        font-size:18px;
+        font-weight:bold;
+        background:#1f4e79;
+        color:white;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+    ">
+    Back
+</button>
+</div>
+ <br>
+
+<div class="container">
+
+    <div class="previewPanel">
+
+        <h3>Detection Preview</h3>
+
+        <canvas id="outputCanvas"></canvas>
+
+    </div>
+
+    <div class="resultPanel">
+<div style="
+    font-size:20px;
+    color:black;
+    font-weight:bold;
+">
+
+        <h3>Result</h3>
+
+        <br>
+
+<div style="
+    font-size:48px;
+    color:red;
+    font-weight:bold;
+">
+
+Qty :
+<span id="qty">0</span>
+
+</div>
+        <br><br>
+<div style="
+    font-size:20px;
+    color:red;
+    font-weight:bold;
+">
+
+
+        Confidence :
+        <span id="confidence">0%</span>
+
+    </div>
+
+</div>
+
+<script>
+
+let imageLoaded=false;
+let threshold = 200;
+let originalImageData = null;
+
+const outputCanvas =
+document.getElementById("outputCanvas");
+
+const octx =
+outputCanvas.getContext("2d");
+
+const inputCanvas =
+document.createElement("canvas");
+
+const ictx =
+inputCanvas.getContext("2d");
+
+
+
+
+document
+.getElementById("imageInput")
+.addEventListener(
+"change",
+loadImage
+);
+
+document
+.getElementById("thresholdSlider")
+.addEventListener(
+"input",
+function(){
+
+    threshold =
+        parseInt(this.value);
+
+    document
+    .getElementById("thresholdValue")
+    .value =
+        threshold;
+
+    if(imageLoaded){
+
+        convertBW();
+        countDies();
+
+    }
+
+}
+);
+
+document
+.getElementById("thresholdValue")
+.addEventListener(
+"change",
+function(){
+
+    let value =
+        parseInt(this.value);
+
+    if(isNaN(value))
+        value = 200;
+
+    if(value < 0)
+        value = 0;
+
+    if(value > 255)
+        value = 255;
+
+    threshold = value;
+
+    document
+    .getElementById("thresholdSlider")
+    .value =
+        threshold;
+
+    this.value =
+        threshold;
+
+    if(imageLoaded){
+
+        convertBW();
+        countDies();
+
+    }
+
+}
+);
+
+function loadImage(e){
+
+const file=e.target.files[0];
+
+if(!file) return;
+
+const img=new Image();
+
+img.onload=function(){
+
+    const scale=
+    Math.min(
+        1,
+        1200/img.width
+    );
+
+    const w=
+    img.width*scale;
+
+    const h=
+    img.height*scale;
+
+    inputCanvas.width=w;
+    inputCanvas.height=h;
+
+    outputCanvas.width=w;
+    outputCanvas.height=h;
+outputCanvas.style.width =
+    w + "px";
+
+outputCanvas.style.height =
+    h + "px";
+ictx.drawImage(
+    img,
+    0,
+    0,
+    w,
+    h
+);
+
+octx.drawImage(
+    img,
+    0,
+    0,
+    w,
+    h
+);
+
+originalImageData =
+octx.getImageData(
+    0,
+    0,
+    w,
+    h
+);
+
+
+    imageLoaded=true;
+convertBW();
+
+countDies();
+};
+
+img.src=
+URL.createObjectURL(file);
+
+}
+
+const dropZone=
+document.getElementById("dropZone");
+
+dropZone.addEventListener(
+"dragover",
+e=>{
+e.preventDefault();
+}
+);
+
+dropZone.addEventListener(
+"drop",
+e=>{
+
+e.preventDefault();
+
+const file=
+e.dataTransfer.files[0];
+
+document
+.getElementById("imageInput")
+.files=
+e.dataTransfer.files;
+
+loadImage({
+target:{
+files:[file]
+}
+});
+
+}
+);
+
+function refreshCount(){
+
+    if(!imageLoaded)
+        return;
+
+    convertBW();
+
+    countDies();
+
+}
+
+function changeBlobArea(v){
+
+    let box =
+        document.getElementById(
+            "minBlobArea"
+        );
+
+    let value =
+        parseInt(box.value);
+
+    value += v;
+
+    if(value < 1)
+        value = 1;
+
+    box.value = value;
+
+    if(imageLoaded){
+
+        countDies();
+
+    }
+
+}
+
+function changeDotSize(v){
+
+    let box =
+        document.getElementById(
+            "dotSize"
+        );
+
+    let value =
+        parseInt(box.value);
+
+    value += v;
+
+    if(value < 1)
+        value = 1;
+
+    if(value > 20)
+        value = 20;
+
+    box.value = value;
+
+    if(imageLoaded){
+
+        countDies();
+
+    }
+
+}
+
+
+function changeThreshold(v){
+
+    threshold += v;
+
+    if(threshold < 0)
+        threshold = 0;
+
+    if(threshold > 255)
+        threshold = 255;
+
+    document
+    .getElementById("thresholdValue")
+    .value =
+        threshold;
+
+    document
+    .getElementById("thresholdSlider")
+    .value =
+        threshold;
+
+    if(imageLoaded){
+
+        convertBW();
+        countDies();
+
+    }
+
+}
+
+
+function convertBW(){
+
+    if(
+        !imageLoaded
+        ||
+        !originalImageData
+    ){
+        return;
+    }
+
+    let img =
+    new ImageData(
+
+        new Uint8ClampedArray(
+            originalImageData.data
+        ),
+
+        originalImageData.width,
+        originalImageData.height
+
+    );
+
+    const data =
+    img.data;
+
+    for(
+        let i=0;
+        i<data.length;
+        i+=4
+    ){
+
+        let gray =
+        (
+            data[i]
+            +
+            data[i+1]
+            +
+            data[i+2]
+        ) / 3;
+
+        let v =
+        gray > threshold
+        ? 255
+        : 0;
+
+        data[i] = v;
+        data[i+1] = v;
+        data[i+2] = v;
+
+    }
+
+    octx.putImageData(
+        img,
+        0,
+        0
+    );
+
+}
+
+function countDies(){
+
+if(!imageLoaded){
+
+alert("Load image first");
+
+return;
+
+}
+convertBW();
+const img=
+
+octx.getImageData(
+
+0,
+0,
+outputCanvas.width,
+outputCanvas.height
+);
+
+const data=
+img.data;
+
+let visited =
+new Uint8Array(
+    outputCanvas.width *
+    outputCanvas.height
+);
+
+let qty = 0;
+
+let centers = [];
+let blobAreas = [];
+
+
+function floodFill(
+    startX,
+    startY
+){
+
+    let stack =
+    [[startX,startY]];
+
+    let count = 0;
+
+    let minX = startX;
+    let maxX = startX;
+
+    let minY = startY;
+    let maxY = startY;
+
+    while(
+        stack.length > 0
+    ){
+
+        let p =
+        stack.pop();
+
+        let x = p[0];
+        let y = p[1];
+
+        if(
+            x < 0 ||
+            y < 0 ||
+            x >= outputCanvas.width ||
+            y >= outputCanvas.height
+        ) continue;
+
+        let idx =
+        y * outputCanvas.width + x;
+
+        if(
+            visited[idx]
+        ) continue;
+
+        visited[idx] = 1;
+
+        let pixel =
+        idx * 4;
+
+        if(
+            data[pixel] !== 255
+        ) continue;
+
+        count++;
+
+        minX =
+        Math.min(
+            minX,
+            x
+        );
+
+        maxX =
+        Math.max(
+            maxX,
+            x
+        );
+
+        minY =
+        Math.min(
+            minY,
+            y
+        );
+
+        maxY =
+        Math.max(
+            maxY,
+            y
+        );
+
+        stack.push(
+            [x+1,y]
+        );
+
+        stack.push(
+            [x-1,y]
+        );
+
+        stack.push(
+            [x,y+1]
+        );
+
+        stack.push(
+            [x,y-1]
+        );
+
+    }
+
+    let width =
+        maxX - minX;
+
+    let height =
+        maxY - minY;
+
+let dotSize =
+parseInt(
+    document.getElementById(
+        "dotSize"
+    ).value
+);
+
+let minimumBlobArea =
+parseInt(
+    document.getElementById(
+        "minBlobArea"
+    ).value
+);
+
+
+if(
+    width >= 8 &&
+    height >= 8 &&
+    count >= minimumBlobArea
+)
+
+{
+console.log(
+    width,
+    height,
+    count
+);
+qty++;
+
+blobAreas.push(count);
+
+centers.push({
+
+            x:
+            (
+                minX +
+                maxX
+            ) / 2,
+
+            y:
+            (
+                minY +
+                maxY
+            ) / 2
+
+        });
+
+    }
+
+}
+
+for(
+    let y=0;
+    y<outputCanvas.height;
+    y++
+){
+
+    for(
+        let x=0;
+        x<outputCanvas.width;
+        x++
+    ){
+
+        let idx =
+        (
+            y *
+            outputCanvas.width
+            +
+            x
+        ) * 4;
+
+        if(
+            data[idx] === 255
+        ){
+
+            floodFill(
+                x,
+                y
+            );
+
+        }
+
+    }
+
+}
+
+octx.fillStyle="red";
+
+centers.forEach(c=>{
+
+    octx.beginPath();
+
+let dotSize =
+parseInt(
+    document.getElementById(
+        "dotSize"
+    ).value
+);
+
+octx.arc(
+    c.x,
+    c.y,
+    dotSize,
+    0,
+    Math.PI*2
+);
+
+    octx.fill();
+
+});
+
+
+let rowGroups = [];
+
+centers.forEach(c=>{
+
+    let found = false;
+
+    for(let i=0;i<rowGroups.length;i++){
+
+        if(
+            Math.abs(
+                rowGroups[i] - c.y
+            ) < 12
+        ){
+
+            found = true;
+            break;
+
+        }
+
+    }
+
+    if(!found){
+
+        rowGroups.push(c.y);
+
+    }
+
+});
+
+let estimatedRows =
+Math.round(
+Math.sqrt(qty)
+);
+
+
+
+let colGroups = [];
+
+centers.forEach(c=>{
+
+    let found = false;
+
+    for(let i=0;i<colGroups.length;i++){
+
+        if(
+            Math.abs(
+                colGroups[i] - c.x
+            ) < 12
+        ){
+
+            found = true;
+            break;
+
+        }
+
+    }
+
+    if(!found){
+
+        colGroups.push(c.x);
+
+    }
+
+});
+
+let estimatedCols =
+Math.round(
+qty /
+estimatedRows
+);
+
+
+
+document
+.getElementById("qty")
+.innerText=
+qty;
+
+
+let avgArea =
+blobAreas.reduce(
+    (a,b)=>a+b,
+    0
+) / blobAreas.length;
+
+let variance = 0;
+
+blobAreas.forEach(a=>{
+
+    variance +=
+    Math.pow(
+        a - avgArea,
+        2
+    );
+
+});
+
+variance =
+variance /
+blobAreas.length;
+
+let stdDev =
+Math.sqrt(
+    variance
+);
+
+let coefficientVariation =
+stdDev / avgArea;
+
+let confidence =
+Math.round(
+
+    100
+
+    -
+
+    coefficientVariation
+    *
+    100
+
+);
+
+if(confidence > 99)
+    confidence = 99;
+
+if(confidence < 50)
+    confidence = 50;
+
+document
+.getElementById("confidence")
+.innerText =
+confidence + "%";
+}
+
+function clearAll(){
+
+ictx.clearRect(
+0,
+0,
+inputCanvas.width,
+inputCanvas.height
+);
+
+octx.clearRect(
+0,
+0,
+outputCanvas.width,
+outputCanvas.height
+);
+
+
+document
+.getElementById("qty")
+.innerText=0;
+
+document
+.getElementById("confidence")
+.innerText="0%";
+
+imageLoaded=false;
+document
+.getElementById("imageInput")
+.value = "";
+
+threshold = 200;
+
+document
+.getElementById("thresholdValue")
+.value = "200";
+
+document
+.getElementById("thresholdSlider")
+.value = 200;
+
+
+}
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+
+}
+</script>
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+        params.get("user")
+        ||
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+        API_URL +
+        "?action=trackUsage" +
+        "&user=" +
+        encodeURIComponent(user) +
+        "&calculator=chip_counter"
+    );
+
+}
+
+trackUsage();
+
+</script>
+</body>
+</html>
