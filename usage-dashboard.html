@@ -863,22 +863,101 @@ async function loadUserCount(){
     ).innerHTML =
         data.length - 1;
 }
-function loadCalculatorCount(){
+async function loadCalculatorCount(){
 
-    document.getElementById(
-        "totalCalculator"
-    ).innerHTML = 23;
+    try{
 
-    document.getElementById(
-        "activeCalculator"
-    ).innerHTML = 21;
+        const response =
+            await fetch("index.html");
 
-    document.getElementById(
-        "disabledCalculator"
-    ).innerHTML = 2;
+        const html =
+            await response.text();
+
+        const parser =
+            new DOMParser();
+
+        const doc =
+            parser.parseFromString(
+                html,
+                "text/html"
+            );
+
+        const headers =
+            Array.from(
+                doc.querySelectorAll(
+                    ".section-header"
+                )
+            );
+
+        let total = 0;
+        let disabled = 0;
+
+        headers.forEach(header=>{
+
+            const title =
+                header.textContent.trim();
+
+            if(
+                title.includes("Phone Setup")
+                ||
+                title.includes("Admin")
+            ){
+                return;
+            }
+
+            const section =
+                header.parentElement;
+
+            const buttons =
+                section.querySelectorAll(
+                    "button"
+                );
+
+            buttons.forEach(btn=>{
+
+                total++;
+
+                if(
+                    btn.disabled
+                ){
+                    disabled++;
+                }
+
+            });
+
+        });
+
+        document
+        .getElementById(
+            "totalCalculator"
+        )
+        .innerHTML =
+        total;
+
+        document
+        .getElementById(
+            "activeCalculator"
+        )
+        .innerHTML =
+        total - disabled;
+
+        document
+        .getElementById(
+            "disabledCalculator"
+        )
+        .innerHTML =
+        disabled;
+
+    }
+    catch(err){
+
+        console.error(
+            err
+        );
+
+    }
 
 }
-
 async function loadUserCount(){
 
     try{
