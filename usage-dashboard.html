@@ -882,48 +882,58 @@ async function loadCalculatorCount(){
                 "text/html"
             );
 
-        const headers =
-            Array.from(
-                doc.querySelectorAll(
-                    ".section-header"
-                )
-            );
-
+const headers =
+    Array.from(
+        doc.querySelectorAll(
+            ".section-title"
+        )
+    );
         let total = 0;
         let disabled = 0;
 
-        headers.forEach(header=>{
+headers.forEach(header=>{
 
-            const title =
-                header.textContent.trim();
+    const title =
+        header.textContent.trim();
+
+    if(
+        title.includes("Phone Setup")
+        ||
+        title.includes("Admin")
+    ){
+        return;
+    }
+
+    let next =
+        header.nextElementSibling;
+
+    while(
+        next &&
+        !next.classList.contains(
+            "section-title"
+        )
+    ){
+
+        if(
+            next.tagName === "BUTTON"
+        ){
+
+            total++;
 
             if(
-                title.includes("Phone Setup")
-                ||
-                title.includes("Admin")
+                next.disabled
             ){
-                return;
+                disabled++;
             }
 
-            const section =
-                header.parentElement;
+        }
 
-            const buttons =
-                section.querySelectorAll(
-                    "button"
-                );
+        next =
+            next.nextElementSibling;
 
-            buttons.forEach(btn=>{
+    }
 
-                total++;
-
-                if(
-                    btn.disabled
-                ){
-                    disabled++;
-                }
-
-            });
+});
 
         });
 
@@ -982,6 +992,14 @@ async function loadUserCount(){
         console.error(err);
 
     }
+
+}
+
+function refreshData(){
+
+    loadLogs();
+
+    loadCalculatorCount();
 
 }
 function goHome(){
