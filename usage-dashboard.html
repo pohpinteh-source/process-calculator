@@ -863,19 +863,92 @@ async function loadUserCount(){
     ).innerHTML =
         data.length - 1;
 }
-function loadCalculatorCount(){
+async function loadCalculatorCount(){
 
-    document.getElementById(
-        "totalCalculator"
-    ).innerHTML = 27;
+    try{
 
-    document.getElementById(
-        "activeCalculator"
-    ).innerHTML = 25;
+        const response =
+            await fetch("index.html");
 
-    document.getElementById(
-        "disabledCalculator"
-    ).innerHTML = 2;
+        const html =
+            await response.text();
+
+        const parser =
+            new DOMParser();
+
+        const doc =
+            parser.parseFromString(
+                html,
+                "text/html"
+            );
+
+        const allButtons =
+            doc.querySelectorAll("button");
+
+        let total = 0;
+        let disabled = 0;
+
+        allButtons.forEach(btn=>{
+
+            const text =
+                btn.textContent.trim();
+
+            if(
+                text.includes("Android Setup")
+                ||
+                text.includes("IOS Setup")
+                ||
+                text.includes("User Access")
+                ||
+                text.includes("Usage Statistics")
+            ){
+                return;
+            }
+
+            total++;
+
+            if(
+                btn.disabled
+            ){
+
+                disabled++;
+
+            }
+
+        });
+
+        document.getElementById(
+            "totalCalculator"
+        ).innerText = total;
+
+        document.getElementById(
+            "activeCalculator"
+        ).innerText =
+            total - disabled;
+
+        document.getElementById(
+            "disabledCalculator"
+        ).innerText =
+            disabled;
+
+        console.log(
+            "Total:",
+            total,
+            "Active:",
+            total - disabled,
+            "Disabled:",
+            disabled
+        );
+
+    }
+    catch(err){
+
+        console.error(
+            "Calculator Count Error:",
+            err
+        );
+
+    }
 
 }
 
@@ -903,6 +976,14 @@ async function loadUserCount(){
         console.error(err);
 
     }
+
+}
+
+function refreshData(){
+
+    loadLogs();
+
+    loadCalculatorCount();
 
 }
 function goHome(){
