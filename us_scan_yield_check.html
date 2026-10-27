@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>US Scan Yield Check</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    margin:10px;
+}
+
+h1{
+    text-align:center;
+    color:#1f4e79;
+}
+
+.card{
+    background:white;
+    padding:8px;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+    margin-bottom:8px;
+}
+
+
+.dropzone{
+    border:3px dashed #999;
+    background:white;
+    padding:50px;
+    text-align:center;
+    border-radius:8px;
+    margin-top:20px;
+}
+
+.dropzone.dragover{
+    background:#e8f5e9;
+}
+
+button{
+    padding:10px 20px;
+    cursor:pointer;
+    margin:5px;
+}
+
+.actionBtn{
+
+    width:200px;
+    height:45px;
+
+    font-size:16px;
+    font-weight:bold;
+
+}
+
+
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+td{
+    border:1px solid #ddd;
+    padding:10px;
+}
+
+.label{
+    font-weight:bold;
+    width:300px;
+}
+
+.pass{
+    color:green;
+    font-weight:bold;
+}
+
+.fail{
+    color:red;
+    font-weight:bold;
+}
+
+.yield{
+    color:#1f4e79;
+    font-size:36px;
+    font-weight:bold;
+}
+
+#incomingReject{
+    width:90px;
+    height:30px;
+
+    font-size:18px;
+
+    box-sizing:border-box;
+
+    text-align:center;
+
+    font-weight:bold;
+
+}
+
+
+#specOperator,
+#specValue{
+    width:70px;
+    height:40px;
+    font-size:18px;
+    box-sizing:border-box;
+
+    text-align:center;
+
+    color:red;
+    font-weight:bold;
+}
+#specOperator{
+    text-align-last:center;
+}
+#photoPreview{
+    max-width:100%;
+    max-height:800px;
+    border:1px solid #ccc;
+}
+
+.fileInfo{
+    color:red;
+    font-weight:bold;
+    font-size:24px;
+    margin:0;
+
+    text-align:center;
+}
+
+#padType{
+
+    font-size:20px;
+
+    font-weight:bold;
+
+}
+
+</style>
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<body>
+
+<h1>US Scan Yield Check</h1>
+<div style="text-align:center;margin-bottom:10px;">
+
+    <button
+        onclick="goHome()"
+        style="
+            width:170px;
+            height:50px;
+            font-size:18px;
+            font-weight:bold;
+            background:#1f4e79;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+        ">
+
+        ⬅ Back
+
+    </button>
+
+</div>
+<!-- PAGE 1 -->
+
+<div id="uploadPage">
+
+    <div class="card">
+
+        <h2 style="text-align:center;">
+            Upload File
+        </h2>
+
+        <div
+            id="dropZone"
+            class="dropzone"
+        >
+
+            <h2>📥 Drag & Drop File Here</h2>
+
+            <p>
+
+                Supported Data Files
+
+                <br><br>
+
+                CSV / TXT / XLS / XLSX
+
+                <br><br>
+
+                Supported Image Files
+
+                <br><br>
+
+                BMP / JPG / JPEG / PNG
+
+            </p>
+
+            <br>
+
+            <button
+                onclick="document.getElementById('universalFile').click()"
+            >
+                📂 Select File
+            </button>
+
+            <input
+                type="file"
+                id="universalFile"
+                style="display:none;"
+            >
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- DATA PAGE -->
+
+<div
+    id="dataPage"
+    style="display:none;"
+>
+<div
+    class="card"
+    style="
+        width:700px;
+        margin-left:auto;
+        margin-right:auto;
+    "
+>
+
+        <div
+            id="dataFileName"
+            class="fileInfo"
+        ></div>
+
+    </div>
+
+<div
+    class="card"
+    style="
+        width:700px;
+        margin-left:auto;
+        margin-right:auto;
+    "
+>
+
+
+<label>
+
+<input
+    type="checkbox"
+    id="swapRowColumn"
+    checked
+    onchange="refreshRowColumn()"
+>
+
+Swap Row / Column (US Scan Format)
+
+</label>
+
+<div
+    style="
+        margin-top:5px;
+        color:#666;
+        font-size:12px;
+        font-style:italic;
+    "
+>
+<br>
+
+US Scan Format refers to CSV files where:
+<br>
+
+
+ⓘ US Scan file: Row Header = Column, Col Header = Row
+
+</div>
+
+<br>
+
+<div
+    id="maxRejectInfo"
+    style="
+        color:red;
+        font-size:16px;
+    "
+></div>         <br>
+
+        Incoming Reject Qty:
+
+
+<input
+    type="number"
+    id="incomingReject"
+    value="0"
+    min="0"
+    onfocus="this.select()"
+    oninput="
+        calculateYield();
+        calculateSpec();
+    "
+>
+
+        <br>
+
+
+    </div>
+
+<div
+    class="card"
+    style="
+        width:700px;
+        margin-left:auto;
+        margin-right:auto;
+    "
+>
+
+    <table>
+
+
+
+            <tr>
+<td
+    class="label"
+    id="rowLabel"
+>
+    Row Qty (Correct Row)
+</td>
+
+                <td id="rowQty">0</td>
+            </tr>
+
+            <tr>
+<td
+    class="label"
+    id="columnLabel"
+>
+    Col Qty (Correct Col)
+</td>
+
+                <td id="columnQty">0</td>
+            </tr>
+<tr>
+    <td class="label">
+
+
+        Pad Type
+
+    </td>
+
+    <td id="padType">
+
+        -
+
+    </td>
+
+</tr>
+
+
+<tr>
+
+    <td class="label">
+
+        Void Spec
+
+    </td>
+
+    <td>
+
+<select
+    id="specOperator"
+    onchange="
+        processCSVText(
+            originalCSVText
+        );
+    "
+>            <option value=">">></option>
+            <option value=">=">≥</option>
+        </select>
+
+        <input
+            type="number"
+            id="specValue"
+            value="20"
+            min="0"
+            max="100"
+            step="1"
+            onfocus="this.select()"
+oninput="
+    processCSVText(
+        originalCSVText
+    );
+"        >
+
+        %
+
+    </td>
+
+</tr>
+
+
+
+<tr>
+    <td class="label">Total Qty Per Panel</td>
+    <td id="totalPanelQty">0</td>
+</tr>
+            <tr>
+<td class="label">
+    PASS Qty (Void Spec)
+</td>
+                <td id="passQty" class="pass">0</td>
+            </tr>
+
+            <tr>
+<td class="label">
+    FAIL Qty (Void Spec)
+</td>
+                <td id="failQty" class="fail">0</td>
+            </tr>
+
+            <tr>
+                <td class="label">Adjusted PASS Qty</td>
+                <td id="adjustedPassQty">0</td>
+            </tr>
+
+            <tr>
+                <td class="label">Yield %</td>
+                <td id="yieldPct" class="yield">0%</td>
+            </tr>
+
+        </table>
+
+        <br>
+
+
+<button
+    class="actionBtn"
+    onclick="clearAll()"
+>
+    🗑 Clear
+</button>
+
+<button
+    class="actionBtn"
+    onclick="exportYieldReport()"
+>
+    📥 Export XLSX
+</button>
+
+    </div>
+</div>
+
+</div>
+
+<!-- PHOTO PAGE -->
+
+<div
+    id="photoPage"
+    style="display:none;"
+>
+
+    <div class="card">
+
+        <button onclick="showUploadPage()">
+            ⬅ Back
+        </button>
+
+        <div
+            id="photoFileName"
+            class="fileInfo"
+        ></div>
+
+    </div>
+
+    <div class="card">
+
+        <img
+            id="photoPreview"
+        >
+
+    </div>
+
+    <div class="card">
+
+        Incoming Reject Qty
+
+        <br><br>
+
+        <input
+            type="number"
+            id="photoIncomingReject"
+            value="0"
+        >
+
+    </div>
+
+    <div class="card">
+
+        <table>
+
+            <tr>
+                <td class="label">Row Qty</td>
+                <td id="photoRowQty">0</td>
+            </tr>
+
+            <tr>
+                <td class="label">Col Qty</td>
+                <td id="photoColQty">0</td>
+            </tr>
+
+            <tr>
+                <td class="label">PASS Qty</td>
+                <td id="photoPassQty">0</td>
+            </tr>
+
+            <tr>
+                <td class="label">FAIL Qty</td>
+                <td id="photoFailQty">0</td>
+            </tr>
+
+            <tr>
+                <td class="label">Yield %</td>
+                <td id="photoYieldPct" class="yield">0%</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+let passQty = 0;
+let failQty = 0;
+
+let maxRow = 0;
+let maxColumn = 0;
+
+let uploadedFileName = "";
+let originalCSVText = "";
+let excelData = [];
+
+
+const fileInput =
+document.getElementById(
+    "universalFile"
+);
+
+const dropZone =
+document.getElementById(
+    "dropZone"
+);
+
+fileInput.addEventListener(
+    "change",
+    function(e){
+
+        handleFile(
+            e.target.files[0]
+        );
+
+    }
+);
+
+dropZone.addEventListener(
+    "dragover",
+    function(e){
+
+        e.preventDefault();
+
+        dropZone.classList.add(
+            "dragover"
+        );
+
+    }
+);
+
+dropZone.addEventListener(
+    "dragleave",
+    function(){
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+    }
+);
+
+dropZone.addEventListener(
+    "drop",
+    function(e){
+
+        e.preventDefault();
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+        const file =
+            e.dataTransfer.files[0];
+
+        if(file){
+
+            handleFile(
+                file
+            );
+
+        }
+
+    }
+);
+
+function handleFile(file){
+uploadedFileName =
+    file.name;
+
+
+    const ext =
+        file.name
+        .toLowerCase()
+        .split(".")
+        .pop();
+
+    // ===================
+    // IMAGE FILES
+    // ===================
+
+    if(
+
+        ext === "bmp" ||
+        ext === "jpg" ||
+        ext === "jpeg" ||
+        ext === "png"
+
+    ){
+
+        showPhotoPage();
+
+        document
+        .getElementById(
+            "photoFileName"
+        )
+        .innerText =
+        file.name;
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+        function(evt){
+
+            document
+            .getElementById(
+                "photoPreview"
+            )
+            .src =
+            evt.target.result;
+
+        };
+
+        reader.readAsDataURL(
+            file
+        );
+
+        return;
+
+    }
+
+    // ===================
+    // CSV
+    // ===================
+
+    if(ext === "csv"){
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+        function(evt){
+
+originalCSVText =
+    evt.target.result;
+
+processCSVText(
+    evt.target.result
+);
+        };
+
+        reader.readAsText(
+            file
+        );
+
+        return;
+
+    }
+
+    // ===================
+    // TXT
+    // ===================
+
+    if(ext === "txt"){
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+        function(evt){
+
+originalCSVText =
+    evt.target.result;
+
+processCSVText(
+    evt.target.result
+);
+
+
+        };
+
+        reader.readAsText(
+            file
+        );
+
+        return;
+
+    }
+
+    // ===================
+    // XLS / XLSX
+    // ===================
+
+    if(
+        ext === "xls"
+        ||
+        ext === "xlsx"
+    ){
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+        function(evt){
+
+            const data =
+                new Uint8Array(
+                    evt.target.result
+                );
+
+            const workbook =
+                XLSX.read(
+                    data,
+                    { type:"array" }
+                );
+
+            const firstSheet =
+                workbook.SheetNames[0];
+
+            const worksheet =
+                workbook.Sheets[
+                    firstSheet
+                ];
+
+            const text =
+                XLSX.utils.sheet_to_csv(
+                    worksheet,
+                    {
+                        FS:";"
+                    }
+                );
+
+originalCSVText =
+    text;
+
+processCSVText(
+    text
+);
+
+
+        };
+
+        reader.readAsArrayBuffer(
+            file
+        );
+
+        return;
+
+    }
+
+    alert(
+        "Unsupported File"
+    );
+
+}
+
+function processCSVText(text){
+const currentSpec =
+
+    parseFloat(
+        document.getElementById(
+            "specValue"
+        ).value
+    ) || 20;
+
+
+    showDataPage();
+document
+.getElementById(
+    "dataFileName"
+)
+.innerText =
+uploadedFileName;
+
+    const rows =
+        text.trim()
+        .split(/\r?\n/);
+
+    if(rows.length < 2){
+
+        alert("No data found");
+
+        return;
+    }
+
+let delimiter = ";";
+
+if(
+    rows[0].includes(",")
+    &&
+    !rows[0].includes(";")
+){
+
+    delimiter = ",";
+
+}
+
+const header =
+    rows[0].split(
+        delimiter
+    );
+
+
+maxRow = 0;
+maxColumn = 0;
+
+
+passQty = 0;
+failQty = 0;
+excelData = [];
+
+let dieResultMap = {};
+    const rowIndex =
+        header.findIndex(
+            h =>
+            h.toLowerCase().includes("row")
+        );
+
+    const colIndex =
+        header.findIndex(
+            h =>
+            h.toLowerCase().includes("col")
+            ||
+            h.toLowerCase().includes("column")
+        );
+
+    for(
+        let i = 1;
+        i < rows.length;
+        i++
+    ){
+
+let fields =
+    rows[i].split(
+        delimiter
+    );
+// Already split file
+
+
+
+excelData.push(fields);
+
+const rowNo =
+    fields[rowIndex];
+
+const colNo =
+    fields[colIndex];
+
+const key =
+    rowNo +
+    "_" +
+    colNo;
+
+const resultValue =
+
+    parseFloat(
+        fields[9]
+    ) || 0;
+
+
+// Column L
+
+const voidPct =
+
+    (
+        resultValue
+        /
+        255
+    )
+
+    *
+
+    100;
+
+// Column M
+
+const specValue =
+    currentSpec;
+
+if(
+    !dieResultMap[key]
+){
+
+    dieResultMap[key] = [];
+
+}
+
+if(
+    rowNo === ""
+    ||
+    colNo === ""
+){
+    continue;
+}
+
+
+if(
+    isNaN(resultValue)
+){
+    continue;
+}
+
+dieResultMap[key].push(
+    voidPct
+);
+
+
+        if(
+            rowIndex >= 0
+        ){
+
+            const rowVal =
+                parseInt(
+                    fields[rowIndex]
+                ) || 0;
+
+            maxRow =
+                Math.max(
+                    maxRow,
+                    rowVal
+                );
+        }
+
+        if(
+            colIndex >= 0
+        ){
+
+            const colVal =
+                parseInt(
+                    fields[colIndex]
+                ) || 0;
+
+maxColumn =
+Math.max(
+    maxColumn,
+    colVal
+);
+
+        }
+
+
+    }
+passQty = 0;
+failQty = 0;
+
+const specValue =
+
+    parseFloat(
+        document.getElementById(
+            "specValue"
+        ).value
+    ) || 20;
+
+
+
+for(let key in dieResultMap){
+
+    const values =
+        dieResultMap[key];
+
+const worstVoidPct =
+
+    parseFloat(
+
+        Math.max(
+            ...values
+        )
+
+        .toFixed(4)
+
+    );
+
+
+
+const operator =
+
+    document.getElementById(
+        "specOperator"
+    ).value;
+
+const isFail =
+
+    operator === ">"
+
+    ?
+
+    worstVoidPct >
+    currentSpec
+
+    :
+
+    worstVoidPct >=
+    currentSpec;
+
+
+
+if(isFail){
+
+    failQty++;
+
+
+}
+
+    else{
+
+        passQty++;
+
+    }
+
+}
+
+
+refreshRowColumn();
+
+
+    document.getElementById(
+        "passQty"
+    ).innerText =
+    passQty;
+
+    document.getElementById(
+        "failQty"
+    ).innerText =
+    failQty;
+
+document.getElementById(
+    "maxRejectInfo"
+).innerText =
+"Maximum Reject Qty: "
++
+passQty;
+
+
+    document.getElementById(
+        "adjustedPassQty"
+    ).innerText =
+    passQty;
+
+
+calculateYield();
+
+requestAnimationFrame(
+    function(){
+
+        calculateSpec();
+
+    }
+);
+
+}
+function refreshRowColumn(){
+
+    const swap =
+        document.getElementById(
+            "swapRowColumn"
+        ).checked;
+
+    if(swap){
+
+        document
+        .getElementById(
+            "rowLabel"
+        )
+        .innerText =
+        "Row Qty (Correct Row)";
+
+        document
+        .getElementById(
+            "columnLabel"
+        )
+        .innerText =
+        "Col Qty (Correct Col)";
+
+        document
+        .getElementById(
+            "rowQty"
+        )
+        .innerText =
+        maxColumn;
+
+        document
+        .getElementById(
+            "columnQty"
+        )
+        .innerText =
+        maxRow;
+
+
+document
+.getElementById(
+    "totalPanelQty"
+)
+.innerText =
+maxColumn * maxRow;
+
+    }
+    else{
+
+        document
+        .getElementById(
+            "rowLabel"
+        )
+        .innerHTML =
+        'Row Qty (<span style="color:red;">US Scan Header:</span> Row)';
+
+        document
+        .getElementById(
+            "columnLabel"
+        )
+        .innerHTML =
+        'Col Qty (<span style="color:red;">US Scan Header:</span> Col)';
+
+        document
+        .getElementById(
+            "rowQty"
+        )
+        .innerText =
+        maxRow;
+
+        document
+        .getElementById(
+            "columnQty"
+        )
+        .innerText =
+        maxColumn;
+document
+.getElementById(
+    "totalPanelQty"
+)
+.innerText =
+maxRow * maxColumn;
+    }
+
+}
+function calculateYield(){
+
+    const incomingReject =
+
+        parseInt(
+            document
+            .getElementById(
+                "incomingReject"
+            )
+            .value
+        ) || 0;
+if(
+    incomingReject > passQty
+){
+
+    alert(
+        "Incoming Reject Qty cannot exceed PASS Qty (" +
+        passQty +
+        ")"
+    );
+
+    document
+    .getElementById(
+        "incomingReject"
+    )
+    .value =
+    passQty;
+
+    return;
+
+}
+    const adjustedPass =
+
+        Math.max(
+            0,
+            passQty -
+            incomingReject
+        );
+
+    document
+    .getElementById(
+        "adjustedPassQty"
+    )
+    .innerText =
+    adjustedPass;
+
+    const denominator =
+
+        adjustedPass +
+        failQty;
+
+    let yieldPct = 0;
+
+    if(
+        denominator > 0
+    ){
+
+        yieldPct =
+
+            adjustedPass
+
+            /
+
+            denominator
+
+            *
+
+            100;
+
+    }
+
+    document
+    .getElementById(
+        "yieldPct"
+    )
+    .innerText =
+
+        yieldPct
+        .toFixed(2)
+
+        + "%";
+
+}
+
+function clearRejectValue() {
+    const box =
+        document.getElementById(
+            "incomingReject"
+        );
+
+    if(box.value === "0"){
+        box.value = "";
+    }
+}
+function restoreRejectDefault(){
+
+    const box =
+        document.getElementById(
+            "incomingReject"
+        );
+
+    if(box.value.trim() === ""){
+
+        box.value = "0";
+
+        calculateYield();
+
+    }
+
+}
+
+function clearSpecValue(){
+
+    const box =
+        document.getElementById(
+            "specValue"
+        );
+
+    if(
+        box.value === "20"
+    ){
+
+        box.value = "";
+
+    }
+
+}
+
+function restoreSpecDefault(){
+
+    const box =
+        document.getElementById(
+            "specValue"
+        );
+
+    if(
+        box.value.trim() === ""
+    ){
+
+        box.value = "20";
+
+        calculateSpec();
+
+    }
+
+}
+
+function exportYieldReport(){
+
+    if(!originalCSVText){
+
+        alert(
+            "Please load a file first."
+        );
+
+        return;
+    }
+
+    const workbook =
+        XLSX.utils.book_new();
+
+    // =================
+    // SHEET 1
+    // =================
+
+let exportDelimiter = ";";
+
+const firstLine =
+
+    originalCSVText
+    .trim()
+    .split(/\r?\n/)[0];
+
+if(
+    firstLine.includes(",")
+    &&
+    !firstLine.includes(";")
+){
+
+    exportDelimiter = ",";
+
+}
+
+const csvRows =
+
+    originalCSVText
+    .trim()
+    .split(/\r?\n/)
+    .map(
+        row =>
+        row.split(
+            exportDelimiter
+        )
+    );
+
+
+const exportSpec =
+
+    parseFloat(
+        document.getElementById(
+            "specValue"
+        ).value
+    ) || 20;
+
+// Add Column L and M
+
+csvRows[0].push(
+    "Void %"
+);
+
+csvRows[0].push(
+    "Void Result (Spec: 20%)"
+);
+
+const operatorText =
+
+    document.getElementById(
+        "specOperator"
+    ).value;
+
+csvRows[0].push(
+    "Void Result (" +
+    operatorText +
+    exportSpec +
+    "%)"
+);
+
+
+for(
+    let i = 1;
+    i < csvRows.length;
+    i++
+){
+
+const exportSpec =
+
+    parseFloat(
+        document.getElementById(
+            "specValue"
+        ).value
+    ) || 20;
+
+
+
+
+const resultIndex =
+
+    csvRows[0].findIndex(
+        h =>
+        String(h)
+        .trim()
+        .toLowerCase()
+        === "result"
+    );
+
+const resultValue =
+
+    parseFloat(
+        csvRows[i][resultIndex]
+    ) || 0;
+
+const voidPct =
+
+    (
+        resultValue
+        /
+        255
+    )
+
+    *
+
+    100;
+
+
+
+csvRows[i].push(
+    voidPct.toFixed(4)
+);
+
+// Column M
+csvRows[i].push(
+
+    voidPct >
+    20
+
+    ?
+
+    "FALSE"
+
+    :
+
+    "TRUE"
+
+);
+
+// Column N
+csvRows[i].push(
+
+    voidPct >
+    exportSpec
+
+    ?
+
+    "FALSE"
+
+    :
+
+    "TRUE"
+
+);
+}
+    const ws1 =
+        XLSX.utils.aoa_to_sheet(
+            csvRows
+        );
+// Auto width
+
+ws1["!cols"] =
+
+csvRows[0].map((header)=>{
+
+    return {
+
+        wch:
+        Math.max(
+            15,
+            String(header).length + 5
+        )
+
+    };
+
+});
+    ws1["!autofilter"] = {
+
+        ref: ws1["!ref"]
+
+    };
+
+// Center align all cells
+
+const range1 =
+    XLSX.utils.decode_range(
+        ws1["!ref"]
+    );
+
+for(
+    let row = range1.s.r;
+    row <= range1.e.r;
+    row++
+){
+
+    for(
+        let col = range1.s.c;
+        col <= range1.e.c;
+        col++
+    ){
+
+        const cellAddress =
+            XLSX.utils.encode_cell({
+                r: row,
+                c: col
+            });
+
+        if(
+            ws1[cellAddress]
+        ){
+
+            ws1[cellAddress].s = {
+
+                alignment: {
+
+                    horizontal:"center",
+                    vertical:"center"
+
+                }
+
+            };
+
+        }
+
+    }
+
+}
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        ws1,
+        "Raw Data"
+    );
+
+    // =================
+    // SHEET 2
+    // =================
+
+    const incomingReject =
+
+        parseInt(
+            document
+            .getElementById(
+                "incomingReject"
+            )
+            .value
+        ) || 0;
+
+    const adjustedPass =
+
+        Math.max(
+            0,
+            passQty -
+            incomingReject
+        );
+
+
+const summary = [
+
+    ["US Scan Yield Summary"],
+
+    [],
+
+    ["File Name", uploadedFileName],
+
+    [],
+
+    ["Row Qty",
+     document.getElementById(
+        "rowQty"
+     ).innerText],
+
+    ["Col Qty",
+     document.getElementById(
+        "columnQty"
+     ).innerText],
+
+["Pad Type",
+ document.getElementById(
+    "padType"
+ ).innerText],
+
+
+    ["Spec Operator",
+     document.getElementById(
+        "specOperator"
+     ).value],
+
+    ["Spec Value (%)",
+     document.getElementById(
+        "specValue"
+     ).value],
+
+
+    ["Total Qty Per Panel",
+     document.getElementById(
+        "totalPanelQty"
+     ).innerText],
+
+    [],
+
+    ["PASS Qty", passQty],
+
+    ["FAIL Qty", failQty],
+
+    [],
+
+    ["Incoming Reject Qty",
+     incomingReject],
+
+    ["Adjusted PASS Qty",
+     adjustedPass],
+
+    ["Yield %",
+     document.getElementById(
+        "yieldPct"
+     ).innerText],
+
+    [],
+
+
+
+
+];
+const ws2 =
+    XLSX.utils.aoa_to_sheet(
+        summary
+    );
+
+// Auto column width
+
+ws2["!cols"] = [
+
+    { wch: 30 },
+    { wch: 25 }
+
+];
+
+// Center align all cells
+
+const range2 =
+    XLSX.utils.decode_range(
+        ws2["!ref"]
+    );
+
+for(
+    let row = range2.s.r;
+    row <= range2.e.r;
+    row++
+){
+
+    for(
+        let col = range2.s.c;
+        col <= range2.e.c;
+        col++
+    ){
+
+        const cellAddress =
+            XLSX.utils.encode_cell({
+                r: row,
+                c: col
+            });
+
+        if(
+            ws2[cellAddress]
+        ){
+
+            ws2[cellAddress].s = {
+
+                alignment: {
+
+                    horizontal: "center",
+                    vertical: "center"
+
+                }
+
+            };
+
+        }
+
+    }
+
+}
+
+// Bold title
+
+if(ws2["A1"]){
+
+    ws2["A1"].s = {
+
+        font:{
+            bold:true,
+            sz:14
+        },
+
+        alignment:{
+            horizontal:"center",
+            vertical:"center"
+        }
+
+    };
+
+}
+
+XLSX.utils.book_append_sheet(
+    workbook,
+    ws2,
+    "Yield Summary"
+);
+
+
+    let exportName =
+        uploadedFileName;
+
+    if(
+        exportName.includes(".")
+    ){
+
+        exportName =
+
+            exportName.substring(
+                0,
+                exportName.lastIndexOf(".")
+            );
+
+    }
+
+    exportName +=
+        "_Yield_Report.xlsx";
+
+    XLSX.writeFile(
+        workbook,
+        exportName
+    );
+
+}
+
+function calculateSpec(){
+console.log(
+    "excelData rows =",
+    excelData.length
+);
+
+console.log(
+    "totalPanelQty =",
+    document.getElementById(
+        "totalPanelQty"
+    ).innerText
+);
+    if(excelData.length === 0){
+
+        alert(
+            "Please load a file first."
+        );
+
+        return;
+    }
+
+    const specValue =
+        parseFloat(
+            document.getElementById(
+                "specValue"
+            ).value
+        ) || 0;
+
+    const operator =
+        document.getElementById(
+            "specOperator"
+        ).value;
+
+    let specFailQty = 0;
+
+    // =====================================
+    // Check whether Chip 1 exists
+    // =====================================
+let hasChip1 = false;
+
+for(let row of excelData){
+
+    if(
+        parseInt(
+            row[6]
+        ) === 1
+    ){
+
+        hasChip1 = true;
+        break;
+
+    }
+
+}
+const padTypeBox =
+    document.getElementById(
+        "padType"
+    );
+
+if(hasChip1){
+
+    padTypeBox.innerHTML =
+    '🔴 <img src="2pads.png" width="100" height="100" style="vertical-align:middle;"> 2 Pads (2boxes)';
+
+    padTypeBox.style.color =
+    "red";
+
+}
+else{
+
+    padTypeBox.innerHTML =
+    '🟢 <img src="1pad.png" width="100" height="100" style="vertical-align:middle;"> 1 Pad (1box)';
+
+    padTypeBox.style.color =
+    "green";
+
+}
+let dieMap = {};
+
+for(let row of excelData){
+
+    const rowNo =
+        row[4];
+
+    const colNo =
+        row[5];
+
+    const key =
+        rowNo +
+        "_" +
+        colNo;
+
+    const result =
+        parseFloat(
+            row[9]
+        ) || 0;
+
+    if(
+        !dieMap[key]
+    ){
+
+        dieMap[key] = [];
+
+    }
+
+    dieMap[key].push(
+        result
+    );
+
+}
+
+
+for(let key in dieMap){
+
+    const values =
+        dieMap[key];
+
+    const avgResult =
+
+        values.reduce(
+            (a,b)=>a+b,
+            0
+        )
+
+        /
+
+        values.length;
+
+    let fail = false;
+
+    if(operator === ">"){
+
+        fail =
+            avgResult >
+            specValue;
+
+    }
+    else{
+
+        fail =
+            avgResult >=
+            specValue;
+
+    }
+
+    if(fail){
+
+        specFailQty++;
+
+    }
+
+}
+    // =====================================
+    // Calculate Yield Loss
+    // =====================================
+
+    const totalQty =
+
+        parseInt(
+            document.getElementById(
+                "totalPanelQty"
+            ).innerText
+        ) || 0;
+
+    const incomingReject =
+
+        parseInt(
+            document.getElementById(
+                "incomingReject"
+            ).value
+        ) || 0;
+
+    const denominator =
+        totalQty -
+        incomingReject;
+
+    let yieldLoss = 0;
+    let finalYield = 0;
+
+    if(
+        denominator > 0
+    ){
+
+        yieldLoss =
+
+            (
+                specFailQty
+                /
+                denominator
+            )
+
+            *
+
+            100;
+
+        finalYield =
+
+            (
+                denominator
+                -
+                specFailQty
+            )
+
+            /
+
+            denominator
+
+            *
+
+            100;
+
+    }
+
+    // =====================================
+    // Update Screen
+    // =====================================
+
+    document.getElementById(
+        "specFailQty"
+    ).innerText =
+    specFailQty;
+
+    document.getElementById(
+        "yieldLossPct"
+    ).innerText =
+    yieldLoss.toFixed(2)
+    + "%";
+
+    document.getElementById(
+        "specYieldPct"
+    ).innerText =
+    finalYield.toFixed(2)
+    + "%";
+
+}
+
+
+
+
+
+function clearAll(){
+
+    passQty = 0;
+    failQty = 0;
+
+    maxRow = 0;
+    maxColumn = 0;
+
+    uploadedFileName = "";
+    originalCSVText = "";
+excelData = [];
+
+
+    document
+    .getElementById(
+        "incomingReject"
+    )
+    .value = "0";
+
+    document
+    .getElementById(
+        "dataFileName"
+    )
+    .innerText = "";
+
+    document
+    .getElementById(
+        "rowQty"
+    )
+    .innerText = "0";
+
+    document
+    .getElementById(
+        "columnQty"
+    )
+    .innerText = "0";
+
+    document
+    .getElementById(
+        "totalPanelQty"
+    )
+    .innerText = "0";
+
+    document
+    .getElementById(
+        "passQty"
+    )
+    .innerText = "0";
+
+    document
+    .getElementById(
+        "failQty"
+    )
+    .innerText = "0";
+
+    document
+    .getElementById(
+        "adjustedPassQty"
+    )
+    .innerText = "0";
+
+    document
+    .getElementById(
+        "yieldPct"
+    )
+    .innerText = "0%";
+
+    document
+    .getElementById(
+        "maxRejectInfo"
+    )
+    .innerText = "";
+
+    document
+    .getElementById(
+        "universalFile"
+    )
+    .value = "";
+
+document.getElementById(
+    "specOperator"
+).value =
+">";
+
+document.getElementById(
+    "specValue"
+).value =
+"20";
+
+
+    showUploadPage();
+
+
+
+
+document.getElementById(
+    "padType"
+).innerText =
+"-";
+
+}
+function showUploadPage(){
+
+    document
+    .getElementById(
+        "uploadPage"
+    )
+    .style.display =
+    "block";
+
+    document
+    .getElementById(
+        "dataPage"
+    )
+    .style.display =
+    "none";
+
+    document
+    .getElementById(
+        "photoPage"
+    )
+    .style.display =
+    "none";
+
+}
+
+function showDataPage(){
+
+    document
+    .getElementById(
+        "uploadPage"
+    )
+    .style.display =
+    "none";
+
+    document
+    .getElementById(
+        "dataPage"
+    )
+    .style.display =
+    "block";
+
+    document
+    .getElementById(
+        "photoPage"
+    )
+    .style.display =
+    "none";
+
+}
+
+function showPhotoPage(){
+
+    document
+    .getElementById(
+        "uploadPage"
+    )
+    .style.display =
+    "none";
+
+    document
+    .getElementById(
+        "dataPage"
+    )
+    .style.display =
+    "none";
+
+    document
+    .getElementById(
+        "photoPage"
+    )
+    .style.display =
+    "block";
+
+}
+
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+
+}
+
+</script>
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+        params.get("user")
+        ||
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+
+        API_URL +
+
+        "?action=trackUsage" +
+
+        "&user=" +
+
+        encodeURIComponent(user) +
+
+        "&calculator=us_scan_yield_check"
+
+    );
+
+}
+
+trackUsage();
+
+</script>
+</body>
+</html>
