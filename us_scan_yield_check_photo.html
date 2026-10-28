@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>US Scan Yield Check (Photo)</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    margin:10px;
+}
+
+.card{
+
+    background:white;
+
+    padding:8px;
+
+    border-radius:8px;
+
+    box-shadow:
+        0 2px 5px rgba(
+            0,
+            0,
+            0,
+            .15
+        );
+
+    margin-bottom:8px;
+
+}
+
+.dropzone{
+
+    border:3px dashed #999;
+
+    background:white;
+
+    padding:50px;
+
+    text-align:center;
+
+    border-radius:8px;
+
+    margin-top:20px;
+
+}
+
+.dropzone.dragover{
+
+    background:#e8f5e9;
+
+}
+body{
+    font-family:Arial, sans-serif;
+    padding:20px;
+}
+
+#dropZone{
+    height:120px;
+    border:3px dashed #888;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    margin-bottom:10px;
+}
+.dropzone{
+
+    border:3px dashed #888;
+
+    min-height:250px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    margin-top:20px;
+
+}
+
+
+
+canvas{
+    border:1px solid #ccc;
+    margin-top:10px;
+    max-width:100%;
+}
+
+.result{
+    margin-top:20px;
+    font-size:20px;
+}
+
+.value{
+    color:red;
+    font-weight:bold;
+}
+.label{
+
+    font-weight:bold;
+
+    width:300px;
+
+}
+.resultValue{
+    color:red;
+    font-weight:bold;
+}
+.passValue{
+    color:green;
+    font-weight:bold;
+}
+
+.normalValue{
+    color:black;
+    font-weight:normal;
+}
+
+#resultTable{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:20px;
+
+}
+
+
+#resultTable th,
+#resultTable td{
+    border:1px solid #999;
+    padding:8px 15px;
+    text-align:center;
+}
+
+#resultTable th{
+    background:#f0f0f0;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<h1
+    style="
+        text-align:center;
+        color:#1f4e79;
+    "
+>
+    US Scan Yield Check (Photo)
+</h1>
+
+<div
+    style="
+        text-align:center;
+        margin-bottom:10px;
+    "
+>
+
+<button
+    onclick="goHome()"
+    style="
+        width:170px;
+        height:50px;
+        font-size:18px;
+        font-weight:bold;
+        background:#1f4e79;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+    "
+>
+⬅ Back
+</button>
+
+</div>
+
+<div
+    id="uploadPage"
+>
+
+<div
+    class="card"
+>
+
+    <h2
+        style="
+            text-align:center;
+        "
+    >
+        Upload File
+    </h2>
+
+<div
+    id="dropZone"
+    class="dropzone"
+>
+
+    <div>
+
+        <h2>
+            📥 Drag & Drop Photo File Here
+        </h2>
+
+        <p>
+
+            Supported Image Files
+
+            <br><br>
+
+            .bmp / .png / .jpg / .jpeg
+
+        </p>
+
+        <br>
+
+        <button
+            onclick="fileInput.click()"
+        >
+            📂 Select File
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<input
+    type="file"
+    id="fileInput"
+    accept=".bmp,.png,.jpg,.jpeg"
+    hidden
+>
+</div>
+
+</div>
+
+<div
+    id="resultPage"
+    style="display:none;"
+>
+
+<div
+    class="card"
+    style="
+        width:700px;
+        margin-left:auto;
+        margin-right:auto;
+    "
+>
+
+<div
+    id="fileName"
+    style="
+        color:red;
+        font-weight:bold;
+        font-size:24px;
+        text-align:center;
+    "
+>
+</div>
+
+</div>
+
+<div
+    class="card"
+    style="
+        width:700px;
+        margin-left:auto;
+        margin-right:auto;
+    "
+>
+
+<div
+    id="maxRejectInfo"
+    style="
+        color:red;
+        font-size:16px;
+        margin-bottom:15px;
+    "
+>
+</div>
+
+Incoming Reject Qty:
+
+<input
+    type="number"
+    id="incomingReject"
+    value="0"
+    min="0"
+    style="
+        width:90px;
+        height:30px;
+        font-size:18px;
+        text-align:center;
+        font-weight:bold;
+    "
+    onfocus="
+        clearRejectValue();
+        this.select();
+    "
+    onblur="
+        restoreRejectValue();
+    "
+    oninput="
+        recalculateYield();
+    "
+>
+</div>
+
+<div
+    class="card"
+    style="
+        width:700px;
+        margin-left:auto;
+        margin-right:auto;
+    "
+>
+
+<div class="result">
+
+<table id="resultTable">
+
+
+    <tr>
+<td class="label">
+    Row Qty
+</td>
+
+        <td><span id="rowCount" class="normalValue">0</span>
+
+</td>
+    </tr>
+
+    <tr>
+<td class="label">
+    Col Qty
+</td>
+
+        <td><span id="colCount" class="normalValue">0</span></td>
+    </tr>
+
+    <tr>
+<td class="label">
+    Total Qty Per Panel
+</td>
+
+        <td><span id="totalQty" class="normalValue">0</span>
+</td>
+    </tr>
+
+</tr>
+    <tr>
+<td class="label">
+    PASS Qty
+</td>
+
+        <td><span id="greenQty" class="passValue">0</span></td>
+    </tr>
+
+    <tr>
+<td class="label">
+    FAIL Qty
+</td>
+
+        <td><span id="redQty" class="resultValue">0</span>
+
+
+</td>
+    </tr>
+    <tr>
+
+<td class="label">
+    Adjusted PASS Qty
+</td>
+    <td>
+        <span id="adjustedQty">
+            0
+        </span>
+    </td>
+</tr>
+
+
+
+
+<tr>
+<td class="label">
+    Yield %
+</td>
+    <td>
+
+        <span
+            id="yieldPct"
+            style="
+                color:#1f4e79;
+                font-size:28px;
+                font-weight:bold;
+            "
+        >
+            0%
+        </span>
+
+    </td>
+</tr>
+</table>
+
+<br>
+
+<button
+    onclick="clearAll()"
+    style="
+        width:200px;
+        height:45px;
+        font-size:16px;
+        font-weight:bold;
+        cursor:pointer;
+    "
+>
+🗑 Clear
+</button>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<canvas
+    id="canvas"
+    style="display:none;"
+></canvas>
+
+<script>
+let currentTotalQty = 0;
+let currentFailQty = 0;
+const dropZone =
+document.getElementById("dropZone");
+
+const fileInput =
+document.getElementById("fileInput");
+
+dropZone.onclick = () =>
+{
+    fileInput.click();
+};
+
+dropZone.addEventListener(
+    "dragover",
+    e =>
+    {
+        e.preventDefault();
+    }
+);
+
+dropZone.addEventListener(
+    "drop",
+    e =>
+    {
+        e.preventDefault();
+
+        if(
+            e.dataTransfer.files.length
+        )
+        {
+            loadFile(
+                e.dataTransfer.files[0]
+            );
+        }
+    }
+);
+
+fileInput.addEventListener(
+    "change",
+    e =>
+    {
+        if(
+            e.target.files.length
+        )
+        {
+            loadFile(
+                e.target.files[0]
+            );
+        }
+    }
+);
+
+function loadFile(file)
+{
+
+document.getElementById(
+    "fileName"
+).innerText =
+file.name;
+
+document.getElementById(
+    "uploadPage"
+).style.display =
+"none";
+
+document.getElementById(
+    "resultPage"
+).style.display =
+"block";
+
+    const img =
+    new Image();
+
+    img.onload =
+    function()
+    {
+        const canvas =
+        document.getElementById(
+            "canvas"
+        );
+
+        const ctx =
+        canvas.getContext("2d");
+
+        canvas.width =
+        img.width;
+
+        canvas.height =
+        img.height;
+
+        ctx.drawImage(
+            img,
+            0,
+            0
+        );
+
+        scanWafer(
+            canvas
+        );
+    };
+
+    img.src =
+    URL.createObjectURL(
+        file
+    );
+}
+
+function scanWafer(canvas)
+{
+    const ctx = canvas.getContext("2d");
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const imgData =
+        ctx.getImageData(
+            0,
+            0,
+            width,
+            height
+        );
+
+    const data = imgData.data;
+
+    //---------------------------------
+    // Detect yellow labels
+    //---------------------------------
+
+    const xProj =
+        new Array(width).fill(0);
+const topLimit =
+    Math.floor(height * 0.15);
+
+
+
+    const yProj =
+        new Array(height).fill(0);
+
+for(let y=0;y<height;y++)
+    {
+        for(let x=0;x<width;x++)
+        {
+            const idx =
+                (y*width+x)*4;
+
+            const r=data[idx];
+            const g=data[idx+1];
+            const b=data[idx+2];
+
+            const isYellow =
+                r > 150 &&
+                g > 150 &&
+                b < 120;
+
+            if(isYellow)
+            {
+                xProj[x]++;
+                yProj[y]++;
+            }
+        }
+    }
+
+//---------------------------------
+// Find label bands
+//---------------------------------
+
+const rawX =
+    findLabelCenters(xProj);
+
+const xLabels =
+    mergeNearbyCenters(
+        rawX,
+        40
+    );
+
+console.log(
+    "Raw X =",
+    rawX.length
+);
+
+console.log(
+    "Merged X =",
+    xLabels.length
+);
+
+
+const yLabels =
+    findLabelCenters(yProj);
+
+console.log(
+    "X Labels:",
+    xLabels.length
+);
+
+console.log(
+    "Y Labels:",
+    yLabels.length
+);
+
+if(
+    xLabels.length < 2 ||
+    yLabels.length < 2
+)
+{
+    document.getElementById(
+        "colCount"
+    ).innerHTML = "ERR";
+
+    document.getElementById(
+        "rowCount"
+    ).innerHTML = "ERR";
+
+    return;
+}
+
+const activeWidth =
+    xLabels[
+        xLabels.length-1
+    ] - xLabels[0];
+
+const activeHeight =
+    yLabels[
+        yLabels.length-1
+    ] - yLabels[0];
+
+const gapsX = [];
+
+for(
+    let i=1;
+    i<xLabels.length;
+    i++
+)
+{
+    gapsX.push(
+        xLabels[i]
+        -
+        xLabels[i-1]
+    );
+}
+
+gapsX.sort(
+    (a,b)=>a-b
+);
+
+let pitchX = 0;
+
+for(let i=1;i<xLabels.length;i++)
+{
+    pitchX +=
+        xLabels[i]
+        - xLabels[i-1];
+}
+
+pitchX /=
+    (xLabels.length-1);
+
+
+const gapsY = [];
+
+for(
+    let i=1;
+    i<yLabels.length;
+    i++
+)
+{
+    gapsY.push(
+        yLabels[i]
+        -
+        yLabels[i-1]
+    );
+}
+
+gapsY.sort(
+    (a,b)=>a-b
+);
+
+const pitchY =
+    gapsY[
+        Math.floor(
+            gapsY.length * 0.8
+        )
+    ];
+
+const colCount =
+    Math.round(
+        activeWidth /
+        pitchX
+    ) + 1;
+
+
+console.log(
+    "PitchX =",
+    pitchX
+);
+
+console.log(
+    "PitchY =",
+    pitchY
+);
+
+console.log(
+    "Calculated Col =",
+    colCount
+);
+
+console.log(
+    "Calculated Row =",
+    yLabels.length
+);
+
+
+
+document
+    .getElementById(
+        "colCount"
+    ).innerHTML =
+    colCount;
+
+document
+    .getElementById(
+        "rowCount"
+    ).innerHTML =
+    yLabels.length;
+
+let failQty = 0;
+
+for(let row=0; row<yLabels.length; row++)
+{
+for(let col=0; col<colCount; col++)
+
+    {
+        const centerX =
+            Math.round(
+                xLabels[0] +
+                col * pitchX
+            );
+
+        const centerY =
+            Math.round(
+                yLabels[0] +
+                row * pitchY
+            );
+
+        let redPixels = 0;
+
+        for(let yy=-8; yy<=8; yy++)
+        {
+            for(let xx=-20; xx<=20; xx++)
+            {
+                const px =
+                    centerX + xx;
+
+                const py =
+                    centerY + yy;
+
+                if(
+                    px < 0 ||
+                    py < 0 ||
+                    px >= width ||
+                    py >= height
+                )
+                    continue;
+
+                const idx =
+                    (py*width+px)*4;
+
+                const r=data[idx];
+                const g=data[idx+1];
+                const b=data[idx+2];
+
+                if(
+                    r > 200 &&
+                    r > g + 40 &&
+                    r > b + 40
+                )
+                {
+                    redPixels++;
+                }
+            }
+        }
+
+        if(redPixels > 25)
+        {
+            failQty++;
+        }
+    }
+}
+
+currentTotalQty =
+    colCount *
+    yLabels.length;
+
+currentFailQty =
+    failQty;
+
+recalculateYield();
+
+
+
+document
+    .getElementById(
+        "redQty"
+    ).innerHTML =
+    failQty;
+
+document
+    .getElementById(
+        "greenQty"
+    ).innerHTML =
+    currentTotalQty - failQty;
+
+
+}
+
+function recalculateYield(){
+
+    const incomingReject =
+
+        parseInt(
+            document.getElementById(
+                "incomingReject"
+            ).value
+        ) || 0;
+
+    const detectedPassQty =
+
+        currentTotalQty -
+        currentFailQty;
+
+if(
+    incomingReject >
+    detectedPassQty
+){
+
+    document.getElementById(
+        "incomingReject"
+    ).value =
+    detectedPassQty;
+
+    return recalculateYield();
+
+}
+
+    const adjustedPassQty =
+
+        Math.max(
+            0,
+            detectedPassQty -
+            incomingReject
+        );
+
+    let yieldPct = 0;
+
+    if(
+        adjustedPassQty +
+        currentFailQty > 0
+    ){
+
+        yieldPct =
+
+            (
+                adjustedPassQty
+                /
+                (
+                    adjustedPassQty +
+                    currentFailQty
+                )
+            )
+
+            * 100;
+
+    }
+
+    document.getElementById(
+        "totalQty"
+    ).innerText =
+    currentTotalQty;
+
+    document.getElementById(
+        "greenQty"
+    ).innerText =
+    detectedPassQty;
+
+    document.getElementById(
+        "redQty"
+    ).innerText =
+    currentFailQty;
+
+    document.getElementById(
+        "adjustedQty"
+    ).innerText =
+    adjustedPassQty;
+
+    document.getElementById(
+        "yieldPct"
+    ).innerText =
+    yieldPct.toFixed(2)
+    + "%";
+document.getElementById(
+    "maxRejectInfo"
+).innerText =
+"Maximum Reject Qty: " +
+detectedPassQty;
+}
+
+function clearRejectValue(){
+
+    const box =
+
+        document.getElementById(
+            "incomingReject"
+        );
+
+    if(
+        box.value === "0"
+    ){
+
+        box.value = "";
+
+    }
+
+}
+
+function restoreRejectValue(){
+
+    const box =
+
+        document.getElementById(
+            "incomingReject"
+        );
+
+    if(
+        box.value.trim() === ""
+    ){
+
+        box.value = "0";
+
+        recalculateYield();
+
+    }
+
+}
+
+function findLabelCenters(projection)
+{
+    const centers=[];
+
+    const maxValue =
+        Math.max(...projection);
+
+    const threshold =
+        maxValue * 0.25;
+console.log(
+    "Threshold =",
+    threshold,
+    "Max =",
+    maxValue
+);
+
+
+
+    let start=-1;
+
+    for(let i=0;i<projection.length;i++)
+    {
+        if(projection[i] > threshold)
+        {
+            if(start===-1)
+            {
+                start=i;
+            }
+        }
+        else
+        {
+            if(start!==-1)
+            {
+                const end=i-1;
+
+                if(end-start>1)
+                {
+                    centers.push(
+                        Math.round(
+                            (start+end)/2
+                        )
+                    );
+                }
+
+                start=-1;
+            }
+        }
+    }
+console.log(
+    "Threshold =",
+    threshold
+);
+
+
+    return centers;
+}
+
+
+function mergeNearbyCenters(
+    centers,
+    gap
+)
+{
+    if(centers.length===0)
+    {
+        return [];
+    }
+
+    const result=[];
+    let group=[centers[0]];
+
+    for(let i=1;i<centers.length;i++)
+    {
+        if(
+            centers[i]-
+            centers[i-1]
+            <= gap
+        )
+        {
+            group.push(
+                centers[i]
+            );
+        }
+        else
+        {
+            result.push(
+                Math.round(
+                    group.reduce((a,b)=>a+b,0)
+                    / group.length
+                )
+            );
+
+            group=[
+                centers[i]
+            ];
+        }
+    }
+
+    result.push(
+        Math.round(
+            group.reduce((a,b)=>a+b,0)
+            / group.length
+        )
+    );
+
+    return result;
+}
+
+function clearAll(){
+
+    currentTotalQty = 0;
+    currentFailQty = 0;
+
+    document.getElementById(
+        "fileName"
+    ).innerText = "";
+
+
+document.getElementById(
+    "maxRejectInfo"
+).innerText = "";
+
+
+    document.getElementById(
+        "rowCount"
+    ).innerText = "0";
+
+    document.getElementById(
+        "colCount"
+    ).innerText = "0";
+
+    document.getElementById(
+        "totalQty"
+    ).innerText = "0";
+
+    document.getElementById(
+        "adjustedQty"
+    ).innerText = "0";
+
+    document.getElementById(
+        "greenQty"
+    ).innerText = "0";
+
+    document.getElementById(
+        "redQty"
+    ).innerText = "0";
+
+    document.getElementById(
+        "yieldPct"
+    ).innerText = "0%";
+
+    document.getElementById(
+        "incomingReject"
+    ).value = "0";
+
+    document.getElementById(
+        "fileInput"
+    ).value = "";
+
+    const canvas =
+        document.getElementById(
+            "canvas"
+        );
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    canvas.width = 0;
+    canvas.height = 0;
+
+    document.getElementById(
+        "resultPage"
+    ).style.display =
+    "none";
+
+    document.getElementById(
+        "uploadPage"
+    ).style.display =
+    "block";
+
+}
+
+
+function goHome(){
+
+    window.location.href =
+        "index.html" +
+        window.location.search;
+
+}
+
+
+</script>
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyX8XQZ924Ut6OSBfCDOsoQ_X_9-DNqjhg7_5H6wKlVjRvZPC8mwucyA-mfmxOuXzwG/exec";
+
+function trackUsage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const user =
+        params.get("user")
+        ||
+        sessionStorage.getItem(
+            "userEmail"
+        );
+
+    if(!user){
+        return;
+    }
+
+    fetch(
+
+        API_URL +
+
+        "?action=trackUsage" +
+
+        "&user=" +
+
+        encodeURIComponent(user) +
+
+        "&calculator=us_scan_yield_check"
+
+    );
+
+}
+
+trackUsage();
+
+</script>
+
+</body>
+</html>

@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>US Scan Yield Check</title>
+<title>US Scan Yield Check (.csv)</title>
+
 
 <style>
 
@@ -149,7 +150,8 @@ td{
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <body>
 
-<h1>US Scan Yield Check</h1>
+<h1>US Scan Yield Check (.csv)</h1>
+
 <div style="text-align:center;margin-bottom:10px;">
 
     <button
@@ -186,8 +188,9 @@ td{
             class="dropzone"
         >
 
-            <h2>📥 Drag & Drop File Here</h2>
-
+<h2>
+📥 Drag & Drop CSV File Here
+</h2>
             <p>
 
                 Supported Data Files
@@ -196,13 +199,6 @@ td{
 
                 CSV / TXT / XLS / XLSX
 
-                <br><br>
-
-                Supported Image Files
-
-                <br><br>
-
-                BMP / JPG / JPEG / PNG
 
             </p>
 
@@ -638,46 +634,22 @@ uploadedFileName =
     // IMAGE FILES
     // ===================
 
-    if(
+if(
 
-        ext === "bmp" ||
-        ext === "jpg" ||
-        ext === "jpeg" ||
-        ext === "png"
+    ext === "bmp" ||
+    ext === "jpg" ||
+    ext === "jpeg" ||
+    ext === "png"
 
-    ){
+){
 
-        showPhotoPage();
+    alert(
+        "Please use Wafer Map Scanner for image files."
+    );
 
-        document
-        .getElementById(
-            "photoFileName"
-        )
-        .innerText =
-        file.name;
+    return;
 
-        const reader =
-            new FileReader();
-
-        reader.onload =
-        function(evt){
-
-            document
-            .getElementById(
-                "photoPreview"
-            )
-            .src =
-            evt.target.result;
-
-        };
-
-        reader.readAsDataURL(
-            file
-        );
-
-        return;
-
-    }
+}
 
     // ===================
     // CSV
