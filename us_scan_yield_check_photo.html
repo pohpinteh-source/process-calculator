@@ -502,10 +502,38 @@ fileInput.addEventListener(
 function loadFile(file)
 {
 
+    const ext =
+
+        file.name
+        .toLowerCase()
+        .split(".")
+        .pop();
+
+    if(
+
+        ext !== "bmp" &&
+        ext !== "png" &&
+        ext !== "jpg" &&
+        ext !== "jpeg"
+
+    ){
+
+alert(
+    "Unsupported File\n\n" +
+    "Please upload:\n" +
+    "BMP / PNG / JPG / JPEG"
+);
+
+
+        return;
+
+    }
+
 document.getElementById(
     "fileName"
 ).innerText =
 file.name;
+
 
 document.getElementById(
     "uploadPage"
