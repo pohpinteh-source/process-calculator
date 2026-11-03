@@ -82,9 +82,12 @@ button:active{
 
     border-radius:8px;
 
-    overflow:auto;
+    overflow:hidden;
+
+    text-align:center;
 
 }
+
 .resultPanel{
 
     flex:1;
@@ -95,19 +98,19 @@ button:active{
 }
 canvas{
 
-    width:auto;
-    height:auto;
+    border:1px solid #ccc;
 
     max-width:100%;
-    max-height:600px;
+
+    max-height:70vh;
+
+    width:auto;
+
+    height:auto;
 
     object-fit:contain;
 
-    border:1px solid #ccc;
-
 }
-
-
 .result{
     margin-top:15px;
     background:white;
@@ -211,6 +214,8 @@ input[type=range]{
     ">
     Back
 </button>
+
+
 </div>
 
 <br>
@@ -292,7 +297,7 @@ input[type=range]{
 <input
     type="number"
     id="minBlobArea"
-    value="80"
+    value="50"
     min="1"
     onchange="countDies()"
     style="
@@ -322,14 +327,27 @@ input[type=range]{
 
 <div class="container">
 
-    <div class="previewPanel">
+<div class="previewPanel">
 
-        <h3>Detection Preview</h3>
+    <h3
+        style="
+            text-align:center;
+            margin-bottom:15px;
+        ">
+        Detection Preview
+    </h3>
+
+    <div
+        style="
+            display:flex;
+            justify-content:center;
+        ">
 
         <canvas id="outputCanvas"></canvas>
 
     </div>
 
+</div>
     <div class="resultPanel">
 <div style="
     font-size:20px;
@@ -359,16 +377,22 @@ Qty :
 ">
 
 
-        Confidence :
-        <span id="confidence">0%</span>
-
-    </div>
 
 </div>
 
 <script>
 
 let imageLoaded=false;
+
+let cropMode=true;
+let cropStartX=0;
+let cropStartY=0;
+
+let cropEndX=0;
+let cropEndY=0;
+
+let isDraggingCrop=false;
+
 let threshold = 200;
 let originalImageData = null;
 
@@ -490,11 +514,6 @@ img.onload=function(){
 
     outputCanvas.width=w;
     outputCanvas.height=h;
-outputCanvas.style.width =
-    w + "px";
-
-outputCanvas.style.height =
-    h + "px";
 ictx.drawImage(
     img,
     0,
@@ -521,9 +540,6 @@ octx.getImageData(
 
 
     imageLoaded=true;
-convertBW();
-
-countDies();
 };
 
 img.src=
@@ -662,8 +678,7 @@ function changeThreshold(v){
 function convertBW(){
 
     if(
-        !imageLoaded
-        ||
+        !imageLoaded ||
         !originalImageData
     ){
         return;
@@ -671,33 +686,59 @@ function convertBW(){
 
     let img =
     new ImageData(
-
         new Uint8ClampedArray(
             originalImageData.data
         ),
-
         originalImageData.width,
         originalImageData.height
-
     );
 
-    const data =
-    img.data;
+    const data = img.data;
+
+    let minGray = 255;
+    let maxGray = 0;
 
     for(
-        let i=0;
-        i<data.length;
-        i+=4
+        let i = 0;
+        i < data.length;
+        i += 4
     ){
 
         let gray =
         (
-            data[i]
-            +
-            data[i+1]
-            +
+            data[i] +
+            data[i+1] +
             data[i+2]
         ) / 3;
+
+        if(gray < minGray) minGray = gray;
+        if(gray > maxGray) maxGray = gray;
+    }
+
+    let range = maxGray - minGray;
+
+    if(range < 1){
+        range = 1;
+    }
+
+    for(
+        let i = 0;
+        i < data.length;
+        i += 4
+    ){
+
+        let gray =
+        (
+            data[i] +
+            data[i+1] +
+            data[i+2]
+        ) / 3;
+
+        gray =
+        (
+            (gray - minGray)
+            / range
+        ) * 255;
 
         let v =
         gray > threshold
@@ -707,7 +748,6 @@ function convertBW(){
         data[i] = v;
         data[i+1] = v;
         data[i+2] = v;
-
     }
 
     octx.putImageData(
@@ -715,9 +755,7 @@ function convertBW(){
         0,
         0
     );
-
 }
-
 function countDies(){
 
 if(!imageLoaded){
@@ -865,42 +903,66 @@ parseInt(
         "minBlobArea"
     ).value
 );
+minimumBlobArea =
+Math.max(
+    30,
+    minimumBlobArea
+);
 
+let ratio =
+width / height;
+let squareError =
+Math.abs(
+    width - height
+);
+
+let boxArea =
+width * height;
+
+let fillRatio =
+count / Math.max(boxArea,1);
 
 if(
-    width >= 8 &&
-    height >= 8 &&
-    count >= minimumBlobArea
-)
+    width >= 6 &&
+    height >= 6 &&
+    count >= minimumBlobArea &&
+    ratio > 0.3 &&
+    ratio < 3.5 &&
+fillRatio > 0.30 &&
+squareError < 10
 
+)
 {
 console.log(
+    "blob",
     width,
     height,
-    count
+    count,
+    fillRatio
 );
+let centerX =
+(
+    minX +
+    maxX
+) / 2;
+
+let centerY =
+(
+    minY +
+    maxY
+) / 2;
+
+
 qty++;
 
 blobAreas.push(count);
 
 centers.push({
+    x:centerX,
+    y:centerY
+});
 
-            x:
-            (
-                minX +
-                maxX
-            ) / 2,
-
-            y:
-            (
-                minY +
-                maxY
-            ) / 2
-
-        });
-
-    }
-
+}
 }
 
 for(
@@ -1138,13 +1200,218 @@ document
 .getElementById("thresholdSlider")
 .value = 200;
 
+cropMode=true;
+
+cropStartX=0;
+cropStartY=0;
+
+cropEndX=0;
+cropEndY=0;
+
+isDraggingCrop=false;
 
 }
+
+
+
 function goHome(){
 
     window.location.href =
         "index.html" +
         window.location.search;
+
+}
+
+
+outputCanvas.addEventListener(
+    "mousedown",
+    function(e){
+
+
+        const rect =
+        outputCanvas.getBoundingClientRect();
+
+cropStartX =
+(
+    e.clientX - rect.left
+)
+*
+(
+    outputCanvas.width /
+    rect.width
+);
+
+cropStartY =
+(
+    e.clientY - rect.top
+)
+*
+(
+    outputCanvas.height /
+    rect.height
+);
+
+        cropEndX =
+        cropStartX;
+
+        cropEndY =
+        cropStartY;
+
+        isDraggingCrop=true;
+
+    }
+);
+
+outputCanvas.addEventListener(
+    "mousemove",
+    function(e){
+
+        if(
+            !cropMode ||
+            !isDraggingCrop
+        ) return;
+
+        const rect =
+        outputCanvas.getBoundingClientRect();
+
+cropEndX =
+(
+    e.clientX - rect.left
+)
+*
+(
+    outputCanvas.width /
+    rect.width
+);
+
+cropEndY =
+(
+    e.clientY - rect.top
+)
+*
+(
+    outputCanvas.height /
+    rect.height
+);
+
+        redrawCropBox();
+
+    }
+);
+
+outputCanvas.addEventListener(
+    "mouseup",
+    function(){
+
+        isDraggingCrop=false;
+
+        applyCrop();
+
+    }
+);
+function redrawCropBox(){
+
+    octx.putImageData(
+        originalImageData,
+        0,
+        0
+    );
+
+    octx.strokeStyle =
+    "lime";
+
+    octx.lineWidth = 3;
+
+    octx.strokeRect(
+
+        cropStartX,
+
+        cropStartY,
+
+        cropEndX -
+        cropStartX,
+
+        cropEndY -
+        cropStartY
+
+    );
+
+}
+
+function applyCrop(){
+
+    let x =
+    Math.min(
+        cropStartX,
+        cropEndX
+    );
+
+    let y =
+    Math.min(
+        cropStartY,
+        cropEndY
+    );
+
+    let w =
+    Math.abs(
+        cropEndX -
+        cropStartX
+    );
+
+    let h =
+    Math.abs(
+        cropEndY -
+        cropStartY
+    );
+
+    if(
+        w < 10 ||
+        h < 10
+    ){
+        alert(
+            "Please draw crop area first"
+        );
+        return;
+    }
+
+    let imgData =
+    ictx.getImageData(
+        x,
+        y,
+        w,
+        h
+    );
+
+    inputCanvas.width=w;
+    inputCanvas.height=h;
+
+    outputCanvas.width=w;
+    outputCanvas.height=h;
+
+    ictx.putImageData(
+        imgData,
+        0,
+        0
+    );
+
+    octx.putImageData(
+        imgData,
+        0,
+        0
+    );
+
+    originalImageData =
+    octx.getImageData(
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    convertBW();
+
+    countDies();
 
 }
 </script>
