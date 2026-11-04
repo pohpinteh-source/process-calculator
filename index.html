@@ -262,6 +262,7 @@ button {
 <div class="section-title">📱 Phone Setup</div>
 <button onclick="window.open('Process Calculator Android.mp4','_blank')">🤖 Android Setup HomeScreen</button>
 <button onclick="window.open('Process Calculator IOS.mp4','_blank')">🍎 IOS Setup HomeScreen</button>
+<button onclick="window.open('quick_guide.gif','_blank')">📖 Quick Guide</button>
 
 
 <br>
@@ -398,6 +399,174 @@ if(pwd === "changsiewtheng"){
 
 
 
+
+</script>
+<!-- Welcome Quick Guide -->
+<div id="welcomeGuide"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+z-index:99999;
+">
+
+<div
+style="
+background:white;
+width:800px;
+max-width:95%;
+height:auto;
+min-height:70vh;
+max-height:95vh;
+margin:15px auto;
+padding:15px;
+border-radius:12px;
+text-align:center;
+
+overflow:hidden;
+">
+
+
+<div
+id="popupUserName"
+style="
+font-size:18px;
+font-weight:bold;
+color:#666;
+margin-bottom:10px;
+">
+👤 Welcome
+</div>
+
+<h2 style="
+color:#1f4e79;
+margin-top:0;
+">
+📖 Welcome to Process Calculator
+</h2>
+<div style="
+font-size:18px;
+font-weight:bold;
+margin-bottom:10px;
+color:#cc0000;
+">
+👋 New User? Please review this guide before using any calculator.
+</div>
+
+<div style="
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+">
+
+<img
+src="quick_guide.gif"
+style="
+width:100%;
+max-width:900px;
+max-height:55vh;
+
+object-fit:contain;
+
+border:1px solid #ccc;
+border-radius:8px;
+">
+</div>
+<div style="
+margin-top:5px;
+text-align:left;
+">
+
+<label style="
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="dontShowAgain"
+>
+<span style="color:red;">
+Don't show this reminder again
+
+</label>
+
+</div>
+
+<div style="
+margin-top:10px;
+">
+
+<button
+onclick="closeWelcomeGuide()"
+style="
+width:220px;
+background:#1f4e79;
+color:white;
+font-size:18px;
+font-weight:bold;
+border:none;
+border-radius:8px;
+padding:12px;
+cursor:pointer;
+">
+Start Using Calculator
+</button>
+
+</div>
+
+</div>
+
+</div>
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const hide =
+            localStorage.getItem(
+                "hideQuickGuide"
+            );
+
+        if(hide !== "YES"){
+
+            document.getElementById(
+                "welcomeGuide"
+            ).style.display = "block";
+
+        }
+
+    }
+);
+
+function closeWelcomeGuide(){
+
+    if(
+        document.getElementById(
+            "dontShowAgain"
+        ).checked
+    ){
+
+        localStorage.setItem(
+            "hideQuickGuide",
+            "YES"
+        );
+
+    }
+
+    document.getElementById(
+        "welcomeGuide"
+    ).style.display = "none";
+
+}
 
 </script>
 </body>
