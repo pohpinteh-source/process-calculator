@@ -97,7 +97,37 @@ tr.diff td{
         width:100%;
     }
 }
+.title-wrapper{
+    position:relative;
+}
 
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    min-width:auto;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 
@@ -105,10 +135,20 @@ tr.diff td{
 
 <div class="container">
 
+<div class="title-wrapper">
+
 <div class="title">
 Universal Comparison Checker (Parameter Comparison)
+
+<button
+class="quick-guide-btn"
+onclick="openQuickGuide()">
+❓ Quick Guide
+</button>
+
 </div>
 
+</div>
 <div style="
 margin-top:8px;
 margin-bottom:8px;
@@ -235,7 +275,77 @@ Clear
 <div id="result"></div>
 
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:750px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:40px auto;
+padding:20px;
+border-radius:10px;
+">
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:1.8;text-align:left;padding-left:25px;">
+
+<li>Load File A and File B using Drag & Drop or Click To Browse.</li>
+
+<li>Both files must be the same file type for comparison.</li>
+
+<li>Click Compare to perform row-by-row comparison.</li>
+
+<li>Comparison is based on exact text matching.</li>
+
+<li>Matching rows remain in normal color.</li>
+
+<li>Different rows are highlighted in red.</li>
+
+<li>The system automatically displays:
+    <ul>
+        <li>Total Rows Compared</li>
+        <li>Different Rows Count</li>
+        <li>File Name Verification Status</li>
+    </ul>
+</li>
+
+<li>Green file-name status indicates different file names were selected.</li>
+
+<li>Red warning indicates both files have the same file name and should be verified.</li>
+
+<li>Click Print / Save PDF to generate a comparison report.</li>
+
+<li>Click Export Excel (if enabled) to save comparison results.</li>
+
+<li>Click Clear to remove loaded files and results.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+
+</div>
+
+</div>
 <script>
 
 let fileA = null;
@@ -968,6 +1078,19 @@ tr.diff td{
 
     setTimeout(() => printWindow.print(), 500);
 }
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
+
 function goHome(){
 
     window.location.href =

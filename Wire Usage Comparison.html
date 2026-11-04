@@ -74,14 +74,57 @@ img{
     margin-right:auto;
 
 }
+.title-wrapper{
+    position:relative;
+}
 
+h1{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    margin:0;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 
 <body onload="setFocus()">
 
-<h1>Wire Usage Comparison (For Estimation Only)</h1>
+<div class="title-wrapper">
 
+<h1>
+
+Wire Usage Comparison (For Estimation Only)
+
+<button
+class="quick-guide-btn"
+onclick="openQuickGuide()">
+❓ Quick Guide
+</button>
+
+</h1>
+
+</div>
 <div
 style="
 margin-top:8px;
@@ -173,6 +216,82 @@ Clear
 
 <img src="Wire Usage.png">
 
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:800px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:40px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:1.45;text-align:left;padding-left:25px;">
+
+<li>This calculator provides a wire consumption comparison between Existing Product and New Product.</li>
+
+<li>Enter all Existing Product values in the left column and New Product values in the right column.</li>
+
+<li>Only enter values in the yellow highlighted cells.</li>
+
+<li>Require information:
+    <ul>
+        <li>Number of Dies</li>
+        <li>LED & ESD Wire Qty</li>
+        <li>LED & ESD Die Thickness</li>
+        <li>Wire Size</li>
+        <li>LED & ESD Loop Height</li>
+        <li>Ball / Bump Size</li>
+        <li>Ball / Bump Height</li>
+        <li>2D Wire Distance</li>
+    </ul>
+</li>
+
+<li>Total Wire Length (3D) for Existing Product is calculated automatically.</li>
+
+<li>Total Wire Length (3D) for New Product is calculated automatically.</li>
+
+<li>Differences (%) indicates wire usage change between New Product and Existing Product.</li>
+
+<li>Positive (%) result indicates higher wire consumption.</li>
+
+<li>Negative (%) result indicates lower wire consumption.</li>
+
+<li>Results are intended for estimation and comparison purposes only.</li>
+
+<li>Refer to the Wire Usage drawing at the bottom of the page for parameter definition.</li>
+
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+
+</ol>
+
+</div>
+
+</div>
 
 <script>
 
@@ -341,6 +460,18 @@ function clearData(){
     backup={};
 
     setFocus();
+}
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
 }
 
 function goHome(){

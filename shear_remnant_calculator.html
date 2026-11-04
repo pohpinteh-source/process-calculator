@@ -16,8 +16,8 @@ body{
 
 .title{
     text-align:center;
-    background:#1f4e79;
-    color:white;
+    background:#F6A30E;
+    color:black;
     padding:15px;
     font-size:26px;
     font-weight:bold;
@@ -144,14 +144,55 @@ canvas{
     gap:8px;
 
 }
+.title-wrapper{
+    position:relative;
+}
+
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    margin:0;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 <body>
 
+<div class="title-wrapper">
+
 <div class="title">
 🔍 Shear Remnant Calculator
+
+<button
+class="quick-guide-btn"
+onclick="openQuickGuide()">
+❓ Quick Guide
+</button>
+
 </div>
 
+</div>
 <div style="
 margin-top:8px;
 margin-bottom:8px;
@@ -357,6 +398,81 @@ accept="image/*,.jpg,.jpeg,.png,.bmp">
 🟡 Resize Boundary
 
 </div>
+</div>
+
+</div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:750px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:40px auto;
+padding:20px;
+border-radius:10px;
+">
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:1.6;text-align:left;padding-left:25px;">
+
+<li>Upload a Ball Shear image using Drag & Drop or Select File.</li>
+
+<li>Select the boundary type:
+    <ul>
+        <li>🔴 Circle = Round Ball Pad</li>
+        <li>🟦 Square / Rectangle = Square Bond Pad</li>
+    </ul>
+</li>
+
+<li>Adjust the red boundary to match the original ball area.</li>
+
+<li>Drag:
+    <ul>
+        <li>🔵 Center Point = Move Boundary</li>
+        <li>🟡 Yellow Handles = Resize Boundary</li>
+    </ul>
+</li>
+
+<li>Click "✏ Draw Remnant".</li>
+
+<li>Draw the remaining shear remnant area inside the red boundary.</li>
+
+<li>Release the mouse to complete the remnant region.</li>
+
+<li>Multiple remnant regions can be added.</li>
+
+<li>Click "↩ Undo Last Region" to remove the latest region.</li>
+
+<li>Remnant %, Original Area, Missing Area and Region Count are calculated automatically.</li>
+
+<li>Higher Remnant % generally indicates better metallurgical bonding quality.</li>
+
+<li>Click "🔄 Reset" to remove all remnant regions while keeping the image.</li>
+
+<li>Click "🗑 Clear File" to start a new analysis.</li>
+
+<li>Click "⬅ Back" to return to Home Page.</li>
+
+</ol>
+
+
 </div>
 
 </div>
@@ -1406,6 +1522,20 @@ document.getElementById(
     "regionCount"
 ).innerHTML = 0;
 }
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
+
+
 // ✅ BACK
 function goHome(){
 

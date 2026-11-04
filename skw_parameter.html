@@ -94,13 +94,57 @@ button{
 .remark{
     font-size:14px;
 }
+.title-wrapper{
+    position:relative;
+}
 
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    margin:0;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 
 <body>
 
-<div class="title">For Shinkawa Bonder</div>
+<div class="title-wrapper">
+
+<div class="title">
+For Shinkawa Bonder
+
+<button
+class="quick-guide-btn"
+onclick="openQuickGuide()">
+❓ Quick Guide
+</button>
+
+</div>
+
+</div>
+
 <div
 style="
 margin-top:8px;
@@ -278,7 +322,70 @@ Clear
 </div>
 
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:700px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Enter Wire Size (μm).</li>
+
+<li>Enter Target Ball Size (μm).</li>
+
+<li>Enter Target Bump Size (μm).</li>
+
+<li>Only enter values in the yellow highlighted cells.</li>
+
+<li>Search Force and Bond Force are calculated automatically.</li>
+
+<li>Ball Bond and Bump Bond values are generated automatically.</li>
+
+<li>2nd Bond Force is automatically determined based on Wire Size.</li>
+
+<li>Refer to US Power table for recommended ultrasonic setting.</li>
+
+<li>Refer to Search Speed table based on Target Ball Size.</li>
+
+<li>Use Bond Parameter table as initial setup reference.</li>
+
+<li>Final machine parameter must be optimized and verified during bonding process.</li>
+
+<li>Click Clear to reset all inputs.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+</div>
+
+</div>
 <script>
 
 // ✅ ENTER FLOW
@@ -367,7 +474,17 @@ function clearData(){
     document.getElementById("bump2").innerHTML = "";
 
 }
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
 
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
 // back
 function goHome(){
 

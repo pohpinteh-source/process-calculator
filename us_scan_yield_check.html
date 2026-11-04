@@ -143,6 +143,36 @@ td{
     font-weight:bold;
 
 }
+.title-wrapper{
+    position:relative;
+}
+
+h1{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 
 </style>
 </head>
@@ -150,8 +180,19 @@ td{
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <body>
 
-<h1>US Scan Yield Check (.csv)</h1>
+<div class="title-wrapper">
 
+    <h1>
+        US Scan Yield Check (.csv)
+
+        <button
+            class="quick-guide-btn"
+            onclick="openQuickGuide()">
+            ❓ Quick Guide
+        </button>
+    </h1>
+
+</div>
 <div style="text-align:center;margin-bottom:10px;">
 
     <button
@@ -537,7 +578,80 @@ oninput="
     </div>
 
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Upload a CSV, TXT, XLS or XLSX US Scan result file.</li>
+
+<li>For standard US Scan format, keep "Swap Row / Column" checked.</li>
+
+<li>Row Qty, Col Qty and Total Qty Per Panel is calculated automatically.</li>
+
+<li>Set Void Spec according to product requirement (default = 20%).</li>
+
+<li>Select comparison operator:
+    <ul>
+        <li>> = Reject when Void % exceeds Spec.</li>
+        <li>≥ = Reject when Void % equals or exceeds Spec.</li>
+    </ul>
+</li>
+
+<li>PASS Qty, FAIL Qty and Yield % are calculated automatically.</li>
+
+<li>Pad Type detection:
+    <ul>
+        <li>🟢 1 Pad (1 Box)</li>
+        <li>🔴 2 Pads (2 Boxes)</li>
+    </ul>
+</li>
+
+<li>Export XLSX generates:
+    <ul>
+        <li>Raw Data Sheet, Yield Summary Sheet, Void % Analysis Result</li>
+    </ul>
+</li>
+
+<li>Click Clear to start a new analysis.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+
+</div>
+
+</div>
 <script>
 let passQty = 0;
 let failQty = 0;
@@ -2161,6 +2275,18 @@ function showPhotoPage(){
     .style.display =
     "block";
 
+}
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
 }
 
 function goHome(){

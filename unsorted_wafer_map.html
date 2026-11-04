@@ -21,8 +21,8 @@ body{
 }
 
 .title{
-    background:#1f4e79;
-    color:white;
+    background:#F6A30E;
+    color:black;
     font-size:26px;
     text-align:center;
     padding:15px;
@@ -140,7 +140,37 @@ td{
     border:1px solid #e0e0e0;
 }
 
+.title-wrapper{
+    position:relative;
+}
 
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    min-width:auto;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 
@@ -148,10 +178,20 @@ td{
 
 <div class="container">
 
-<div class="title">
-🟢 Unsorted Wafer Map
-</div>
+<div class="title-wrapper">
 
+    <div class="title">
+        🟢 Unsorted Wafer Map
+
+        <button
+            class="quick-guide-btn"
+            onclick="openQuickGuide()">
+            ❓ Quick Guide
+        </button>
+
+    </div>
+
+</div>
 <div style="
 margin-top:8px;
 margin-bottom:8px;
@@ -347,6 +387,78 @@ The wafer map is automatically rotated to match the standard viewing orientation
 ⬛ Empty Cell = No Die Position
 
 </div>
+
+
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
+
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Drop the wafer map file into the upload area or click to browse.</li>
+
+<li>Click <b>Process Wafer Map</b> to generate the wafer map.</li>
+
+<li>The system automatically detects whether the map is a New Map or Used Map.</li>
+
+<li>Total Good Die and Total OCR Die are calculated automatically.</li>
+
+<li>The wafer map is automatically rotated to the standard viewing orientation.</li>
+
+<li>Color Definition:
+    <ul>
+        <li>🟩 Green = Good Die</li>
+        <li>🟦 Blue = OCR Die</li>
+        <li>⬜ White = Other Bin Code</li>
+        <li>⬛ Empty = No Die Position</li>
+    </ul>
+</li>
+
+<li>Use Zoom to enlarge or reduce the wafer map display.</li>
+
+<li>Click Export to Excel to save the wafer map table.</li>
+
+<li>Click Export to PDF to save the wafer summary and wafer map.</li>
+
+<li>Click Clear to remove the current wafer map.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+
+</div>
+
+</div>
+
 <script>
 
 let waferFile = null;
@@ -848,6 +960,19 @@ const pdf =
         ".pdf"
     );
 }
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
+
 function goHome(){
 
     window.location.href =

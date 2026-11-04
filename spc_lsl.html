@@ -122,6 +122,45 @@ button {
         font-size:14px;
     }
 }
+.title-wrapper{
+    position:relative;
+    width:100%;
+}
+
+.title{
+    position:relative;
+    background:#f4a300;
+    color:black;
+    font-size:22px;
+    text-align:center;
+    padding:15px;
+    margin:0 0 10px 0;
+    font-weight:bold;
+    border-radius:4px;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:35%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 
 </style>
 </head>
@@ -129,8 +168,19 @@ button {
 <body>
 
 
-<div class="title">
-    SPC LSL Reference
+<div class="title-wrapper">
+
+    <div class="title">
+        SPC LSL Reference
+
+        <button
+            class="quick-guide-btn"
+            onclick="openQuickGuide()">
+            ❓ Quick Guide
+        </button>
+
+    </div>
+
 </div>
 
 <div class="container">
@@ -228,8 +278,82 @@ button {
 <b>Remark:</b><br>
 Above LSL is for reference purpose. Final LSL refer to product control plan.
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Use this page as an SPC LSL reference only.</li>
+
+<li>Refer to the corresponding Wire Size for:
+    <ul>
+        <li>Wire Pull</li>
+        <li>Tweezer Pull</li>
+        <li>Ball Shear</li>
+    </ul>
+</li>
+
+<li>Refer to the corresponding package or chip size for:
+    <ul>
+        <li>Die Shear ESD</li>
+        <li>Die Shear LED</li>
+        <li>Die Shear Sapphire</li>
+    </ul>
+</li>
+
+<li>Final LSL must always follow the Product Control Plan.</li>
+
+<li>Click Back to return to the Home Page.</li>
+
+</ol>
+
+
+</div>
+
+</div>
 <script>
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
 
 function goHome(){
 

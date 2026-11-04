@@ -319,6 +319,29 @@ td:nth-child(2){
 
 }
 
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
+
+.quick-guide-floating{
+    position:absolute;
+
+    left:33%;
+    transform:translateX(-50%);
+
+    top:3px;
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:10px 18px;
+
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
 </style>
 </head>
 
@@ -326,8 +349,13 @@ td:nth-child(2){
 
 <!-- TOP INPUT TABLE -->
 
-<div class="topSection">
+<div class="topSection" style="position:relative;">
 
+<button
+class="quick-guide-floating"
+onclick="openQuickGuide()">
+❓ Quick Guide
+</button>
 <div class="top">
 
 <table>
@@ -336,8 +364,13 @@ td:nth-child(2){
 <tr>
 <td class="header"
     colspan="3"
-    style="font-size:20px;">
+    style="
+    font-size:20px;
+    position:relative;
+    ">
+
 Fusing Current Checker (FCC) per wire
+
 </td>
 
 
@@ -1071,7 +1104,87 @@ Design CCC is for benchmark comparison.
 Extreme Stress CCC is for thermal-stress comparison only and shall not be used as the product operating limit.
 
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:800px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:40px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:1.5;text-align:left;padding-left:25px;">
+
+<li>Select Wire Type (Ag, Au, Cu or Al).</li>
+
+<li>Enter Wire Diameter (µm).</li>
+
+<li>Enter 3D Wire Length (mm).</li>
+
+<li>Enter Operating Temperature if different from the default value.</li>
+
+<li>For Au and Al wire, Temp_Wire Max is automatically loaded.</li>
+
+<li>Est Fusing Current is not applicable for Ag / Cu wire, and will show N/A.</li>
+
+<li>Reference Length is automatically rounded to the nearest 0.1 mm design table value.</li>
+
+<li>Est. Fusing Current shows the estimated wire fuse current.</li>
+
+<li>Operating CCC is the primary value for wire-size selection and product design.</li>
+
+<li>Design CCC is provided as a benchmark reference (25°C → 150°C).</li>
+
+<li>Extreme Stress CCC is for material comparison only and shall not be used as the product operating limit.</li>
+
+<li>CCC Range shows the expected variation if actual wire length changes by +0.1 mm and +0.2 mm.</li>
+
+<li>Use the graph to compare:
+    <ul>
+        <li>Fusing Current</li>
+        <li>Design CCC</li>
+        <li>Operating CCC</li>
+        <li>Extreme Stress CCC</li>
+    </ul>
+</li>
+
+<li>Open Current carrying capacity.pdf for technical reference.</li>
+
+<li>Open Fusing Current Checker (FCC) per wire.pdf for calculation reference.</li>
+
+<li>Click Go to Est. Wire Length (3D) if wire length is unknown.</li>
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+
+</ol>
+
+</div>
+
+</div>
 
 <script>
 
@@ -2582,7 +2695,17 @@ document.addEventListener("keydown",function(e){
     }
 
 });
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
 
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
 function goHome(){
 
     const user =
