@@ -871,12 +871,18 @@ async function loadUserCount(){
     ).innerHTML =
         data.length - 1;
 }
+
+
+
 async function loadCalculatorCount(){
 
     try{
 
         const response =
-            await fetch("index.html");
+            await fetch(
+                "index.html?t=" +
+                Date.now()
+            );
 
         const html =
             await response.text();
@@ -890,44 +896,67 @@ async function loadCalculatorCount(){
                 "text/html"
             );
 
-        const allButtons =
-            doc.querySelectorAll("button");
-
         let total = 0;
         let disabled = 0;
 
-        allButtons.forEach(btn=>{
+        const sections =
+            doc.querySelectorAll(
+                ".calculator-section"
+            );
 
-            const text =
-                btn.textContent.trim();
+        console.log(
+            "Calculator Sections Found:",
+            sections.length
+        );
 
-            if(
-                text.includes("Android Setup")
-                ||
-                text.includes("IOS Setup")
-                ||
-                text.includes("User Access")
-                ||
-                text.includes("Usage Statistics")
-            ){
-                return;
-            }
+        sections.forEach(section => {
 
-            total++;
+            const title =
+                section.querySelector(
+                    ".section-title"
+                )?.innerText ||
+                "Unknown";
 
-            if(
-                btn.disabled
-            ){
+            const buttons =
+                section.querySelectorAll(
+                    "button"
+                );
 
-                disabled++;
+            console.log(
+                "Section:",
+                title,
+                "Buttons:",
+                buttons.length
+            );
 
-            }
+            buttons.forEach(btn => {
+
+                const text =
+                    btn.textContent.trim();
+
+                console.log(
+                    text
+                );
+
+                total++;
+
+                if(
+                    btn.disabled ||
+                    btn.classList.contains(
+                        "disabled-btn"
+                    )
+                ){
+                    disabled++;
+                }
+
+            });
 
         });
 
         document.getElementById(
             "totalCalculator"
-        ).innerText = total;
+        ).innerText =
+            total;
 
         document.getElementById(
             "activeCalculator"
@@ -940,11 +969,17 @@ async function loadCalculatorCount(){
             disabled;
 
         console.log(
-            "Total:",
-            total,
-            "Active:",
-            total - disabled,
-            "Disabled:",
+            "Final Total:",
+            total
+        );
+
+        console.log(
+            "Final Active:",
+            total - disabled
+        );
+
+        console.log(
+            "Final Disabled:",
             disabled
         );
 
@@ -959,6 +994,8 @@ async function loadCalculatorCount(){
     }
 
 }
+
+
 
 async function loadUserCount(){
 
