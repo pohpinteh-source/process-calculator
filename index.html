@@ -537,18 +537,24 @@ document.addEventListener(
     "DOMContentLoaded",
     function(){
 
-        // Copy username from welcome banner
-        const welcomeText =
-            document.getElementById(
-                "welcome"
-            ).innerText;
+        // Get username from URL
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-        if(welcomeText.trim() !== ""){
+        const user =
+            params.get("user");
+
+        if(user){
+
+            const userName =
+                user.split("@")[0];
 
             document.getElementById(
                 "popupUserName"
             ).innerHTML =
-                "👤 " + welcomeText;
+                "👤 Welcome, " + userName;
 
         }
 
@@ -567,7 +573,6 @@ document.addEventListener(
 
     }
 );
-
 function closeWelcomeGuide(){
 
     if(
