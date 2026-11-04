@@ -434,13 +434,19 @@ overflow:hidden;
 <div
 id="popupUserName"
 style="
-font-size:18px;
+display:inline-block;
+background:#e8f0fa;
+color:#1f4e79;
+padding:6px 15px;
+border-radius:20px;
+font-size:16px;
 font-weight:bold;
-color:#666;
 margin-bottom:10px;
 ">
 👤 Welcome
 </div>
+
+
 
 <h2 style="
 color:#1f4e79;
@@ -530,6 +536,21 @@ Start Using Calculator
 document.addEventListener(
     "DOMContentLoaded",
     function(){
+
+        // Copy username from welcome banner
+        const welcomeText =
+            document.getElementById(
+                "welcome"
+            ).innerText;
+
+        if(welcomeText.trim() !== ""){
+
+            document.getElementById(
+                "popupUserName"
+            ).innerHTML =
+                "👤 " + welcomeText;
+
+        }
 
         const hide =
             localStorage.getItem(
