@@ -422,14 +422,20 @@ async function loadLogs(){
                 "?action=getAccessLog"
             );
 
-        allLogs =
-            await response.json();
-loadUserCount();
-        populateFilters();
+allLogs =
+    await response.json();
 
-        buildDashboard(
-            allLogs
-        );
+calculatorNameMap =
+    await buildCalculatorNameMap();
+
+loadUserCount();
+
+populateFilters();
+
+buildDashboard(
+    allLogs
+);
+
     }
 
     catch(err){
@@ -442,6 +448,64 @@ loadUserCount();
         );
     }
 }
+async function buildCalculatorNameMap(){
+
+    const response =
+        await fetch(
+            "index.html?t=" +
+            Date.now()
+        );
+
+    const html =
+        await response.text();
+
+    const parser =
+        new DOMParser();
+
+    const doc =
+        parser.parseFromString(
+            html,
+            "text/html"
+        );
+
+    const map = {};
+
+    doc.querySelectorAll("button")
+        .forEach(btn => {
+
+        const onclick =
+            btn.getAttribute(
+                "onclick"
+            );
+
+        if(!onclick){
+            return;
+        }
+
+        const match =
+            onclick.match(
+                /goTo\('(.+?)\.html'\)/
+            );
+
+        if(!match){
+            return;
+        }
+
+        const fileName =
+            match[1];
+
+        const displayName =
+            btn.textContent.trim();
+
+        map[fileName] =
+            displayName;
+
+    });
+
+    return map;
+
+}
+
 
 function buildDashboard(logs){
 
@@ -453,7 +517,7 @@ function buildDashboard(logs){
 }
 
 function buildCalculatorChart(logs){
-
+let calculatorNameMap = {};
     const counter = {};
 
     logs.forEach(log=>{
@@ -466,10 +530,17 @@ function buildCalculatorChart(logs){
             return;
         }
 
-        const name =
-            decodeURIComponent(
-                log.calculator
-            );
+const rawName =
+    decodeURIComponent(
+        log.calculator
+    );
+
+const name =
+    calculatorNameMap[
+        rawName
+    ] ||
+    rawName;
+
 
         counter[name] =
             (counter[name] || 0) + 1;
@@ -716,10 +787,15 @@ function buildLogTable(logs){
     ${
         log.calculator
         ?
-        decodeURIComponent(
-            log.calculator
-        )
-        :
+calculatorNameMap[
+    decodeURIComponent(
+        log.calculator
+    )
+]
+||
+decodeURIComponent(
+    log.calculator
+)        :
         "-"
     }
 </td>
