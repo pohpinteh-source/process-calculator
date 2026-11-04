@@ -46,11 +46,97 @@ img{
     display:block;
     margin:20px auto;
 }
+#guideBtn{
+    position:fixed;
+    top:26px;
+    right:10px;
+    z-index:9999;
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+    width:auto;
+}
+
+#guidePopup{
+    display:none;
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:420px;
+    max-width:90%;
+    background:white;
+    border:2px solid #1f4e79;
+    border-radius:10px;
+    padding:15px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    text-align:left;
+}
+
+#guidePopup h3{
+    margin-top:0;
+    color:#1f4e79;
+}
 </style>
 </head>
 
 <body onload="setFocus()">
 
+<button id="guideBtn" onclick="showGuide(event)">
+❓ Quick Guide
+</button>
+
+<div id="guidePopup">
+
+<h3>📖 Quick Guide
+</h3>
+
+<ol style="
+padding-left:25px;
+line-height:1.8;
+margin:0;
+text-align:left;
+">
+
+<li>
+Enter the current machine Offset X and Offset Y values.
+</li>
+
+<li>
+Measure Position 1 and enter X1 and Y1 values.
+</li>
+
+<li>
+Measure Position 2 and enter X2 and Y2 values.
+</li>
+
+<li>
+The calculator will automatically calculate the center position (Delta).
+</li>
+
+<li>
+Verify whether Delta is within ±5 µm tolerance.
+</li>
+
+<li>
+Review the recommended placement adjustment direction.
+</li>
+
+<li>
+Update the machine with the New Offset Value shown in the result section.
+</li>
+
+<li>
+Run verification after adjustment to confirm placement accuracy.
+</li>
+
+</ol>
+
+</div>
 <h1>Chip Placement (ASM AD838L) [Measurement]</h1>
 <img src="chip_placement.png">
 <div
@@ -294,6 +380,40 @@ function clearData(){
     document.querySelectorAll(".result-box").forEach(i=>i.innerHTML="");
     setFocus();
 }
+
+function showGuide(event){
+
+    event.stopPropagation();
+
+    document.getElementById(
+        "guidePopup"
+    ).style.display = "block";
+
+}
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const popup =
+            document.getElementById(
+                "guidePopup"
+            );
+
+        const btn =
+            document.getElementById(
+                "guideBtn"
+            );
+
+        if(
+            !popup.contains(event.target) &&
+            !btn.contains(event.target)
+        ){
+            popup.style.display = "none";
+        }
+
+    }
+);
 
 // back
 function goHome(){

@@ -110,15 +110,79 @@ button{ padding:8px; font-size:14px; }
     button{
         font-size:18px;
         padding:12px;
-    }
+    } 
 }
+#guideBtn{
+    position:fixed;
+    top:15px;
+    right:10px;
+    z-index:9999;
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+    width:auto;
+}
+
+#guidePopup{
+    display:none;
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:350px;
+    max-width:90%;
+    background:white;
+    border:2px solid #1f4e79;
+    border-radius:10px;
+    padding:15px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+
+    text-align:left;
+}
+#guidePopup h3{
+    margin-top:0;
+    color:#1f4e79;
+}
+#guidePopup h3{
+    margin-top:0;
+    color:#1f4e79;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<button id="guideBtn" onclick="showGuide(event)">
+❓ Quick Guide
+</button>
 
+<div id="guidePopup">
+<h3>📖 Quick Guide</h3>
+
+<ol style="
+    padding-left:25px;
+    line-height:1.8;
+    margin:0;
+    text-align:left;
+">
+
+    <li>Enter the planned production Loading Qty.</li>
+    <li>Enter the number of wires per unit.</li>
+    <li>Confirm Touchdown per Wire values for Shinkawa and ASM.</li>
+    <li>Confirm the Capillary Life Span values.</li>
+    <li>The calculator will automatically determine the required capillary quantity.</li>
+    <li>Compare the capillary requirement between Shinkawa and ASM.</li>
+    <li>Click Clear to reset all values or Back to return to Home Page.</li>
+</ol>
+
+</div>
+
+<div class="container">
 
 <div class="title">
     Capillary Need Calculator
@@ -351,6 +415,40 @@ function clearData(){
     life1El.value="720000";
     life2El.value="720000";
 }
+
+function showGuide(event){
+
+    event.stopPropagation();
+
+    document.getElementById(
+        "guidePopup"
+    ).style.display = "block";
+
+}
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const popup =
+            document.getElementById(
+                "guidePopup"
+            );
+
+        const btn =
+            document.getElementById(
+                "guideBtn"
+            );
+
+        if(
+            !popup.contains(event.target) &&
+            !btn.contains(event.target)
+        ){
+            popup.style.display = "none";
+        }
+
+    }
+);
 
 // ✅ BACK
 function goHome(){

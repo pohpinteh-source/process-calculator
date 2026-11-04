@@ -126,16 +126,57 @@ button{
 
 }
 
+.title-wrapper{
+    position:relative;
+}
+
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 
 </style>
 </head>
 
 <body onload="setFocus()">
 
-<div class="title">
-    Define WB Spec
-</div>
+<div class="title-wrapper">
 
+    <div class="title">
+
+        Define WB Spec
+
+        <button
+            class="quick-guide-btn"
+            onclick="openQuickGuide()">
+            ❓ Quick Guide
+        </button>
+
+    </div>
+
+</div>
 <div
 style="
 margin-top:8px;
@@ -259,6 +300,73 @@ Please input values in the yellow highlighted cells only.
 <img src="Define WB Spec3.png">
 </div>
 
+
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
+
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Enter Wire Size (µm).</li>
+
+<li>Enter Target Ball Size (µm).</li>
+
+<li>Enter Target Bump Size (µm).</li>
+
+<li>Only enter values in the yellow highlighted cells.</li>
+
+<li>Wire Size, Ball Size and Bump Size will automatically convert to mils.</li>
+
+<li>Others will be calculated automatically.</li>
+
+<li>Wire Pull and Tweezer Pull specifications are generated automatically based on Wire Size.</li>
+
+<li>If Wire Size is not 18µm, 25µm, 30µm or 38µm, refer to the Wire Pull Chart.</li>
+
+<li>Refer to JEDEC Standard 22-B116 for Ball Shear and Bump Shear requirements.</li>
+
+<li>Refer to IPC-TM-650 for Wire Pull requirements.</li>
+
+<li>Click Osram SPC LSL to access SPC LSL reference.</li>
+
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+
+</div>
+</div>
 <script>
 
 // focus
@@ -381,6 +489,18 @@ document.querySelectorAll(".result").forEach(i=>i.innerHTML="");
 wire_mils.innerHTML="";
 ball_mils.innerHTML="";
 bump_mils.innerHTML="";
+}
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
 }
 
 // nav

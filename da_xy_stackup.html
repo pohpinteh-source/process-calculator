@@ -17,6 +17,38 @@ h1{
     padding:12px;
 }
 
+.title-bar{
+    position:relative;
+}
+
+.title-bar h1{
+    margin:0;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    margin:0;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
+
 .mode-buttons{
     display:flex;
     gap:8px;
@@ -145,8 +177,15 @@ button {
 
 <body onload="init()">
 
-<h1>Gap between chips / cavity after tolerance study:</h1>
+<div class="title-bar">
+    <h1>Gap between chips / cavity after tolerance study:</h1>
 
+    <button
+        class="quick-guide-btn"
+        onclick="openQuickGuide()">
+        ❓ Quick Guide
+    </button>
+</div>
 <!-- ✅ IMAGE -->
 <img src="DA XY Stackup.png">
 
@@ -277,7 +316,81 @@ Clear
 >
 ⬅ Back
 </button>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
+
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Select G1 or G2 mode.</li>
+
+<li>Refer to the drawing image.</li>
+
+<li>Input Gap between chips / cavity in drawing.</li>
+
+<li>Input Glue Smear at the selected area.</li>
+
+<li>Only enter values in yellow highlighted cells.</li>
+
+<li>Gap after tolerance study will be calculated automatically.</li>
+
+<li>No Risk = Sufficient Gap.</li>
+
+<li>Risk = Possible Interference.</li>
+
+<li>Remark: Assume both chips have the same BLT.</li>
+
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+
+</div>
+
+</div>
 <script>
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
+
 
 let mode = "G1";
 

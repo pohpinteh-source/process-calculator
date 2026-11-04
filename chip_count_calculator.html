@@ -139,13 +139,80 @@ input[type=range]{
     }
 
 }
+#guideBtn{
+    position:fixed;
+    top:10px;
+    right:10px;
+    z-index:9999;
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+}
+
+#guidePopup{
+    display:none;
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:450px;
+    max-width:90%;
+    background:white;
+    border:2px solid #1f4e79;
+    border-radius:10px;
+    padding:15px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    text-align:left;
+}
 </style>
 </head>
 
 <body>
 
+<button id="guideBtn" onclick="showGuide(event)">
+❓ Quick Guide
+</button>
 <h1>Chip Counter</h1>
 
+<div id="guidePopup">
+
+<h3>📖 Quick Guide
+</h3>
+
+<ol style="
+padding-left:25px;
+line-height:1.8;
+margin:0;
+text-align:left;
+">
+
+<li>Click 📁 Select Image or 📷 Take Photo.</li>
+
+<li>Use a clear image with minimum reflection.</li>
+
+<li>Drag and draw a box around the chip area.</li>
+
+<li>Release the mouse to crop the image.</li>
+
+<li>Detection runs automatically after crop.</li>
+
+<li>Adjust Threshold until chips appear correctly.</li>
+
+<li>Adjust Min Blob Area to remove noise.</li>
+
+<li>Verify every chip has a red dot.</li>
+
+<li>Check Qty result on the right panel.</li>
+
+<li>Click New Image to start a new analysis.</li>
+
+</ol>
+
+</div>
 <div class="dropzone" id="dropZone">
 
 
@@ -1212,7 +1279,39 @@ isDraggingCrop=false;
 
 }
 
+function showGuide(event){
 
+    event.stopPropagation();
+
+    document.getElementById(
+        "guidePopup"
+    ).style.display = "block";
+
+}
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const popup =
+            document.getElementById(
+                "guidePopup"
+            );
+
+        const btn =
+            document.getElementById(
+                "guideBtn"
+            );
+
+        if(
+            !popup.contains(event.target) &&
+            !btn.contains(event.target)
+        ){
+            popup.style.display = "none";
+        }
+
+    }
+);
 
 function goHome(){
 

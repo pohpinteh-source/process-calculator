@@ -150,13 +150,78 @@ button{
         text-align:center;
         font-size:14px;
     }
+    }
+
+/* Quick Guideline Button */
+#guideBtn{
+    position:fixed;
+    top:20px;
+    right:10px;
+    z-index:9999;
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Guideline Popup */
+#guidePopup{
+    display:none;
+    position:fixed;
+    top:60px;
+    right:10px;
+    width:320px;
+    max-width:90%;
+    background:white;
+    border:2px solid #1f4e79;
+    border-radius:10px;
+    padding:15px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+
+#guidePopup h3{
+    margin-top:0;
+    color:#1f4e79;
+}
+
+#guidePopup button{
+    margin-top:10px;
+    width:100%;
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:8px;
+}
 }
 </style>
 </head>
 
 <body>
+
+<button id="guideBtn" onclick="showGuide(event)">
+❓ Quick Guide
+</button>
+
 <h1>B.A.R Calculator</h1>
-<div class="container">
+<div id="guidePopup">
+<h3>📖 Quick Guide</h3>
+
+<ol style="padding-left:20px; line-height:1.8;">
+    <li>Enter Ball Diameter MIN value.</li>
+    <li>Enter Ball Diameter MAX value.</li>
+    <li>Verify both input values.</li>
+    <li>Review the calculated B.A.R. results.</li>
+    <li>Click Clear to reset all values.</li>
+    <li>Click Back to return to Home Page.</li>
+</ol>
+
 </div>
 
 <div style="
@@ -374,6 +439,40 @@ r6_min,r6_max
 ].forEach(el=>el.innerHTML="");
 
 }
+
+function showGuide(event){
+
+    event.stopPropagation();
+
+    document.getElementById(
+        "guidePopup"
+    ).style.display = "block";
+
+}
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const popup =
+            document.getElementById(
+                "guidePopup"
+            );
+
+        const btn =
+            document.getElementById(
+                "guideBtn"
+            );
+
+        if(
+            !popup.contains(event.target) &&
+            !btn.contains(event.target)
+        ){
+            popup.style.display = "none";
+        }
+
+    }
+);
 
 // ✅ BACK
 function goHome(){

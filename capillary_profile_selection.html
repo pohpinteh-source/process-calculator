@@ -188,10 +188,106 @@ button{
     width:180px;
     height:400px;
 }
+
+#guideBtn{
+    position:fixed;
+    top:16px;
+    right:10px;
+    z-index:9999;
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+    width:auto;
+}
+
+#guidePopup{
+    display:none;
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:420px;
+    max-width:90%;
+    background:white;
+    border:2px solid #1f4e79;
+    border-radius:10px;
+    padding:15px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    text-align:left;
+}
+
+#guidePopup h3{
+    margin-top:0;
+    color:#1f4e79;
+}
 </style>
 </head>
 
 <body onload="cd.focus()">
+
+<button id="guideBtn" onclick="showGuide(event)">
+❓ Quick Guide
+</button>
+
+<div id="guidePopup">
+
+<h3>📖 Quick Guide
+</h3>
+
+<ol style="
+    padding-left:25px;
+    line-height:1.8;
+    margin:0;
+    text-align:left;
+">
+
+<li>
+Enter the capillary dimensions from the supplier specification sheet.
+</li>
+
+<li>
+Input ØCD (Chamfer Diameter) in um.
+</li>
+
+<li>
+Input ØH (Hole Diameter) in um.
+</li>
+
+<li>
+Input CA (Chamfer Angle) in Degree.
+</li>
+
+<li>
+Input ØTip (Tip Diameter) in um.
+</li>
+
+<li>
+Input MTA (Main Taper Angle) in Degree.
+</li>
+
+<li>
+TL and ØTD are pre-filled with standard values. Change only if a different capillary design is used.
+</li>
+
+<li>
+Input L₃ based on actual chip thickness or cavity depth in mm.
+</li>
+
+<li>
+Results L₁, L₂, X₁ and X₂ will update automatically.
+</li>
+
+<li>
+Use the calculated dimensions to verify capillary fit and package clearance.
+</li>
+
+</ol>
+
+</div>
 
 <div class="title">
     Capillary Profile Selection
@@ -451,6 +547,40 @@ tl.value="11.000";
 td.value="1.587";
 Lright.innerHTML="0.0000";
 }
+
+function showGuide(event){
+
+    event.stopPropagation();
+
+    document.getElementById(
+        "guidePopup"
+    ).style.display = "block";
+
+}
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const popup =
+            document.getElementById(
+                "guidePopup"
+            );
+
+        const btn =
+            document.getElementById(
+                "guideBtn"
+            );
+
+        if(
+            !popup.contains(event.target) &&
+            !btn.contains(event.target)
+        ){
+            popup.style.display = "none";
+        }
+
+    }
+);
 
 function goHome(){
 

@@ -200,15 +200,57 @@ img {
         padding:12px;
     }
 }
+
+.title-wrapper{
+    position:relative;
+}
+
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    margin:0;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 
 <body onload="setFocus()">
 
-<div class="title">
-    Define DA Spec
-</div>
+<div class="title-wrapper">
 
+    <div class="title">
+        Define DA Spec
+
+        <button
+            class="quick-guide-btn"
+            onclick="openQuickGuide()">
+            ❓ Quick Guide
+        </button>
+
+    </div>
+
+</div>
 <div
 style="
 margin-top:8px;
@@ -231,25 +273,25 @@ Please input values in the yellow highlighted cells only.
 <table>
 
 <tr>
-<td class="label">Chip edge 1 [mm]</td>
+<td class="label">Chip Size, X [mm]</td>
 <td class="input-box"><input id="mm1"></td>
 <td>mm</td>
 </tr>
 
 <tr>
-<td class="label">Chip edge 2 [mm]</td>
+<td class="label">Chip Size, Y [mm]</td>
 <td class="input-box"><input id="mm2"></td>
 <td>mm</td>
 </tr>
 
 <tr>
-<td class="label">Chip edge 1 [in]</td>
+<td class="label">Chip Size, X [in]</td>
 <td class="result-box" id="in1"></td>
 <td>in</td>
 </tr>
 
 <tr>
-<td class="label">Chip edge 2 [in]</td>
+<td class="label">Chip Size, Y [in]</td>
 <td class="result-box" id="in2"></td>
 <td>in</td>
 </tr>
@@ -329,7 +371,68 @@ Please input values in the yellow highlighted cells only.
 </div>
 
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Enter Chip Size, X [mm].</li>
+
+<li>Enter Chip Size, Y [mm].</li>
+
+<li>Only enter values in yellow highlighted cells.</li>
+
+<li>Dimensions will automatically convert from mm to inch.</li>
+
+<li>Chip area will be calculated automatically.</li>
+
+<li>1.0x, 2.0x, 2.0x+14%, and 2.0x+25% Die Shear Force values will be calculated automatically.</li>
+
+<li>2.0x [gf] is the target value.</li>
+
+<li>2.0x+25% [gf] is recommended for production usage.</li>
+
+<li>Roundup value can be used as specification reference.</li>
+
+<li>Click Die Shear Spec MIL883 for reference.</li>
+
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+</ol>
+
+
+</div>
+</div>
 <script>
 
 // ✅ focus
@@ -433,12 +536,41 @@ const roundupEl=document.getElementById("roundupValue");
 document.getElementById(id).addEventListener("input", calc);
 });
 
+// Force 3 decimal display
+["mm1","mm2"].forEach(id=>{
+
+    document.getElementById(id).addEventListener("blur", function(){
+
+        if(this.value === "") return;
+
+        let num = Number(this.value);
+
+        if(!isNaN(num)){
+            this.value = num.toFixed(3);
+        }
+
+    });
+
+});
+
 // ✅ clear
 function clearData(){
 document.querySelectorAll("input").forEach(i=>i.value="");
 document.querySelectorAll(".result-box").forEach(i=>i.innerHTML="");
 roundupEl.innerHTML="0.00 gf";
 prev = {}; // reset stored values ✅
+}
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
 }
 
 // ✅ back

@@ -21,7 +21,41 @@ h1{
     line-height:1.3;
 }
 
+.title-bar{
+    background:orange;
+    padding:12px;
+    position:relative;
+    text-align:center;
+}
 
+.title-bar h1{
+    margin:0;
+    background:none;
+    padding:0;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:8px 15px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+
+    width:auto;
+    margin:0;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 /* ✅ IMAGE FIXED + LEFT ALIGN */
 
 img {
@@ -138,8 +172,15 @@ button{
 
 <body onload="setFocus()">
 
-<h1>Min Gap of Collet (ØA) Hit Cavity Wall / Adjacent Chip</h1>
+<div class="title-bar">
+    <h1>Min Gap of Collet (ØA) Hit Cavity Wall / Adjacent Chip</h1>
 
+    <button
+        class="quick-guide-btn"
+        onclick="openQuickGuide()">
+        ❓ Quick Guide
+    </button>
+</div>
 <!-- ✅ ✅ IMAGE WILL SHOW NOW -->
 <img src="DA Collet.png">
 <div
@@ -257,6 +298,70 @@ Clear
 >
 ⬅ Back
 </button>
+
+<!-- Quick Guide -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
+
+
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:650px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:50px auto;
+padding:20px;
+border-radius:10px;
+">
+
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+<li>Refer to the DA Collet diagram shown above.</li>
+
+<li>Enter Gap between Chips / Cavity (G).</li>
+
+<li>Enter Height of Cavity / Adjacent Chip (H).</li>
+
+<li>Enter Chip Thickness (CT).</li>
+
+<li>Enter Chip Size.</li>
+
+<li>Enter Collet OD and Collet Diameter (A).</li>
+
+<li>Enter Collet MTA.</li>
+
+<li>Enter Placement Accuracy.</li>
+
+<li>Gap of Collet (ØA) Hit Cavity Wall / Adjacent Chip (X) will be calculated automatically.</li>
+
+<li>Result ≥ 0 = No Risk.</li>
+
+<li>Result < 0 = Risk of Collet hitting cavity wall or adjacent chip.</li>
+
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back to return to Home Page.</li>
+</ol>
+
+
+</div>
+</div>
 <script>
 
 // Focus
@@ -347,6 +452,18 @@ function clearData(){
     document.getElementById("result").innerHTML="";
     document.getElementById("risk").innerHTML="";
     setFocus();
+}
+
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
+
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
 }
 
 // Back

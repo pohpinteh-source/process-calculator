@@ -145,6 +145,37 @@ button{
     }
 
 }
+.title-wrapper{
+    position:relative;
+}
+
+.title{
+    position:relative;
+}
+
+.quick-guide-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    background:#1f4e79;
+    color:white;
+    border:none;
+    border-radius:8px;
+
+    padding:8px 15px;
+    width:auto;
+    margin:0;
+
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.quick-guide-btn:hover{
+    background:#163a5c;
+}
 </style>
 </head>
 
@@ -154,10 +185,21 @@ button{
 <div class="container">
 
 
+<div class="title-wrapper">
+
 <div class="title">
+
     Est. Wire Length (3D)
+
+    <button
+    class="quick-guide-btn"
+    onclick="openQuickGuide()">
+    ❓ Quick Guide
+    </button>
+
 </div>
 
+</div>
 </div>
 
 <div style="
@@ -344,7 +386,77 @@ Clear
 
 
 </div>
+<!-- Quick Guide Popup -->
+<div id="quickGuideModal"
+onclick="closeQuickGuide()"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;
+">
 
+<div
+onclick="event.stopPropagation()"
+style="
+background:white;
+width:750px;
+max-width:90%;
+max-height:80vh;
+overflow-y:auto;
+margin:40px auto;
+padding:20px;
+border-radius:10px;
+">
+
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
+
+<ol style="line-height:2;text-align:left;padding-left:25px;">
+
+<li>Select the wire loop type:
+    <ul>
+        <li>Forward Sq Loop</li>
+        <li>Forward Q Loop</li>
+        <li>RBSOB</li>
+    </ul>
+</li>
+
+<li>Refer to the loop diagram shown for the selected wire profile.</li>
+
+<li>Input Die Thickness (T).</li>
+
+<li>Input Wire Distance, Point to Point (L).</li>
+
+<li>Input Typ Loop Height (A).</li>
+
+<li>For Forward Sq Loop only, input Span Length % (B).</li>
+
+<li>Only enter values in the yellow highlighted cells.</li>
+
+<li>Estimated 3D Wire Length is calculated automatically.</li>
+
+<li>Use recommended wire length result from row "Refer Wire Length's Table" for FCC and CCC calculations.</li>
+
+<li>Use the generated wire length range when selecting Fusing Current Checker (FCC) & Current Carrying Capacity (CCC) reference values.</li>
+
+<li>Click Clear to reset all values.</li>
+
+<li>Click Back To Fusing Current Check (FCC) to return to FCC Calculator.</li>
+
+<li>Click Back to return to Home Page.</li>
+
+
+</ol>
+
+</div>
+
+</div>
 <script>
 
 let backup = {};
@@ -608,7 +720,17 @@ window.location.href =
     window.location.search;
 
 }
+function openQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "block";
+}
 
+function closeQuickGuide(){
+    document.getElementById(
+        "quickGuideModal"
+    ).style.display = "none";
+}
 
 function goHome(){
 
