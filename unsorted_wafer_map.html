@@ -191,28 +191,6 @@ td{
 
     </div>
 
-</div>
-<div style="
-margin-top:8px;
-margin-bottom:8px;
-padding:10px;
-background:white;
-border:1px solid #cccccc;
-text-align:left;
-line-height:1.6;
-">
-
-<b>Purpose</b><br>
-
-Convert an unsorted wafer map file into a visual wafer map and automatically classify good dies and OCR dies.
-
-<br><br>
-
-<b>Application</b><br>
-
-Used for quick wafer map review, OCR verification, die count validation, and production yield assessment.
-
-</div>
 
 
 
@@ -348,27 +326,6 @@ Export to PDF
 ">
 
 
-<b>Calculation Logic</b><br>
-
-The calculator reads the wafer map file, determines whether the map is a New Map or Used Map, and counts:
-
-<br>
-
-• Total Good Die
-
-<br>
-
-• Total OCR Die
-
-<br>
-
-• Wafer Map Type
-
-<br><br>
-
-The wafer map is automatically rotated to match the standard viewing orientation and displayed in a color-coded format.
-
-<br><br>
 
 <b>Color Definition</b><br>
 
@@ -420,23 +377,51 @@ border-radius:10px;
 <h2 style="margin-top:0;color:#1f4e79;">
 📖 Quick Guide
 </h2>
+<div style="
+background:#e8f0fa;
+border-left:4px solid #1f4e79;
+padding:10px;
+margin-bottom:12px;
+font-size:14px;
+line-height:1.6;
+">
 
-<ol style="line-height:2;text-align:left;padding-left:25px;">
+<b>Calculator Function</b>
+
+<ul style="
+margin-top:6px;
+margin-bottom:0;
+padding-left:20px;
+text-align:left;
+">
+
+<li>Convert an unsorted wafer map file into a visual wafer map display.</li>
+
+<li>Automatically identify wafer map type (New Map or Used Map).</li>
+
+<li>Count and summarize Total Good Die quantity & Total OCR quantity.</li>
+
+<li>Display wafer map using color-coded die classification.</li>
+
+<li>Automatically rotate the wafer map into standard viewing orientation.</li>
+
+<li>Support wafer map review, OCR verification and die count validation.</li>
+
+<li>Allow export of wafer map data to Excel and PDF formats.</li>
+
+</ul>
+
+</div>
+<ol style="line-height:1.35;text-align:left;padding-left:25px;">
 
 <li>Drop the wafer map file into the upload area or click to browse.</li>
 
 <li>Click <b>Process Wafer Map</b> to generate the wafer map.</li>
 
-<li>The system automatically detects whether the map is a New Map or Used Map.</li>
-
-<li>Total Good Die and Total OCR Die are calculated automatically.</li>
-
-<li>The wafer map is automatically rotated to the standard viewing orientation.</li>
-
 <li>Color Definition:
     <ul>
         <li>🟩 Green = Good Die</li>
-        <li>🟦 Blue = OCR Die</li>
+        <li>🟦 Blue = OCR Die</li>s
         <li>⬜ White = Other Bin Code</li>
         <li>⬛ Empty = No Die Position</li>
     </ul>

@@ -311,51 +311,6 @@ canvas{
 
 </div>
 
-<div
-    class="card"
-    style="
-        width:700px;
-        margin-left:auto;
-        margin-right:auto;
-    "
->
-
-<div
-    id="maxRejectInfo"
-    style="
-        color:red;
-        font-size:16px;
-        margin-bottom:15px;
-    "
->
-</div>
-
-Incoming Reject Qty:
-
-<input
-    type="number"
-    id="incomingReject"
-    value="0"
-    min="0"
-    style="
-        width:90px;
-        height:30px;
-        font-size:18px;
-        text-align:center;
-        font-weight:bold;
-    "
-    onfocus="
-        clearRejectValue();
-        this.select();
-    "
-    onblur="
-        restoreRejectValue();
-    "
-    oninput="
-        recalculateYield();
-    "
->
-</div>
 
 <div
     class="card"
@@ -402,16 +357,67 @@ Incoming Reject Qty:
     <tr>
 <td class="label">
     PASS Qty
+    (<span style="color:green;font-weight:bold;">Green</span> Box)
 </td>
 
         <td><span id="greenQty" class="passValue">0</span></td>
     </tr>
+<tr>
+<td class="label">
+    In Qty (eMOS)
+</td>
 
+<td>
+<input
+    type="number"
+    id="emosQty"
+    value=""
+    min="0"
+    style="
+        width:120px;
+        background:yellow;
+        text-align:center;
+        font-size:18px;
+        font-weight:bold;
+        border:1px solid #999;
+    "
+    onfocus="
+        clearEmosValue();
+        this.select();
+    "
+    onblur="
+        restoreEmosValue();
+    "
+    oninput="
+        recalculateYield();
+    "
+>
+    </tr>
+
+<tr>
+<td class="label">
+    Out Qty (eMOS)
+</td>
+
+<td>
+<span
+    id="outQty"
+    style="
+        color:#1f4e79;
+        font-weight:bold;
+    "
+></span>
+</td>
+</tr>
+
+
+</td>
+</tr>
     <tr>
 <td class="label">
     FAIL Qty
+    (<span style="color:red;font-weight:bold;">Red</span> Box)
 </td>
-
         <td><span id="redQty" class="resultValue">0</span>
 
 
@@ -420,12 +426,11 @@ Incoming Reject Qty:
     <tr>
 
 <td class="label">
-    Adjusted PASS Qty
+    Incoming Reject
 </td>
+
     <td>
-        <span id="adjustedQty">
-            0
-        </span>
+<span id="adjustedQty"></span>
     </td>
 </tr>
 
@@ -512,32 +517,62 @@ border-radius:10px;
 📖 Quick Guide
 </h2>
 
-<ol style="line-height:2;text-align:left;padding-left:25px;">
+<div style="
+background:#e8f0fa;
+border-left:4px solid #1f4e79;
+padding:10px;
+margin-bottom:12px;
+font-size:14px;
+line-height:1.6;
+">
 
-<li>Upload BMP, PNG, JPG or JPEG image file.</li>
+<b>Calculator Function</b>
 
-<li>Use a clear US Scan image with visible yellow labels and red defect marks.</li>
+<ul style="
+margin-top:6px;
+margin-bottom:0;
+padding-left:20px;
+text-align:left;
+">
+
+<li>Analyze US Scan photo and automatically detect Row Qty and Column Qty.</li>
+
+<li>Automatically identify PASS Qty (Green Box) and FAIL Qty (Red Box) from the US Scan image.</li>
+
+<li>Provide automated Yield (%) calculation for production verification.</li>
+
+<li>Support yield validation and discrepancy checking between US Scan map and eMOS data.</li>
+
+</ul>
+</div>
+
+<ol style="line-height:1.5;text-align:left;padding-left:25px;">
+
+<li>Upload US Scan image. (BMP, PNG, JPG or JPEG image file)</li>
+
 
 <li>The system automatically detects:
     <ul>
-        <li>Row Qty, Col Qty, Total Qty Per Panel, PASS Qty, FAIL Qty</li>
+        <li>Row & Col Qty</li>
+        <li>Total Qty Per Panel, PASS Qty (Green Box) & FAIL Qty (Red Box)</li>
     </ul>
 </li>
 
-<li>Red marks are automatically counted as FAIL Qty.</li>
+<li>Enter In Qty (eMOS) from eMOS.</li>
 
-<li>Green marks are automatically counted as PASS Qty.</li>
+<li><b>Incoming Reject</b> = Total Qty Per Panel − In Qty (eMOS)</li>
 
-<li>Yield % is calculated automatically.</li>
+<li><b>Out Qty (eMOS)</b> = In Qty (eMOS) − FAIL Qty (Red Box)</li>
 
-<li>If Row Qty or Col Qty is incorrect, verify image quality and orientation.</li>
+<li><b>Yield %</b> = (In Qty (eMOS) − FAIL Qty) ÷ In Qty (eMOS) × 100</li>
+
+<li>If detected quantities do not match the wafer map and eMOS data, verify the image quality and eMOS input value.</li>
 
 <li>Click Clear to analyse a new image.</li>
 
 <li>Click Back to return to Home Page.</li>
 
 </ol>
-
 
 </div>
 
@@ -988,62 +1023,10 @@ document
 
 function recalculateYield(){
 
-    const incomingReject =
-
-        parseInt(
-            document.getElementById(
-                "incomingReject"
-            ).value
-        ) || 0;
-
-    const detectedPassQty =
-
-        currentTotalQty -
-        currentFailQty;
-
-if(
-    incomingReject >
-    detectedPassQty
-){
-
-    document.getElementById(
-        "incomingReject"
-    ).value =
-    detectedPassQty;
-
-    return recalculateYield();
-
-}
-
-    const adjustedPassQty =
-
-        Math.max(
-            0,
-            detectedPassQty -
-            incomingReject
-        );
-
-    let yieldPct = 0;
-
-    if(
-        adjustedPassQty +
-        currentFailQty > 0
-    ){
-
-        yieldPct =
-
-            (
-                adjustedPassQty
-                /
-                (
-                    adjustedPassQty +
-                    currentFailQty
-                )
-            )
-
-            * 100;
-
-    }
+    const emosText =
+        document.getElementById(
+            "emosQty"
+        ).value.trim();
 
     document.getElementById(
         "totalQty"
@@ -1053,67 +1036,147 @@ if(
     document.getElementById(
         "greenQty"
     ).innerText =
-    detectedPassQty;
+    currentTotalQty -
+    currentFailQty;
 
     document.getElementById(
         "redQty"
     ).innerText =
     currentFailQty;
 
+if(emosText === ""){
+
+    document.getElementById(
+        "adjustedQty"
+    ).innerText = "";
+
+    document.getElementById(
+        "outQty"
+    ).innerText = "";
+
+    document.getElementById(
+        "yieldPct"
+    ).innerText = "0%";
+
+    return;
+}
+
+
+let incomingQty =
+    parseInt(emosText) || 0;
+
+const passQty =
+    currentTotalQty -
+    currentFailQty;
+
+if(incomingQty > passQty){
+
+    alert(
+        "In Qty (eMOS) cannot be higher than PASS Qty (" +
+        passQty +
+        ")."
+    );
+
+    incomingQty = passQty;
+
+    document.getElementById(
+        "emosQty"
+    ).value =
+    passQty;
+
+}
+
+
+const incomingReject =
+    currentTotalQty -
+    incomingQty;
+
+
+const outQty =
+    incomingQty -
+    currentFailQty;
+    let yieldPct = 0;
+
+
+const mapQty =
+    currentTotalQty -
+    incomingReject -
+    currentFailQty;
+
+if(
+    outQty !== mapQty
+){
+
+    alert(
+        "Out Qty (eMOS) not tally with map"
+    );
+
+}
+
+    if(incomingQty > 0){
+
+        yieldPct =
+        (
+            (incomingQty - currentFailQty)
+            /
+            incomingQty
+        ) * 100;
+
+    }
+
     document.getElementById(
         "adjustedQty"
     ).innerText =
-    adjustedPassQty;
+    incomingReject;
+document.getElementById(
+    "outQty"
+).innerText =
+outQty;
 
     document.getElementById(
         "yieldPct"
     ).innerText =
-    yieldPct.toFixed(2)
-    + "%";
-document.getElementById(
-    "maxRejectInfo"
-).innerText =
-"Maximum Reject Qty: " +
-detectedPassQty;
+    yieldPct.toFixed(2) + "%";
 }
 
-function clearRejectValue(){
+let prevEmosValue = "";
+
+function clearEmosValue(){
 
     const box =
-
         document.getElementById(
-            "incomingReject"
+            "emosQty"
         );
 
+    prevEmosValue =
+        box.value;
+
     if(
-        box.value === "0"
+        box.value !== ""
     ){
-
         box.value = "";
-
     }
-
 }
 
-function restoreRejectValue(){
+function restoreEmosValue(){
 
     const box =
-
         document.getElementById(
-            "incomingReject"
+            "emosQty"
         );
 
     if(
         box.value.trim() === ""
     ){
 
-        box.value = "0";
-
-        recalculateYield();
+        box.value =
+            prevEmosValue;
 
     }
 
+    recalculateYield();
 }
+
 
 function findLabelCenters(projection)
 {
@@ -1233,9 +1296,6 @@ function clearAll(){
     ).innerText = "";
 
 
-document.getElementById(
-    "maxRejectInfo"
-).innerText = "";
 
 
     document.getElementById(
@@ -1250,9 +1310,13 @@ document.getElementById(
         "totalQty"
     ).innerText = "0";
 
-    document.getElementById(
-        "adjustedQty"
-    ).innerText = "0";
+document.getElementById(
+    "adjustedQty"
+).innerText = "";
+
+document.getElementById(
+    "outQty"
+).innerText = "";
 
     document.getElementById(
         "greenQty"
@@ -1266,9 +1330,11 @@ document.getElementById(
         "yieldPct"
     ).innerText = "0%";
 
-    document.getElementById(
-        "incomingReject"
-    ).value = "0";
+document.getElementById(
+    "emosQty"
+).value = "";
+
+prevEmosValue = "";
 
     document.getElementById(
         "fileInput"

@@ -101,7 +101,7 @@ input,select{
 }
 
 .guidePanel{
-    width:450px;
+    width:500px;
     border:2px solid #4472C4;
     background:white;
     padding:10px;
@@ -1040,20 +1040,6 @@ Extreme Stress CCC (A)<br>
 
 <div class="purpose-box">
 
-<b>Purpose:</b><br>
-Estimate the maximum current capability of a wire bond based on wire material, wire diameter, wire length, and operating temperature.
-
-<br><br>
-
-<b>Fusing Current (Ampacity):</b><br>
-Estimated current that may cause the wire to fuse or melt.
-
-<br><br>
-
-<b>Current Carrying Capacity (CCC):</b><br>
-Estimated continuous current capability based on thermal conductivity and electrical resistivity.
-
-<br><br>
 
 <b>RT (25°C):</b><br>
 Uses room-temperature material properties.
@@ -1135,7 +1121,34 @@ border-radius:10px;
 📖 Quick Guide
 </h2>
 
-<ol style="line-height:1.5;text-align:left;padding-left:25px;">
+<div style="
+background:#e8f0fa;
+border-left:4px solid #1f4e79;
+padding:10px;
+margin-bottom:12px;
+font-size:14px;
+line-height:1.6;
+text-align:left;
+">
+
+<b>Calculator Function</b>
+
+<ul style="
+margin-top:6px;
+margin-bottom:0;
+padding-left:20px;
+text-align:left;
+">
+
+<li>Calculate the maximum current capability of a wire bond based on wire material, diameter, length, and operating temperature to support wire size selection and wire bond design verification.</li>
+
+
+<li>Evaluate the effect of wire diameter, wire length and temperature on current capability.</li>
+
+</ul>
+
+</div>
+<ol style="line-height:1.3;text-align:left;padding-left:25px;">
 
 <li>Select Wire Type (Ag, Au, Cu or Al).</li>
 
@@ -1163,10 +1176,7 @@ border-radius:10px;
 
 <li>Use the graph to compare:
     <ul>
-        <li>Fusing Current</li>
-        <li>Design CCC</li>
-        <li>Operating CCC</li>
-        <li>Extreme Stress CCC</li>
+        <li>Fusing Current, Design CCC, Operating CCC, Extreme Stress CCC</li>
     </ul>
 </li>
 
