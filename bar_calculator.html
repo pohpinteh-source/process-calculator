@@ -173,18 +173,27 @@ button{
 #guidePopup{
     display:none;
     position:fixed;
-    top:60px;
-    right:10px;
-    width:320px;
-    max-width:90%;
+
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+
+    width:750px;
+    max-width:95%;
+
+    max-height:85vh;
+    overflow-y:auto;
+
     background:white;
     border:2px solid #1f4e79;
     border-radius:10px;
-    padding:15px;
+    padding:20px;
+
     z-index:10000;
     box-shadow:0 4px 12px rgba(0,0,0,0.3);
-}
 
+    text-align:left;
+}
 #guidePopup h3{
     margin-top:0;
     color:#1f4e79;
@@ -211,8 +220,39 @@ button{
 
 <h1>B.A.R Calculator</h1>
 <div id="guidePopup">
-<h3>📖 Quick Guide</h3>
+<h2 style="margin-top:0;color:#1f4e79;">
+📖 Quick Guide
+</h2>
 
+<div style="
+background:#e8f0fa;
+border-left:4px solid #1f4e79;
+padding:10px;
+margin-bottom:12px;
+font-size:14px;
+line-height:1.6;
+">
+
+<b>Calculator Function</b>
+
+<ul style="
+margin-top:6px;
+margin-bottom:0;
+padding-left:20px;
+text-align:left;
+">
+
+<li>Calculate Ball Aspect Ratio (B.A.R.) dimensions based on Ball Diameter.</li>
+
+<li>B.A.R. values are commonly used during wire bond process development to evaluate bonded ball geometry and bond pad suitability.</li>
+
+<li>Support wire bond process development and bonded ball geometry assessment.</li>
+
+<li>Assist bond pad suitability evaluation based on ball size requirements.</li>
+
+</ul>
+
+</div>
 <ol style="padding-left:20px; line-height:1.8;">
     <li>Enter Ball Diameter MIN value.</li>
     <li>Enter Ball Diameter MAX value.</li>
@@ -224,24 +264,6 @@ button{
 
 </div>
 
-<div style="
-margin-top:8px;
-margin-bottom:8px;
-padding:10px;
-background:white;
-border:1px solid #cccccc;
-text-align:left;
-line-height:1.6;
-">
-
-<b>Purpose</b><br>
-
-Calculate Ball Aspect Ratio (B.A.R.) dimensions based on ball diameter.
-<br>
-B.A.R. values are commonly used during wire bond process development
-to evaluate bonded ball geometry and bond pad suitability.
-
-</div>
 
 <!-- ✅ PNG FIX (IMPORTANT) -->
 <div class="top-img">

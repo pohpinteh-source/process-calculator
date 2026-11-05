@@ -6,65 +6,6 @@
 
 <title>Bond Pad Risk Calculator</title>
 
-<div class="info-box">
-
-<b>Purpose:</b><br>
-Evaluate the risk of Bond Out Of Pad (BOOP) by comparing the available bond pad area against the ball diameter, placement variation, and operator teaching variation.
-
-<br><br>
-
-<b>Key Formula:</b><br>
-
-Minimum BPO =
-Nominal BPO − BPO Tolerance
-
-<br>
-
-Maximum Allowable Ball Diameter =
-Minimum BPO +
-(2 × BOOP) −
-Total Design Tolerance
-
-<br>
-
-Margin =
-Maximum Allowable Ball Diameter −
-Actual Ball Diameter
-
-<br><br>
-
-<b>Result Interpretation:</b><br>
-
-PASS = Sufficient design margin available.
-
-<br>
-
-WARNING = Low design margin. Review recommended.
-
-<br>
-
-FAIL = Potential BOOP risk.
-
-<br><br>
-
-<b>Sigma Analysis:</b><br>
-
-Z Margin =
-(Maximum Allowable Ball Diameter − Mean Ball Diameter)
-/ Sigma
-
-<br><br>
-
-Higher Z Margin indicates a more robust design and lower BOOP risk.
-
-<br>
-
-Predicted PPM estimates the probability of Bond Out Of Pad occurrence.
-
-<br><br>
-
-
-</div>
 
 <style>
 
@@ -167,18 +108,19 @@ button{
 #guidePopup{
     display:none;
     position:fixed;
-    top:60px;
-    right:10px;
-    width:350px;
-    max-width:90%;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:800px;
+    max-width:95%;
     background:white;
     border:2px solid #1f4e79;
     border-radius:10px;
     padding:15px;
     z-index:10000;
     box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    text-align:left;
 }
-
 
 
 
@@ -198,8 +140,39 @@ button{
 
 <div id="guidePopup">
 <h3>📖 Quick Guide</h3>
-<ol style="line-height:1.8;text-align:left;padding-left:25px;">
 
+<div style="
+background:#e8f0fa;
+border-left:4px solid #1f4e79;
+padding:10px;
+margin-bottom:12px;
+font-size:14px;
+line-height:1.6;
+">
+
+<b>Calculator Function</b>
+
+<ul style="
+margin-top:6px;
+margin-bottom:0;
+padding-left:20px;
+text-align:left;
+">
+
+<li>Evaluate Bond Out Of Pad (BOOP) risk based on bond pad and ball diameter conditions.</li>
+
+<li>Calculate allowable ball diameter and available design margin.</li>
+
+<li>Assess the impact of process tolerances, placement accuracy and operator teaching variation.</li>
+
+<li>Automatically classify design condition as PASS, WARNING or FAIL.</li>
+
+<li>Estimate BOOP Z-Margin and predicted BOOP Risk (PPM).</li>
+
+
+</div>
+
+<ol style="line-height:1.8;text-align:left;padding-left:25px;">
 <li>Enter Nominal BPO.</li>
 <li>Verify BPO Tolerance & change it if need.</li>
 <li>Enter Allowable BOOP per Side.</li>
