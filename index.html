@@ -535,46 +535,50 @@ Start Using Calculator
 </div>
 <script>
 
+function getCurrentQuarter(){
+
+    const month =
+        new Date().getMonth() + 1;
+
+    if(month <= 3) return "Q1";
+    if(month <= 6) return "Q2";
+    if(month <= 9) return "Q3";
+
+    return "Q4";
+
+}
+
+
 document.addEventListener(
     "DOMContentLoaded",
     function(){
 
-        // Get username from URL
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
+        const currentQuarterKey =
+            new Date().getFullYear() +
+            "_" +
+            getCurrentQuarter();
 
-        const user =
-            params.get("user");
-
-        if(user){
-
-            const userName =
-                user.split("@")[0];
-
-            document.getElementById(
-                "popupUserName"
-            ).innerHTML =
-                "👤 Welcome, " + userName;
-
-        }
-
-        const hide =
+        const savedQuarter =
             localStorage.getItem(
-                "hideQuickGuide"
+                "guideQuarter"
             );
 
-        if(hide !== "YES"){
+        if(
+            savedQuarter !==
+            currentQuarterKey
+        ){
 
             document.getElementById(
                 "welcomeGuide"
-            ).style.display = "block";
+            ).style.display =
+                "block";
 
         }
 
     }
 );
+
+
 function closeWelcomeGuide(){
 
     if(
@@ -583,9 +587,14 @@ function closeWelcomeGuide(){
         ).checked
     ){
 
+        const currentQuarterKey =
+            new Date().getFullYear() +
+            "_" +
+            getCurrentQuarter();
+
         localStorage.setItem(
-            "hideQuickGuide",
-            "YES"
+            "guideQuarter",
+            currentQuarterKey
         );
 
     }
@@ -595,6 +604,7 @@ function closeWelcomeGuide(){
     ).style.display = "none";
 
 }
+
 
 </script>
 </body>
