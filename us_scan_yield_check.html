@@ -328,30 +328,6 @@ US Scan Format refers to CSV files where:
 
 <br>
 
-<div
-    id="maxRejectInfo"
-    style="
-        color:red;
-        font-size:16px;
-    "
-></div>         <br>
-
-        Incoming Reject Qty:
-
-
-<input
-    type="number"
-    id="incomingReject"
-    value="0"
-    min="0"
-    onfocus="this.select()"
-    oninput="
-        calculateYield();
-        calculateSpec();
-    "
->
-
-        <br>
 
 
     </div>
@@ -454,27 +430,68 @@ oninput="
     <td class="label">Total Qty Per Panel</td>
     <td id="totalPanelQty">0</td>
 </tr>
-            <tr>
+<tr>
 <td class="label">
-    PASS Qty (Void Spec)
+Green Box Qty
 </td>
-                <td id="passQty" class="pass">0</td>
-            </tr>
+<td id="passQty" class="pass">0</td>
+</tr>
 
-            <tr>
+<tr>
+<td class="label">
+    In Qty (eMOS)
+</td>
+
+<td>
+<input
+    type="number"
+    id="emosQty"
+    value=""
+    min="0"
+    style="
+        width:120px;
+        background:yellow;
+        text-align:center;
+        font-size:18px;
+        font-weight:bold;
+        border:1px solid #999;
+    "
+    onfocus="
+        clearEmosValue();
+        this.select();
+    "
+    onblur="
+        restoreEmosValue();
+    "
+    oninput="
+        calculateYield();
+    "
+>
+</td>
+</tr>
+
+<tr>
+<td class="label">
+US Scan Out Qty (eMOS)</td>
+<td id="outQty"> </td>
+</tr>
+
+<tr>
 <td class="label">
     FAIL Qty (Void Spec)
 </td>
+
                 <td id="failQty" class="fail">0</td>
             </tr>
 
             <tr>
-                <td class="label">Adjusted PASS Qty</td>
-                <td id="adjustedPassQty">0</td>
+<td class="label">Panel Incoming Reject</td>
+<td id="adjustedPassQty"></td>
+
             </tr>
 
             <tr>
-                <td class="label">Yield %</td>
+                <td class="label">US Scan Yield %</td>
                 <td id="yieldPct" class="yield">0%</td>
             </tr>
 
@@ -640,7 +657,7 @@ text-align:left;
 
 </div>
 
-<ol style="line-height:1.5
+<ol style="line-height:1.3
 ;text-align:left;padding-left:25px;">
 
 <li>Upload a CSV, TXT, XLS or XLSX US Scan result file.</li>
@@ -1190,12 +1207,6 @@ refreshRowColumn();
     ).innerText =
     failQty;
 
-document.getElementById(
-    "maxRejectInfo"
-).innerText =
-"Maximum Reject Qty: "
-+
-passQty;
 
 
     document.getElementById(
@@ -1299,89 +1310,146 @@ maxRow * maxColumn;
     }
 
 }
+
+let prevEmosValue = "";
+
+function clearEmosValue(){
+
+    const box =
+        document.getElementById(
+            "emosQty"
+        );
+
+    prevEmosValue =
+        box.value;
+
+    if(box.value !== ""){
+        box.value = "";
+    }
+}
+
+function restoreEmosValue(){
+
+    const box =
+        document.getElementById(
+            "emosQty"
+        );
+
+    if(
+        box.value.trim() === ""
+    ){
+        box.value =
+            prevEmosValue;
+    }
+
+    calculateYield();
+}
 function calculateYield(){
 
-    const incomingReject =
+    const emosText =
+        document.getElementById(
+            "emosQty"
+        ).value.trim();
 
-        parseInt(
-            document
-            .getElementById(
-                "incomingReject"
-            )
-            .value
-        ) || 0;
+    if(emosText === ""){
+
+        document.getElementById(
+            "adjustedPassQty"
+        ).innerText = "";
+
+        document.getElementById(
+            "outQty"
+        ).innerText = "";
+
+        document.getElementById(
+            "yieldPct"
+        ).innerText = "0%";
+
+        return;
+    }
+
+    let incomingQty =
+        parseInt(emosText) || 0;
+
+const totalPanelQty =
+    parseInt(
+        document.getElementById(
+            "totalPanelQty"
+        ).innerText
+    ) || 0;
+
 if(
-    incomingReject > passQty
+    incomingQty >
+    totalPanelQty
 ){
 
     alert(
-        "Incoming Reject Qty cannot exceed PASS Qty (" +
-        passQty +
-        ")"
+        "DA In Qty (eMOS) cannot be higher than Total Qty Per Panel (" +
+        totalPanelQty +
+        ")."
     );
 
-    document
-    .getElementById(
-        "incomingReject"
-    )
-    .value =
-    passQty;
+    incomingQty =
+        totalPanelQty;
 
-    return;
-
+    document.getElementById(
+        "emosQty"
+    ).value =
+        totalPanelQty;
 }
-    const adjustedPass =
 
-        Math.max(
-            0,
-            passQty -
-            incomingReject
-        );
+    const incomingReject =
+        parseInt(
+            document.getElementById(
+                "totalPanelQty"
+            ).innerText
+        ) -
+        incomingQty;
 
-    document
-    .getElementById(
-        "adjustedPassQty"
-    )
-    .innerText =
-    adjustedPass;
+    const outQty =
+        incomingQty -
+        failQty;
 
-    const denominator =
-
-        adjustedPass +
+    const mapQty =
+        parseInt(
+            document.getElementById(
+                "totalPanelQty"
+            ).innerText
+        )
+        -
+        incomingReject
+        -
         failQty;
 
     let yieldPct = 0;
 
-    if(
-        denominator > 0
-    ){
+    if(incomingQty > 0){
 
         yieldPct =
-
-            adjustedPass
-
+        (
+            (incomingQty - failQty)
             /
-
-            denominator
-
-            *
-
-            100;
-
+            incomingQty
+        ) * 100;
     }
 
-    document
-    .getElementById(
+    document.getElementById(
+        "adjustedPassQty"
+    ).innerText =
+    incomingReject;
+
+    document.getElementById(
+        "outQty"
+    ).innerText =
+    outQty;
+
+    document.getElementById(
         "yieldPct"
-    )
-    .innerText =
-
-        yieldPct
-        .toFixed(2)
-
-        + "%";
-
+    ).innerText =
+    yieldPct.toFixed(2) + "%";
 }
+
+
 
 function clearRejectValue() {
     const box =
@@ -1693,24 +1761,30 @@ for(
     // SHEET 2
     // =================
 
-    const incomingReject =
+const incomingReject =
 
-        parseInt(
-            document
-            .getElementById(
-                "incomingReject"
-            )
-            .value
-        ) || 0;
+    parseInt(
+        document
+        .getElementById(
+            "adjustedPassQty"
+        )
+        .innerText
+    ) || 0;
+const outQty =
 
-    const adjustedPass =
+    parseInt(
+        document.getElementById(
+            "outQty"
+        ).innerText
+    ) || 0;
 
-        Math.max(
-            0,
-            passQty -
-            incomingReject
-        );
+const inQty =
 
+    parseInt(
+        document.getElementById(
+            "emosQty"
+        ).value
+    ) || 0;
 
 const summary = [
 
@@ -1749,30 +1823,28 @@ const summary = [
      ).value],
 
 
-    ["Total Qty Per Panel",
-     document.getElementById(
-        "totalPanelQty"
-     ).innerText],
+["Total Qty Per Panel",
+ document.getElementById(
+    "totalPanelQty"
+ ).innerText],
 
-    [],
+[],
 
-    ["PASS Qty", passQty],
+["Green Box Qty", String(passQty)],
 
-    ["FAIL Qty", failQty],
+["FAIL Qty (Void Spec)", String(failQty)],
 
-    [],
+["DA In Qty (eMOS)", String(inQty)],
 
-    ["Incoming Reject Qty",
-     incomingReject],
+["Panel Incoming Reject", String(incomingReject)],
 
-    ["Adjusted PASS Qty",
-     adjustedPass],
+["US Scan Out Qty (eMOS)", String(outQty)],
 
-    ["Yield %",
-     document.getElementById(
-        "yieldPct"
-     ).innerText],
 
+["US Scan Yield %",
+ document.getElementById(
+    "yieldPct"
+ ).innerText],
     [],
 
 
@@ -1788,8 +1860,8 @@ const ws2 =
 
 ws2["!cols"] = [
 
-    { wch: 30 },
-    { wch: 25 }
+    { wch: 35 },
+    { wch: 30 }
 
 ];
 
@@ -1818,22 +1890,22 @@ for(
                 c: col
             });
 
-        if(
-            ws2[cellAddress]
-        ){
+if(
+    ws2[cellAddress]
+){
 
-            ws2[cellAddress].s = {
+    ws2[cellAddress].s = {
 
-                alignment: {
+        alignment: {
 
-                    horizontal: "center",
-                    vertical: "center"
-
-                }
-
-            };
+            horizontal: "center",
+            vertical: "center"
 
         }
+
+    };
+
+}
 
     }
 
@@ -1933,6 +2005,16 @@ console.log(
 let hasChip1 = false;
 
 for(let row of excelData){
+
+console.log(
+    "Row Data = ",
+    row
+);
+
+console.log(
+    "Chip Value = ",
+    row[6]
+);
 
     if(
         parseInt(
@@ -2056,14 +2138,15 @@ for(let key in dieMap){
             ).innerText
         ) || 0;
 
-    const incomingReject =
+const incomingReject =
 
-        parseInt(
-            document.getElementById(
-                "incomingReject"
-            ).value
-        ) || 0;
-
+    parseInt(
+        document
+        .getElementById(
+            "adjustedPassQty"
+        )
+        .innerText
+    ) || 0;
     const denominator =
         totalQty -
         incomingReject;
@@ -2109,22 +2192,6 @@ for(let key in dieMap){
     // Update Screen
     // =====================================
 
-    document.getElementById(
-        "specFailQty"
-    ).innerText =
-    specFailQty;
-
-    document.getElementById(
-        "yieldLossPct"
-    ).innerText =
-    yieldLoss.toFixed(2)
-    + "%";
-
-    document.getElementById(
-        "specYieldPct"
-    ).innerText =
-    finalYield.toFixed(2)
-    + "%";
 
 }
 
@@ -2145,11 +2212,14 @@ function clearAll(){
 excelData = [];
 
 
-    document
-    .getElementById(
-        "incomingReject"
-    )
-    .value = "0";
+document
+.getElementById(
+    "emosQty"
+)
+.value = "";
+
+prevEmosValue = "";
+
 
     document
     .getElementById(
@@ -2187,11 +2257,18 @@ excelData = [];
     )
     .innerText = "0";
 
-    document
-    .getElementById(
-        "adjustedPassQty"
-    )
-    .innerText = "0";
+document
+.getElementById(
+    "adjustedPassQty"
+)
+.innerText = "";
+
+document
+.getElementById(
+    "outQty"
+)
+.innerText = "";
+
 
     document
     .getElementById(
@@ -2199,11 +2276,6 @@ excelData = [];
     )
     .innerText = "0%";
 
-    document
-    .getElementById(
-        "maxRejectInfo"
-    )
-    .innerText = "";
 
     document
     .getElementById(
