@@ -356,7 +356,7 @@ canvas{
 </tr>
     <tr>
 <td class="label">
-    PASS Qty
+Green Box Qty
     (<span style="color:green;font-weight:bold;">Green</span> Box)
 </td>
 
@@ -364,9 +364,8 @@ canvas{
     </tr>
 <tr>
 <td class="label">
-    In Qty (eMOS)
+     DA In / Out Qty (eMOS)
 </td>
-
 <td>
 <input
     type="number"
@@ -392,11 +391,13 @@ canvas{
         recalculateYield();
     "
 >
+</td>
+
     </tr>
 
 <tr>
 <td class="label">
-    Out Qty (eMOS)
+    US Scan Out Qty (eMOS)
 </td>
 
 <td>
@@ -426,7 +427,7 @@ canvas{
     <tr>
 
 <td class="label">
-    Incoming Reject
+    Panel Incoming Reject
 </td>
 
     <td>
@@ -439,7 +440,7 @@ canvas{
 
 <tr>
 <td class="label">
-    Yield %
+    US Scan Yield %
 </td>
     <td>
 
@@ -537,12 +538,11 @@ text-align:left;
 
 <li>Analyze US Scan photo and automatically detect Row Qty and Column Qty.</li>
 
-<li>Automatically identify PASS Qty (Green Box) and FAIL Qty (Red Box) from the US Scan image.</li>
+<li>Automatically identify Green Box Qty and FAIL Qty (Red Box) from the US Scan image.</li>
 
 <li>Provide automated Yield (%) calculation for production verification.</li>
 
-<li>Support yield validation and discrepancy checking between US Scan map and eMOS data.</li>
-
+<li>Support comparison and validation between US Scan map quantities and DA In Qty recorded in eMOS.</li>
 </ul>
 </div>
 
@@ -554,17 +554,17 @@ text-align:left;
 <li>The system automatically detects:
     <ul>
         <li>Row & Col Qty</li>
-        <li>Total Qty Per Panel, PASS Qty (Green Box) & FAIL Qty (Red Box)</li>
+        <li>Total Qty Per Panel, Green Box Qty & FAIL Qty (Red Box)</li>
     </ul>
 </li>
 
-<li>Enter In Qty (eMOS) from eMOS.</li>
+<li>Enter  DA In or DA Out Qty (eMOS) from eMOS.</li>
 
-<li><b>Incoming Reject</b> = Total Qty Per Panel − In Qty (eMOS)</li>
+<li><b>Panel Incoming Reject</b> = Total Qty Per Panel −  DA In or DA Out Qty (eMOS)</li>
 
-<li><b>Out Qty (eMOS)</b> = In Qty (eMOS) − FAIL Qty (Red Box)</li>
+<li><b>US Scan Out Qty (eMOS)</b> =  DA In or DA Out Qty (eMOS) − FAIL Qty (Red Box)</li>
 
-<li><b>Yield %</b> = (In Qty (eMOS) − FAIL Qty) ÷ In Qty (eMOS) × 100</li>
+<li><b>US Scan Yield %</b> = ( DA In or DA Out Qty (eMOS) − FAIL Qty) ÷  DA In or DA Out Qty (eMOS) × 100</li>
 
 <li>If detected quantities do not match the wafer map and eMOS data, verify the image quality and eMOS input value.</li>
 
@@ -1065,27 +1065,25 @@ if(emosText === ""){
 let incomingQty =
     parseInt(emosText) || 0;
 
-const passQty =
-    currentTotalQty -
-    currentFailQty;
-
-if(incomingQty > passQty){
+if(
+    incomingQty >
+    currentTotalQty
+){
 
     alert(
-        "In Qty (eMOS) cannot be higher than PASS Qty (" +
-        passQty +
+        " DA In / Out Qty (eMOS) cannot be higher than Total Qty Per Panel (" +
+        currentTotalQty +
         ")."
     );
 
-    incomingQty = passQty;
+    incomingQty =
+        currentTotalQty;
 
     document.getElementById(
         "emosQty"
     ).value =
-    passQty;
-
+        currentTotalQty;
 }
-
 
 const incomingReject =
     currentTotalQty -
