@@ -439,8 +439,7 @@ Green Box Qty
 
 <tr>
 <td class="label">
-    In Qty (eMOS)
-</td>
+DA In / Out Qty (eMOS)</td>
 
 <td>
 <input
@@ -643,29 +642,30 @@ padding-left:20px;
 text-align:left;
 ">
 
-<li>Analyze US Scan result files (CSV, TXT, XLS, XLSX).</li>
+<li>Analyze US Scan result files (CSV, TXT, XLS and XLSX).</li>
 
-<li>Calculate PASS Qty, FAIL Qty and Yield % automatically.</li>
 
-<li>Evaluate die rejection based on user-defined Void Spec criteria.</li>
+<li>Determine Green Box Qty and FAIL Qty based on selected Void Spec.</li>
 
-<li>Support automatic Row, Column and Panel Quantity verification.</li>
 
-<li>Generate Yield Report with detailed void analysis in XLSX format.</li>
+<li>Identify Pad Type (1 Pad or 2 Pads).</li>
+
+<li>Generate Yield Analysis Report in XLSX format.</li>
 
 </ul>
 
 </div>
-
-<ol style="line-height:1.3
-;text-align:left;padding-left:25px;">
+<ol style="line-height:1.8;text-align:left;padding-left:25px;">
 
 <li>Upload a CSV, TXT, XLS or XLSX US Scan result file.</li>
 
 <li>For standard US Scan format, keep "Swap Row / Column" checked.</li>
 
-<li>Row Qty, Col Qty and Total Qty Per Panel is calculated automatically.</li>
+<li>Panel Incoming Reject = Total Qty Per Panel − DA In or DA Out Qty (eMOS)</li>
 
+<li>US Scan Out Qty = DA In or DA Out Qty (eMOS) − FAIL Qty</li>
+
+<li>US Scan Yield (%) = (US Scan Out Qty ÷ DA In or DA Out Qty (eMOS)) × 100</li>
 <li>Set Void Spec according to product requirement (default = 20%).</li>
 
 <li>Select comparison operator:
@@ -674,8 +674,6 @@ text-align:left;
         <li>≥ = Reject when Void % equals or exceeds Spec.</li>
     </ul>
 </li>
-
-<li>PASS Qty, FAIL Qty and Yield % are calculated automatically.</li>
 
 <li>Pad Type detection:
     <ul>
@@ -1384,7 +1382,7 @@ if(
 ){
 
     alert(
-        "DA In Qty (eMOS) cannot be higher than Total Qty Per Panel (" +
+        "DA In or DA Out Qty (eMOS) cannot be higher than Total Qty Per Panel (" +
         totalPanelQty +
         ")."
     );
@@ -1834,7 +1832,7 @@ const summary = [
 
 ["FAIL Qty (Void Spec)", String(failQty)],
 
-["DA In Qty (eMOS)", String(inQty)],
+["DA In / Out Qty (eMOS) (eMOS)", String(inQty)],
 
 ["Panel Incoming Reject", String(incomingReject)],
 
