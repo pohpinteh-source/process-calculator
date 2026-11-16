@@ -168,6 +168,37 @@ input[type=range]{
     box-shadow:0 4px 12px rgba(0,0,0,0.3);
     text-align:left;
 }
+
+.blink{
+    animation:blink 1s infinite;
+}
+@keyframes blink{
+    0%{
+        opacity:1;
+    }
+    50%{
+        opacity:0;
+    }
+    100%{
+        opacity:1;
+    }
+}
+
+.instructionBox{
+
+    background:#fff3cd;
+    border:1px solid #ffcc00;
+
+    color:#cc0000;
+
+    padding:10px;
+
+    border-radius:6px;
+
+    margin-bottom:10px;
+
+}
+
 </style>
 </head>
 
@@ -429,6 +460,17 @@ text-align:left;
         ">
         Detection Preview
     </h3>
+<div id="instructionMsg"
+class="instructionBox">
+
+<span class="blink">
+⚠️
+</span>
+
+<b>Action Required:</b>
+Draw and crop the chip area to start counting.
+
+</div>
 
     <div
         style="
