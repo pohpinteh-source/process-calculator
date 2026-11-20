@@ -746,29 +746,34 @@ const topLimit =
         new Array(height).fill(0);
 
 for(let y=0;y<height;y++)
+{
+    for(let x=0;x<width;x++)
     {
-        for(let x=0;x<width;x++)
+        const idx =
+            (y*width+x)*4;
+
+        const r=data[idx];
+        const g=data[idx+1];
+        const b=data[idx+2];
+
+        const isYellow =
+            r > 150 &&
+            g > 150 &&
+            b < 120;
+
+        if(isYellow)
         {
-            const idx =
-                (y*width+x)*4;
-
-            const r=data[idx];
-            const g=data[idx+1];
-            const b=data[idx+2];
-
-            const isYellow =
-                r > 150 &&
-                g > 150 &&
-                b < 120;
-
-            if(isYellow)
+            // X projection only use top area
+            if(y < topLimit)
             {
                 xProj[x]++;
-                yProj[y]++;
             }
+
+            // Y projection use full image
+            yProj[y]++;
         }
     }
-
+}
 //---------------------------------
 // Find label bands
 //---------------------------------
@@ -779,8 +784,43 @@ const rawX =
 const xLabels =
     mergeNearbyCenters(
         rawX,
-        40
+        20
     );
+
+console.log(
+    "Raw X Count =",
+    rawX.length
+);
+
+console.log(
+    "Merged X Count =",
+    xLabels.length
+);
+
+console.log(
+    "Raw X Array =",
+    rawX
+);
+
+console.log(
+    "Merged X Array =",
+    xLabels
+);
+
+console.log(
+    "Raw X Centers:",
+    rawX.length
+);
+
+console.log(
+    "Merged X Centers:",
+    xLabels.length
+);
+
+console.log(
+    xLabels
+);
+
 
 console.log(
     "Raw X =",
@@ -891,11 +931,7 @@ const pitchY =
     ];
 
 const colCount =
-    Math.round(
-        activeWidth /
-        pitchX
-    ) + 1;
-
+    xLabels.length;
 
 console.log(
     "PitchX =",
