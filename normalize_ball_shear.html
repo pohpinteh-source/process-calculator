@@ -36,7 +36,7 @@ h2{ margin-bottom:10px; }
 .mode-btn{
     flex:1;
     padding:10px;
-    background:#9cb6cc;
+    background:#00FF00;
     border:1px solid black;
 }
 
@@ -292,15 +292,15 @@ color:#cc0000;
 text-align:center;
 "
 >
-Please input values in the yellow highlighted cells only.
+Select a calculation mode (green button) and enter values only in the yellow highlighted cells.
 </div>
 
 
 <!-- ✅ MODE -->
 <div class="mode-row">
-<button class="mode-btn" onclick="setMode('diameter')">Min Ball Diameter</button>
-<button class="mode-btn" onclick="setMode('shear')">Min Ball Shear Value</button>
-<button class="mode-btn" onclick="setMode('strength')">Normalize Ball Shear</button>
+<button class="mode-btn" onclick="setMode('diameter')">Find Min Ball Diameter</button>
+<button class="mode-btn" onclick="setMode('shear')">Find Min Ball Shear Value</button>
+<button class="mode-btn" onclick="setMode('strength')">Find Normalize Ball Shear</button>
 </div>
 
 
@@ -442,7 +442,7 @@ text-align:left;
 </div>
 <ol style="line-height:1.4;text-align:left;padding-left:25px;">
 
-<li>Select the calculation mode:
+<li>Select the calculation mode (green button):
     <ul>
         <li>Min Ball Diameter</li>
         <li>Min Ball Shear Value</li>
