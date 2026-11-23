@@ -16,9 +16,9 @@ body{
 .title{
     background:#f4a300;
     color:black;
-    font-size:22px;
+    font-size:20px;
     text-align:center;
-    padding:15px;
+    padding:10px;
     margin:10px 0 15px 0;
     font-weight:bold;
     border-radius:4px;
@@ -28,20 +28,22 @@ body{
 
 /* layout */
 .container{
-    margin-top:15px;
+    margin-top:5px;
 }
 
 /* table */
 table{
     border-collapse:collapse;
     width:100%;
-    margin-bottom:15px;
+    margin-bottom:8px;
+    table-layout:fixed;
 }
 
 td{
     border:1px solid black;
-    padding:6px;
+    padding:3px 6px;
 }
+
 
 /* colors */
 .label{
@@ -64,14 +66,25 @@ td{
     text-align:center;
 }
 
+/* standard 3-column layout */
+.col-label{
+    width:55%;
+}
+
+.col-bond{
+    width:22.5%;
+}
+
 /* input */
 input{
     width:100%;
     border:none;
     background:yellow;
     text-align:center;
-    font-size:16px;
+    font-size:14px;
+    height:24px;
 }
+
 
 /* buttons */
 .btn-row{
@@ -149,7 +162,7 @@ onclick="openQuickGuide()">
 style="
 margin-top:8px;
 margin-bottom:8px;
-padding:8px;
+padding:4px;
 background:#fff3cd;
 border:1px solid #ffcc00;
 font-weight:bold;
@@ -164,6 +177,13 @@ Please input values in the yellow highlighted cells only.
 
 <!-- INPUT -->
 <table>
+
+<colgroup>
+    <col class="col-label">
+    <col class="col-bond">
+    <col class="col-bond">
+</colgroup>
+
 <tr>
 <td class="label">Wire Size, μm</td>
 <td class="input-box"><input id="wire"></td>
@@ -185,6 +205,13 @@ Please input values in the yellow highlighted cells only.
 
 <!-- SEARCH FORCE -->
 <table>
+
+<colgroup>
+    <col class="col-label">
+    <col class="col-bond">
+    <col class="col-bond">
+</colgroup>
+
 
 <tr>
 <td class="header">Search Force = Bond Force, gf</td>
@@ -208,6 +235,13 @@ Please input values in the yellow highlighted cells only.
 
 <!-- US POWER -->
 <table>
+
+<colgroup>
+    <col class="col-label">
+    <col class="col-bond">
+    <col class="col-bond">
+</colgroup>
+
 
 <tr>
 <td class="header">US Power</td>
@@ -234,6 +268,13 @@ Please input values in the yellow highlighted cells only.
 <!-- SEARCH SPEED -->
 <table>
 
+<colgroup>
+    <col class="col-label">
+    <col class="col-bond">
+    <col class="col-bond">
+</colgroup>
+
+
 <tr>
 <td class="header">Search Speed (Target Ball Size - Ø)</td>
 <td class="header">1st Bond</td>
@@ -250,6 +291,14 @@ Please input values in the yellow highlighted cells only.
 
 <!-- BOND PARAM -->
 <table>
+
+<colgroup>
+    <col class="col-label">
+    <col class="col-bond">
+    <col class="col-bond">
+</colgroup>
+
+
 
 <tr>
 <td class="header">Bond Parameter</td>
