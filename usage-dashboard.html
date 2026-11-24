@@ -422,9 +422,17 @@ async function loadLogs(){
                 "?action=getAccessLog"
             );
 
-        allLogs =
-            await response.json();
-loadUserCount();
+allLogs =
+(
+    await response.json()
+).filter(log =>
+
+    log.user &&
+
+    log.user.toLowerCase() !==
+    "pohpin_85@yahoo.com"
+
+);loadUserCount();
         populateFilters();
 
         buildDashboard(
