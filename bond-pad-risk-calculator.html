@@ -137,59 +137,95 @@ button{
 <button id="guideBtn" onclick="showGuide(event)">
 ❓ Quick Guide
 </button>
-
 <div id="guidePopup">
+
 <h3>📖 Quick Guide</h3>
 
 <div style="
 background:#e8f0fa;
 border-left:4px solid #1f4e79;
 padding:10px;
-margin-bottom:12px;
-font-size:14px;
 line-height:1.6;
 ">
 
-<b>Calculator Function</b>
+<b>Purpose</b>
 
-<ul style="
-margin-top:6px;
-margin-bottom:0;
+<ul>
+<li>Check BOOP risk and available design margin.</li>
+<li>Evaluate process capability using production data (optional).</li>
+</ul>
+
+</div>
+
+<br>
+
+<b>How to Use</b>
+
+<ol style="
+line-height:1.8;
 padding-left:20px;
-text-align:left;
 ">
 
-<li>Evaluate Bond Out Of Pad (BOOP) risk based on bond pad and ball diameter conditions.</li>
+<li>Enter BPO, BOOP, Ball Diameter and Ball Tolerance.</li>
 
-<li>Calculate allowable ball diameter and available design margin.</li>
+<li>Enter Bond Accuracy and Operator Teaching variation.</li>
 
-<li>Assess the impact of process tolerances, placement accuracy and operator teaching variation.</li>
+<li>Click <b>Calculate</b> and review <b>Part A - Design Assessment</b>.</li>
 
-<li>Automatically classify design condition as PASS, WARNING or FAIL.</li>
+<li>Optionally enter Mean Ball Diameter and Ball Size Sigma (1σ).</li>
 
-<li>Estimate BOOP Z-Margin and predicted BOOP Risk (PPM).</li>
+<li>Click <b>Calculate</b> again and review <b>Part B - Statistical Assessment</b>.</li>
 
-
-</div>
-
-<ol style="line-height:1.8;text-align:left;padding-left:25px;">
-<li>Enter Nominal BPO.</li>
-<li>Verify BPO Tolerance & change it if need.</li>
-<li>Enter Allowable BOOP per Side.</li>
-<li>Enter Target Ball Diameter and Ball Tolerance.</li>
-<li>Verify Bond Accuracy and Placement Sigma Level.</li>
-<li>Enter Operator Teaching and Teaching Sigma Level.</li>
-<li>Optionally enter Mean Ball Diameter and Sigma.</li>
-<li>Click Calculate.</li>
-<li>Review Design Margin Analysis and Sigma Analysis.</li>
 </ol>
 
+<div style="
+background:#FFF2CC;
+border-left:4px solid #BF9000;
+padding:10px;
+margin-top:10px;
+line-height:1.6;
+">
+
+<b>Result Interpretation</b>
+
+<ul>
+<li>✅ PASS = No BOOP risk predicted.</li>
+<li>⚠️ WARNING = Margin is limited.</li>
+<li>❌ FAIL = Design improvement required.</li>
+<li>Higher design margin and higher process capability indicate lower BOOP risk.</li>
+<li>Higher σ capability = Lower BOOP risk.</li>
+
+
+<li>Part A (Design Assessment) can be used without production data.</li>
+
+<li>Part B (Statistical Assessment) requires Mean Ball Diameter and Ball Size Sigma.</li>
+
+
+</ul>
+
 </div>
+</div>
+
+<div style="
+display:flex;
+align-items:flex-start;
+gap:20px;
+">
+    
+<div style="
+width:700px;
+">
+
 <table>
 
 <tr>
 <td colspan="3" class="header" style="font-size:20px;">
 Bond Pad Risk Calculator
+</td>
+</tr>
+<tr>
+<td colspan="3" class="header">
+Design Parameters
 </td>
 </tr>
 <tr>
@@ -219,7 +255,7 @@ Bond Pad Risk Calculator
 <td>Allowable Bond Out of Pad (BOOP) per Side</td>
 <td>µm</td>
 <td class="input-box">
-<input id="boop">
+<input id="boop" value="5.00">
 </td>
 </tr>
 
@@ -240,12 +276,12 @@ Bond Pad Risk Calculator
 </tr>
 <tr>
 <td colspan="3" class="header">
-Design Tolerance Stack-Up
+Assembly Process Variation
 </td>
 </tr>
 
 <tr>
-<td>Bond Accuracy (±)</td>
+<td>Bond Accuracy</td>
 <td>µm</td>
 <td class="input-box">
 <input id="placementAcc" value="3.00">
@@ -253,7 +289,7 @@ Design Tolerance Stack-Up
 </tr>
 
 <tr>
-<td>Placement Sigma Level</td>
+<td>Bond Accuracy Sigma Basis</td>
 <td>σ</td>
 <td class="input-box">
 <input id="placementSigmaLevel" value="3.00">
@@ -261,40 +297,39 @@ Design Tolerance Stack-Up
 </tr>
 
 <tr>
-<td>Operator Teaching (±)</td>
+<td>Operator Teaching</td>
 <td>µm</td>
 <td class="input-box">
-<input id="operatorTeaching">
+<input id="operatorTeaching" value="2.00">
 </td>
 </tr>
 
 <tr>
-<td>Teaching Sigma Level</td>
+<td>Teaching Sigma Basis</td>
 <td>σ</td>
 <td class="input-box">
-<input id="teachingSigmaLevel" value="3.00">
+<input id="teachingSigmaLevel" value="1.00">
 </td>
 </tr>
-
 
 
 <tr>
 <td
 title="
-Tolerance converted to equivalent 5σ basis.
-
-Bond Accuracy @5σ
+5 × Bond Accuracy (1σ)
 +
-Operator Teaching @5σ
+5 × Operator Teaching (1σ)
 ">
-Total Design Tolerance (5σ)</td>
+Total Design Tolerance (5σ)
+</td>
 <td>µm</td>
 <td id="totalTolerance" class="pass">
 </td>
 </tr>
+
 <tr>
 <td colspan="3" class="header">
-Optional Statistical Inputs
+Statistical Production Data (Optional)
 </td>
 </tr>
 
@@ -307,8 +342,8 @@ Optional Statistical Inputs
 </tr>
 
 <tr>
-<td>Sigma</td>
-<td>σ</td>
+<td>Ball Size Sigma (1σ)</td>
+<td>µm</td>
 <td class="input-box">
 <input id="ballSigma">
 </td>
@@ -372,33 +407,110 @@ Clear
 
 <div id="results"></div>
 
-<div class="remark-box">
-
-<b>Remark #1:</b><br>
-Design Margin Analysis can be used without historical production data.
-
-<br><br>
-
-<b>Remark #2:</b><br>
-Sigma Analysis is only available when Mean Ball Diameter and Sigma are entered.
-
-<br><br>
-
-<b>Remark #3:</b><br>
-Predicted PPM is a statistical estimation and should not be treated as actual production PPM.
-
-<br><br>
-
-<b>Remark #4:</b><br>
-Actual BOOP performance may vary depending on ball formation, bonding parameters, capillary design, and process variation.
-
-<br><br>
-
-<b>Remark #5:</b><br>
-Physical validation is recommended before engineering release or production implementation.
 
 </div>
 
+<div id="autoSummary"
+style="
+width:650px;
+min-height:500px;
+background:#EAF4FF;
+border:3px solid #1F4E79;
+padding:20px;
+line-height:1.8;
+text-align:left;
+display:block;
+font-size:16px;
+position:sticky;
+top:15px;
+">
+
+<b>Engineering Assessment Summary</b>
+
+<br><br>
+
+Click Calculate to generate:
+
+<ul>
+<li>✅ Design Assessment (Is the design safe?)</li>
+<li>📊 Statistical Assessment (Is the current process capable?)</li>
+</ul>
+
+</div>
+
+</div>
+
+<div class="info-box">
+
+<b>📘 Calculation Method</b>
+
+<br><br>
+
+<b><u>Part A – Design Assessment (Worst Case Analysis)</u></b>
+
+<br>
+
+Min BPO
+=
+Nominal BPO − BPO Tolerance
+
+<br>
+
+Maximum Allowable Ball Diameter
+=
+Min BPO + (2 × Allowable BOOP)
+− Total Design Tolerance
+
+<br>
+
+Remaining Margin
+=
+Maximum Allowable Ball Diameter
+− Ball Max Diameter
+
+<br>
+
+Design Status:
+
+<ul>
+<li>✅ PASS → Margin > 5 µm</li>
+<li>⚠️ WARNING → Margin 0 to 5 µm</li>
+<li>❌ FAIL → Margin < 0 µm</li>
+</ul>
+
+<b><u>Part B – Statistical Assessment (Process Capability)</u></b>
+
+<br>
+
+Total RSS Sigma
+
+=
+√(
+Ball Sigma²
++
+Placement Sigma²
++
+Teaching Sigma²
+)
+
+<br>
+
+Process Capability (Z)
+
+=
+(Bondable Area − Mean Ball Diameter)
+/
+Total RSS Sigma
+
+<br>
+
+Predicted BOOP Risk (PPM)
+
+=
+(1 − NormalCDF(Z))
+× 1,000,000
+
+</div>
 <script>
 
 let prev = {};
@@ -420,8 +532,8 @@ const inputs = [
 
     "ballMean",
     "ballSigma"
-
 ];
+
 inputs.forEach(id => {
 
     const el = document.getElementById(id);
@@ -521,7 +633,7 @@ const placement =
 const placementSigmaLevel =
     parseFloat(
         document.getElementById("placementSigmaLevel").value
-    ) || 3;
+    ) || 1;
 
 const teaching =
     parseFloat(
@@ -531,21 +643,23 @@ const teaching =
 const teachingSigmaLevel =
     parseFloat(
         document.getElementById("teachingSigmaLevel").value
-    ) || 3;
+    ) || 1;
 
 /* Convert all tolerances to 5σ basis */
 
-const placement5Sigma =
-    placement *
-    (5 / placementSigmaLevel);
+placement5Sigma =
+(placement / placementSigmaLevel) * 5;
 
-const teaching5Sigma =
-    teaching *
-    (5 / teachingSigmaLevel);
+
+teaching5Sigma =
+(teaching / teachingSigmaLevel) * 5;
+
 
 const totalTolerance =
-    placement5Sigma +
-    teaching5Sigma;
+Math.sqrt(
+    Math.pow(placement5Sigma,2) +
+    Math.pow(teaching5Sigma,2)
+);
 
 document.getElementById(
     "totalTolerance"
@@ -558,6 +672,11 @@ document.getElementById(
     const sigma =
         parseFloat(document.getElementById("ballSigma").value);
 
+let overallAssessment = "N/A";
+let overallColor = "#92D050";
+let overallComment = "";
+
+
     const ballMin = target - tol;
     const ballMax = target + tol;
 
@@ -565,7 +684,9 @@ const limit =
     bpoMin +
     (2 * boop) -
     totalTolerance;
-
+const bondableArea =
+    bpoMin +
+    (2 * boop);
 
     const marginMin = limit - ballMin;
     const marginTarget = limit - target;
@@ -644,7 +765,7 @@ ${
 </tr>
 
 
-
+ <tr>
 
         <td>Margin @ Min</td>
         <td>${marginMin.toFixed(2)} µm</td>
@@ -673,6 +794,9 @@ ${
         !isNaN(sigma) &&
         sigma > 0
     ){
+overallAssessment = "";
+overallColor = "#92D050";
+overallComment = "";
 
 
         html += `
@@ -693,23 +817,49 @@ ${
     <td title="
 Mean Ball Diameter + N Sigma
 ">
-Mean + Nσ Ball
+Predicted Ball Diameter
 </td>
 
     <td>Margin</td>
 
     <td>Status</td>
-</tr>
 
+    <td>PPM</td>
+</tr>
         `;
 
-        for(let s=1; s<=6; s++){
+const placementSigma =
+placement;
 
-            const dia =
-                mean + (s * sigma);
+const teachingSigma =
+teaching;
 
-            const margin =
-                limit - dia;
+
+const totalSigma =
+Math.sqrt(
+Math.pow(placementSigma,2) +
+Math.pow(teachingSigma,2) +
+Math.pow(sigma,2)
+);
+
+for(let s=1; s<=6; s++){
+
+    const dia =
+        mean + (s * totalSigma);
+const margin =
+    bondableArea - dia;
+
+let sigmaPPM = "-";
+
+if(margin < 0){
+
+    sigmaPPM =
+    (
+        (1 - normalCDF(s))
+        * 1000000
+    ).toFixed(3);
+
+}
 
             let rowColor = "";
 
@@ -718,18 +868,21 @@ Mean + Nσ Ball
                 "style='background:#FFCCCC;'";
             }
 
-            html += `
-            <tr ${rowColor}>
-                <td>${s}σ</td>
-                <td>${dia.toFixed(2)}</td>
-                <td>${margin.toFixed(2)}</td>
-                <td>${margin >= 0 ? "PASS" : "BOOP Risk"}</td>
-            </tr>
-            `;
+html += `
+<tr ${rowColor}>
+    <td>${s}σ</td>
+    <td>${dia.toFixed(2)}</td>
+    <td>${margin.toFixed(2)}</td>
+    <td>${margin >= 0 ? "PASS" : "BOOP Risk"}</td>
+    <td>${sigmaPPM}</td>
+</tr>
+`;
+
         }
 
-        const z =
-            (limit - mean) / sigma;
+
+const z =
+(bondableArea - mean) / totalSigma;
 const ppm =
 (
     1 -
@@ -737,219 +890,264 @@ const ppm =
 )
 *
 1000000;
-let zAssessment = "";
 
-if(z > 6){
-    zAssessment = "Excellent";
-}
-else if(z > 5){
-    zAssessment = "Very Good";
-}
-else if(z > 4){
-    zAssessment = "Acceptable";
-}
-else if(z > 3){
-    zAssessment = "Review Design";
-}
-else{
-    zAssessment = "High Risk";
-}
+if(z >= 5){
 
-let ppmAssessment = "";
+    overallComment =
+    "✅ Process capability is adequate for volume production. No improvement action is required at this time.";
 
-if(ppm < 1){
-    ppmAssessment = "Excellent";
 }
-else if(ppm < 10){
-    ppmAssessment = "Very Good";
+else if(z >= 4){
+
+    overallComment =
+    "✅ Process capability is acceptable. Continue monitoring ball size variation and bond placement consistency.";
+
 }
-else if(ppm < 100){
-    ppmAssessment = "Acceptable";
-}
-else if(ppm < 1000){
-    ppmAssessment = "Review Design";
+else if(z >= 3){
+
+    overallComment =
+    "⚠️ Process margin is limited. Consider reducing ball size variation, improving bond accuracy, or optimizing operator teaching consistency.";
+
 }
 else{
-    ppmAssessment = "High Risk";
-}
 
-let zColor = "#92D050";
+    overallComment =
+    "❌ Statistical BOOP risk is predicted. Increase bondable area, reduce ball diameter variation, or improve placement accuracy to increase process margin.";
 
-if(z <= 3){
-    zColor = "#FF6666";
-}
-else if(z <= 4){
-    zColor = "#F4B183";
-}
-else if(z <= 5){
-    zColor = "#FFD966";
-}
-let ppmColor = "#92D050";
-
-if(ppm > 1000){
-    ppmColor = "#FF6666";
-}
-else if(ppm > 100){
-    ppmColor = "#F4B183";
-}
-else if(ppm > 10){
-    ppmColor = "#FFD966";
-}
-else{
-    ppmColor = "#92D050";
 }
 
 
-html += `
-<tr>
-<td colspan="5"
-style="
-background:${zColor};
-font-weight:bold;
-">BOOP Z Margin = ${z.toFixed(2)}σ
 
-<br><br>
-
-Assessment :
-<b>${zAssessment}</b>
-
-<span
-style="
-cursor:help;
-color:#0078D7;
-font-size:16px;
-font-weight:bold;
-margin-left:5px;
-"
-title="
-Excellent:
-Extremely robust design with near-zero BOOP risk.
-
-Very Good:
-Strong design margin with very low BOOP risk.
-
-Acceptable:
-Generally suitable for production use.
-
-Review Design:
-Limited design margin. Engineering review recommended.
-
-High Risk:
-High BOOP risk. Design or process improvement recommended.
-"
->
-ⓘ
-</span><br>
-<br>
-
-Rating Guide
-
-<br>
-<br>
-
-Excellent : Z > 6σ
-
-<br>
-
-Very Good : 5σ < Z ≤ 6σ
-
-<br>
-
-Acceptable : 4σ < Z ≤ 5σ
-
-<br>
-
-Review Design : 3σ < Z ≤ 4σ
-
-<br>
-
-High Risk : Z ≤ 3σ
-    </td>
-</tr>
-
-<tr>
-<td colspan="5"
-style="
-background:${ppmColor};
-font-weight:bold;
-">
-
-
-Predicted BOOP Risk =
-${ppm.toFixed(2)} PPM
-
-<br><br>
-
-Assessment :
-<b>${ppmAssessment}</b>
-
-<span
-style="
-cursor:help;
-color:#0078D7;
-font-size:16px;
-font-weight:bold;
-margin-left:5px;
-"
-title="
-Excellent:
-PPM < 1.
-Extremely robust design.
-
-Very Good:
-1 ≤ PPM < 10.
-Very low BOOP risk.
-
-Acceptable:
-10 ≤ PPM < 100.
-Generally acceptable for production.
-
-Review Design:
-100 ≤ PPM < 1000.
-Design margin should be reviewed.
-
-High Risk:
-PPM ≥ 1000.
-Design or process optimization is strongly recommended.
-"
->
-ⓘ
-</span>
-<br>
-<br>
-
-Rating Guide
-
-<br>
-<br>
-
-Excellent : PPM < 1
-
-<br>
-
-Very Good : 1 ≤ PPM < 10
-
-<br>
-
-Acceptable : 10 ≤ PPM < 100
-
-<br>
-
-Review Design : 100 ≤ PPM < 1000
-
-<br>
-
-High Risk : PPM ≥ 1000
-</td>
-</tr>
-
-</table>
-`;
 
 
     }
+let summary = "";
 
-    document.getElementById("results").innerHTML = html;
+const statisticalMode =
+!isNaN(mean) &&
+!isNaN(sigma) &&
+sigma > 0;
+
+const summaryTitle = `
+<div style="
+font-size:24px;
+font-weight:bold;
+text-decoration:underline;
+color:#1F4E79;
+margin-bottom:15px;
+">
+Engineering Assessment Summary
+</div>
+`;
+
+summary = summaryTitle +
+
+`
+<div style="
+font-size:18px;
+font-weight:bold;
+color:#1F4E79;
+margin-bottom:10px;
+">
+✅ Part A - Design Assessment
+</div>
+
+<b>Purpose:</b> Is the design safe?
+
+<br><br>
+
+Design Status:
+<b>
+${
+status === "PASS"
+? "✅ PASS"
+: status === "WARNING"
+? "⚠️ WARNING"
+: "❌ FAIL"
+}
+</b>
+
+<br>
+
+Maximum Allowable Ball Diameter:
+<b>${limit.toFixed(2)} µm</b>
+
+<br>
+
+Worst Case Ball Diameter:
+<b>${ballMax.toFixed(2)} µm</b>
+
+<br>
+
+Remaining Margin:
+<b>${marginMax.toFixed(2)} µm</b>
+
+<br><br>
+
+<b>Conclusion:</b>
+`;
+
+if(status === "PASS"){
+
+summary += `
+✅ No BOOP risk predicted.
+`;
+
+}
+
+else if(status === "WARNING"){
+
+summary += `
+⚠️ Design passes but available margin is limited.
+Review is recommended.
+`;
+
+}
+
+else{
+
+summary += `
+
+<div style="
+background:#FFCCCC;
+border:2px solid #C00000;
+padding:12px;
+margin-top:10px;
+border-radius:6px;
+">
+
+<b>❌ FAIL</b>
+
+<br>
+
+Worst Case Ball Diameter exceeds the allowable limit by
+
+<b>${Math.abs(marginMax).toFixed(2)} µm</b>.
+
+<br>
+
+<b><u>Required Improvement:</u></b>
+<ul style="
+margin-top:5px;
+margin-bottom:0px;
+padding-left:18px;
+line-height:1.2;
+">
+<li>
+Increase Min BPO by at least
+<b>${Math.abs(marginMax).toFixed(2)} µm</b>
+</li>
+
+<li>
+OR reduce Ball Max Diameter by at least
+<b>${Math.abs(marginMax).toFixed(2)} µm</b>
+</li>
+
+<li>
+OR improve Bond Accuracy / Teaching variation
+to recover
+<b>${Math.abs(marginMax).toFixed(2)} µm</b>
+margin
+</li>
+</ul>
+</div>
+
+`;
+
+}
+if(statisticalMode){
+
+const placementSigma =
+placement;
+
+const teachingSigma =
+teaching;
+
+
+const ballSigmaActual =
+sigma;
+
+const totalSigma =
+Math.sqrt(
+    Math.pow(placementSigma,2) +
+    Math.pow(teachingSigma,2) +
+    Math.pow(ballSigmaActual,2)
+);
+
+const z =
+(bondableArea - mean) / totalSigma;
+const ppm =
+(
+    1 -
+    normalCDF(z)
+)
+*
+1000000;
+
+let processComment =
+overallComment;
+
+summary += `
+
+<hr style="margin-top:15px;margin-bottom:15px;">
+
+<div style="
+font-size:18px;
+font-weight:bold;
+color:#1F4E79;
+margin-bottom:10px;
+">
+📊 Part B - Statistical Assessment
+</div>
+
+<b>Purpose:</b> Is the current process capable?
+
+<br><br>
+
+Mean Ball Diameter:
+<b>${mean.toFixed(2)} µm</b>
+<br>
+
+Placement Sigma:
+<b>${placementSigma.toFixed(2)} µm</b>
+
+<br>
+
+Teaching Sigma:
+<b>${teachingSigma.toFixed(2)} µm</b>
+
+<br>
+
+Ball Size Sigma:
+<b>${ballSigmaActual.toFixed(2)} µm</b>
+
+<br>
+
+Total RSS Sigma:
+<b>${totalSigma.toFixed(2)} µm</b>
+<br>
+
+
+Current Process Capability:
+<b>${z.toFixed(2)}σ</b>
+
+<br><br>
+
+
+
+
+<b>Conclusion:</b>
+
+<br>
+
+${processComment}
+
+`;
+}
+
+document.getElementById("autoSummary").innerHTML = summary;
+document.getElementById("autoSummary").style.display = "block";
+document.getElementById("results").innerHTML = html;
 }
 
 function showGuide(event){
@@ -992,20 +1190,31 @@ document.getElementById("bpoNominal").value = "";
 
 document.getElementById("bpoTol").value = "5.00";
 
-document.getElementById("bpoMinCalc").innerHTML = "";    document.getElementById("boop").value = "";
+document.getElementById("bpoMinCalc").innerHTML = "";    document.getElementById("boop").value = "5.00";
     document.getElementById("ballTarget").value = "";
     document.getElementById("ballTol").value = "5.00";
     document.getElementById("ballMean").value = "";
     document.getElementById("ballSigma").value = "";
 document.getElementById("placementAcc").value = "3.00";
 
-document.getElementById("operatorTeaching").value = "";
-document.getElementById("placementSigmaLevel").value = "3.00";
-
-document.getElementById("teachingSigmaLevel").value = "3.00";
+document.getElementById("operatorTeaching").value = "2.00";
 document.getElementById("totalTolerance").innerHTML = "";
 
     document.getElementById("results").innerHTML = "";
+document.getElementById("autoSummary").innerHTML = `
+<b>Engineering Assessment Summary</b>
+
+<br><br>
+
+Click Calculate to generate:
+
+<ul>
+<li>✅ Design Assessment (Is the design safe?)</li>
+<li>📊 Statistical Assessment (Is the current process capable?)</li>
+</ul>
+`;
+
+document.getElementById("autoSummary").style.display = "block";
 
     prev = {};
 
@@ -1015,49 +1224,76 @@ document.getElementById("bpoNominal").focus();
 
 document.addEventListener("keydown", function(e){
 
-    if(e.key !== "Enter"){
+    const fields = [
+
+        "bpoNominal",
+        "bpoTol",
+        "boop",
+        "ballTarget",
+        "ballTol",
+
+        "placementAcc",
+        "placementSigmaLevel",
+
+        "operatorTeaching",
+        "teachingSigmaLevel",
+
+        "ballMean",
+        "ballSigma"
+
+    ];
+
+    const active =
+        document.activeElement.id;
+
+    const currentIndex =
+        fields.indexOf(active);
+
+    if(currentIndex === -1){
         return;
     }
 
-    e.preventDefault();
+    // ENTER or DOWN ARROW
+    if(
+        e.key === "Enter" ||
+        e.key === "ArrowDown"
+    ){
 
-    const active = document.activeElement.id;
+        e.preventDefault();
 
-if(active === "bpoNominal"){
-    document.getElementById("bpoTol").focus();
-}
-else if(active === "bpoTol"){
-    document.getElementById("boop").focus();
-}
-else if(active === "boop"){
-    document.getElementById("ballTarget").focus();
-}
-else if(active === "ballTarget"){
-    document.getElementById("ballTol").focus();
-}
-else if(active === "ballTol"){
-    document.getElementById("placementAcc").focus();
-}
-else if(active === "placementAcc"){
-    document.getElementById("placementSigmaLevel").focus();
-}
-else if(active === "placementSigmaLevel"){
-    document.getElementById("operatorTeaching").focus();
-}
-else if(active === "operatorTeaching"){
-    document.getElementById("teachingSigmaLevel").focus();
-}
-else if(active === "teachingSigmaLevel"){
-    document.getElementById("ballMean").focus();
-}
-else if(active === "ballMean"){
-    document.getElementById("ballSigma").focus();
-}
-else if(active === "ballSigma"){
-    calculateRisk();
-}
+        if(
+            currentIndex <
+            fields.length - 1
+        ){
+            document.getElementById(
+                fields[currentIndex + 1]
+            ).focus();
+        }
+        else{
+            calculateRisk();
+        }
+    }
+
+    // UP ARROW
+
+    else if(
+        e.key === "ArrowUp"
+    ){
+
+        e.preventDefault();
+
+        if(currentIndex > 0){
+
+            document.getElementById(
+                fields[currentIndex - 1]
+            ).focus();
+
+        }
+    }
 
 });
+
+
 </script>
 
 <script>
